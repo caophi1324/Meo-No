@@ -34,6 +34,7 @@ export function sanitizeStateForPlayer(gameState, playerId) {
             image: gameState.drawPile[0].image,
             lolImage: gameState.drawPile[0].lolImage,
             lolName: gameState.drawPile[0].lolName,
+            lolSkinName: gameState.drawPile[0].lolSkinName,
             faceUp: true,
           }
         : null,
@@ -59,6 +60,7 @@ export function sanitizeStateForPlayer(gameState, playerId) {
             emoji: c.emoji,
             lolImage: c.lolImage,
             lolName: c.lolName,
+            lolSkinName: c.lolSkinName,
           }))
         : null,
     favorTarget: gameState.favorTarget,

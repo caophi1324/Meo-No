@@ -597,11 +597,28 @@ test('Mỗi ván có đúng 1 Nạp Nhiên Liệu', () => {
   }
 });
 
-test('Bộ Liên Minh: 150 lá, mỗi lá một tướng riêng', () => {
+test('Bộ Liên Minh: thú cùng loại cùng ảnh, lá khác unique', () => {
   const deck = createDeck(4);
   assert.equal(deck.length, 150);
-  assert.equal(new Set(deck.map(c => c.lolImage)).size, 150);
-  assert.ok(deck.every(c => c.lolImage?.startsWith('/cards/lol/') && c.lolName));
+
+  const expectedBeasts = {
+    [CARD_TYPES.CAO_LUA]: 'Ahri',
+    [CARD_TYPES.HO_VAN]: 'Nasus',
+    [CARD_TYPES.CHIM_UNG]: 'Teemo',
+    [CARD_TYPES.CA_CHEP]: 'Yuumi',
+    [CARD_TYPES.HUOU_SAO]: 'Lillia',
+  };
+  for (const [type, name] of Object.entries(expectedBeasts)) {
+    const copies = deck.filter(c => c.type === type);
+    assert.equal(copies.length, 4);
+    assert.equal(new Set(copies.map(c => c.lolImage)).size, 1);
+    assert.equal(copies[0].lolName, name);
+    assert.ok(copies[0].lolSkinName);
+  }
+
+  const others = deck.filter(c => !BEAST_CARDS.includes(c.type));
+  assert.equal(new Set(others.map(c => c.lolImage)).size, others.length);
+  assert.ok(deck.every(c => c.lolImage?.startsWith('/cards/lol/') && c.lolName && c.lolSkinName));
 });
 
 test('Choice mới có giá trị timeout/bot hợp lệ', () => {

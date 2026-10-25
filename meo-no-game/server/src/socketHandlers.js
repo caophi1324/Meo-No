@@ -1,5 +1,6 @@
 import { EVENTS } from '../../shared/events.js';
 import { DECK_THEME_IDS, DEFAULT_DECK_THEME } from '../../shared/decks.js';
+import { BEAST_CARDS } from '../../shared/cardTypes.js';
 import { CONFIG } from './constants.js';
 import { sanitizeStateForPlayer, sanitizeLobbyPlayers } from './stateSanitizer.js';
 import {
@@ -82,6 +83,14 @@ export function registerSocketHandlers(io, roomManager, GameEngine) {
       alterFutureTime: room.alterFutureTime || CONFIG.ALTER_FUTURE_TIME,
     };
     engine.gameState.deckTheme = room.deckTheme || DEFAULT_DECK_THEME;
+    // Theme Liên Minh: lá thú hiển thị/log bằng tên tướng, không phải tên con vật cũ.
+    if (engine.gameState.deckTheme === 'lol') {
+      const renameBeast = (card) => {
+        if (BEAST_CARDS.includes(card.type) && card.lolName) card.nameVN = card.lolName;
+      };
+      room.players.forEach(p => p.hand?.forEach(renameBeast));
+      engine.gameState.drawPile.forEach(renameBeast);
+    }
     room.engine = engine;
     room.gameState = engine.gameState;
     room.status = 'playing';

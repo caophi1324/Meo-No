@@ -477,7 +477,7 @@ export class GameEngine {
           type: 'imploding_flipped',
           playerId,
           playerName: player.name,
-          card: { id: drawnCard.id, type: drawnCard.type, nameVN: drawnCard.nameVN, emoji: drawnCard.emoji, image: drawnCard.image, lolImage: drawnCard.lolImage, lolName: drawnCard.lolName, faceUp: true },
+          card: { id: drawnCard.id, type: drawnCard.type, nameVN: drawnCard.nameVN, emoji: drawnCard.emoji, image: drawnCard.image, lolImage: drawnCard.lolImage, lolName: drawnCard.lolName, lolSkinName: drawnCard.lolSkinName, faceUp: true },
         },
       };
     }

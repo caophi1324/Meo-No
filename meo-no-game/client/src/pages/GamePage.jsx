@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSocket } from '../hooks/useSocket';
 import useGameStore from '../store/gameStore';
 import { CARD_DATA } from '../data/cardData';
-import { BOOSTABLE_TYPES, CARD_TYPES, getPetCombo } from '../../../shared/cardTypes.js';
+import { BOOSTABLE_TYPES, BEAST_CARDS, CARD_TYPES, getPetCombo } from '../../../shared/cardTypes.js';
 import { clearIdentity } from '../socket.js';
 import { soundEffects } from '../utils/soundEffects';
 import {
@@ -61,6 +61,7 @@ export default function GamePage() {
   const chatMessages = useGameStore((s) => s.chatMessages);
   const lobbyPlayers = useGameStore((s) => s.lobbyPlayers);
   const connectionLost = useGameStore((s) => s.connectionLost);
+  const deckTheme = useGameStore((s) => s.deckTheme);
 
   const showNopePopup = useGameStore((s) => s.showNopePopup);
   const nopeInfo = useGameStore((s) => s.nopeInfo);
@@ -292,6 +293,12 @@ export default function GamePage() {
         };
       if (c.type === CARD_TYPES.FUEL && isFueled)
         return { valid: false, label: '⛽ ĐÃ NẠP NHIÊN LIỆU', reason: 'Hãy dùng Tấn Công trước khi nạp thêm' };
+      if (deckTheme === 'lol' && BEAST_CARDS.includes(c.type) && c.lolName)
+        return {
+          valid: true,
+          label: `CHƠI ${c.lolName.toUpperCase()} ⚡`,
+          reason: CARD_DATA[c.type]?.shortTip || '',
+        };
       return {
         valid: true,
         label: `CHƠI ${CARD_DATA[c.type]?.nameVN?.toUpperCase() || ''} ⚡`,
@@ -333,7 +340,7 @@ export default function GamePage() {
     if (petCombo?.size === 5)
       return { valid: true, comboSize: 5, needsDiscard: true, label: petCombo.family === 'beast' ? '🦊 COMBO 5 THÚ — LẤY BÀI HẠ' : '🐱 COMBO 5 — LẤY BÀI HẠ', reason: 'Lấy 1 lá bất kỳ từ chồng bài hạ' };
     return { valid: false, label: 'CHƠI BÀI', reason: 'Kết hợp các lá bài không hợp lệ' };
-  }, [myHand, selectedCards, isFueled]);
+  }, [myHand, selectedCards, isFueled, deckTheme]);
 
   // Đồng hồ lượt: server gửi mốc kết thúc, client chỉ đếm lùi.
   useEffect(() => {
@@ -956,15 +963,16 @@ export default function GamePage() {
             <div className="flex flex-wrap gap-2.5 justify-center max-h-72 overflow-y-auto p-1">
               {myHand.map((card) => {
                 const info = CARD_DATA[card.type] || card;
+                const lolBeast = deckTheme === 'lol' && BEAST_CARDS.includes(card.type);
                 return (
                   <button
                     key={card.id}
                     onClick={() => handleFavorGive(card.id)}
                     className="w-24 py-2.5 px-1 bg-slate-800 hover:bg-pink-600/30 border border-slate-700 hover:border-pink-400 rounded-2xl text-white transition-all cursor-pointer flex flex-col items-center gap-1 shadow"
                   >
-                    <div className="text-2xl">{info.emoji}</div>
+                    <div className="text-2xl">{lolBeast ? '🐾' : info.emoji}</div>
                     <div className="text-[11px] font-bold leading-tight truncate w-full text-center">
-                      {info.nameVN}
+                      {lolBeast && card.lolName ? card.lolName : info.nameVN}
                     </div>
                   </button>
                 );

@@ -2,6 +2,15 @@
 import { CARD_DATA } from '../data/cardData';
 import useGameStore from '../store/gameStore';
 import { themedImage } from '../../../shared/decks.js';
+import { BEAST_CARDS, CARD_TYPES } from '../../../shared/cardTypes.js';
+
+const LOL_BEAST_EMOJI = {
+  [CARD_TYPES.CAO_LUA]: '🦊',
+  [CARD_TYPES.HO_VAN]: '🐺',
+  [CARD_TYPES.CHIM_UNG]: '🦡',
+  [CARD_TYPES.CA_CHEP]: '🐱',
+  [CARD_TYPES.HUOU_SAO]: '🦌',
+};
 
 export default function Card({
   card,
@@ -17,6 +26,12 @@ export default function Card({
   const deckTheme = useGameStore((s) => s.deckTheme);
   const isLol = deckTheme === 'lol';
   const cardImage = isLol && card?.lolImage ? card.lolImage : cardInfo.image;
+  const isLolBeast = isLol && BEAST_CARDS.includes(card?.type);
+  const cardTitle = isLolBeast
+    ? card?.lolName || cardInfo.nameVN
+    : cardInfo.nameVN || cardInfo.badgeText;
+  const cardSubtitle = isLol ? card?.lolSkinName || card?.lolName : null;
+  const cardEmoji = isLolBeast ? LOL_BEAST_EMOJI[card.type] || cardInfo.emoji : cardInfo.emoji;
   const borderColor = cardInfo.borderColor || '#64748B';
   const glowColor = cardInfo.glowColor || 'rgba(100, 116, 139, 0.3)';
   const headerBg = cardInfo.headerBg || 'from-slate-700 to-slate-800';
@@ -32,7 +47,7 @@ export default function Card({
           }
         },
         'aria-pressed': selected,
-        'aria-label': `${cardInfo.nameVN || 'Lá bài'}${isLol && card?.lolName ? ` (${card.lolName})` : ''}${selected ? ', đang chọn' : highlighted ? ', có thể dùng' : ''}`,
+        'aria-label': `${cardTitle || 'Lá bài'}${cardSubtitle ? ` (${cardSubtitle})` : ''}${selected ? ', đang chọn' : highlighted ? ', có thể dùng' : ''}`,
       }
     : {};
 
@@ -99,7 +114,7 @@ export default function Card({
       >
         <img
           src={themedImage(cardImage, deckTheme)}
-          alt={cardInfo.nameVN || card?.name || 'Lá bài'}
+          alt={cardTitle || 'Lá bài'}
           className="h-full w-full object-cover"
           style={isLol ? { objectPosition: 'center 20%' } : undefined}
           loading="lazy"
@@ -107,10 +122,10 @@ export default function Card({
         {isLol && (
           <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent px-1.5 pb-1 pt-6 text-center">
             <div className="truncate text-[9px] font-black uppercase tracking-wide text-white">
-              {cardInfo.nameVN || card?.name || 'Lá bài'}
+              {cardTitle || 'Lá bài'}
             </div>
-            {card?.lolName && (
-              <div className="truncate text-[7px] font-bold text-amber-300">{card.lolName}</div>
+            {cardSubtitle && (
+              <div className="truncate text-[7px] font-bold text-amber-300">{cardSubtitle}</div>
             )}
           </div>
         )}
@@ -190,16 +205,16 @@ export default function Card({
       <div
         className={`w-full py-0.5 sm:py-1 px-1 sm:px-1.5 bg-gradient-to-r ${headerBg} flex items-center justify-between border-b border-white/20`}
       >
-        <span className="text-[10px] sm:text-xs leading-none">{cardInfo.emoji || '🃏'}</span>
+        <span className="text-[10px] sm:text-xs leading-none">{cardEmoji || '🃏'}</span>
         <span className="font-extrabold uppercase tracking-wider text-[8px] sm:text-[9px] md:text-[10px] text-white font-display truncate px-0.5 drop-shadow">
-          {cardInfo.nameVN || cardInfo.badgeText}
+          {cardTitle || 'Lá bài'}
         </span>
-        <span className="text-[10px] sm:text-xs leading-none">{cardInfo.emoji || '🃏'}</span>
+        <span className="text-[10px] sm:text-xs leading-none">{cardEmoji || '🃏'}</span>
       </div>
 
-      {isLol && card?.lolName && (
+      {isLol && cardSubtitle && (
         <div className="w-full px-1 text-center text-[7px] font-bold uppercase tracking-wider text-amber-300/90 truncate">
-          {card.lolName}
+          {cardSubtitle}
         </div>
       )}
 
@@ -214,7 +229,7 @@ export default function Card({
           {cardImage ? (
             <img
               src={themedImage(cardImage, deckTheme)}
-              alt={`${cardInfo.nameVN}${isLol && card?.lolName ? ` — ${card.lolName}` : ''}`}
+              alt={`${cardTitle}${cardSubtitle ? ` — ${cardSubtitle}` : ''}`}
               className={`w-full h-full filter drop-shadow group-hover:scale-105 transition-transform duration-300 ${
                 isLol ? 'object-cover' : 'object-contain'
               }`}

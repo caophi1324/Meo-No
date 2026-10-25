@@ -8,7 +8,7 @@ export function cardView(card) {
     type: card.type,
     nameVN: card.nameVN,
     emoji: card.emoji,
-    ...(card.lolImage ? { lolImage: card.lolImage, lolName: card.lolName } : {}),
+    ...(card.lolImage ? { lolImage: card.lolImage, lolName: card.lolName, lolSkinName: card.lolSkinName } : {}),
   };
 }
 

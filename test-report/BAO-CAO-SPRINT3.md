@@ -64,9 +64,12 @@ Ngày: 25/10/2026. Không commit.
 
 ### D. Bộ Liên Minh (mới)
 - Thêm theme `lol` vào `shared/decks.js`; chọn được trong lobby như default/anime.
-- `tools/make-lol-cards.ps1`: tải **150 ảnh loading art** tướng từ Data Dragon vào `client/public/cards/lol/` (6.6 MB) và sinh `shared/lolChampions.js`.
-- `deckBuilder.js`: mỗi lá trong 150 lá nhận một tướng riêng (`lolImage`, `lolName`), kể cả các lá cùng loại — không dùng chung hình.
-- `Card.jsx`: khi theme `lol`, dùng `card.lolImage`; hiện tên lá + tên tướng; crop ảnh theo mặt tướng.
+- `tools/make-lol-cards.ps1`: tải **150 ảnh loading art của skin** (không dùng skin mặc định) từ Data Dragon vào `client/public/cards/lol/` (~7.7 MB) và sinh `shared/lolChampions.js`.
+- Chọn skin theo bậc cao nhất từ CommunityDragon (`Transcendent > Mythic > Legendary > Epic`), ưu tiên không legacy rồi mới nhất; 5 tướng thú được ghim skin cao cấp.
+- 5 lá thú cố định: Cáo Lửa → **Ahri** (Risen Legend), Hổ Vằn → **Nasus** (Infernal), Chim Ưng → **Teemo** (Omega Squad), Cá Chép → **Yuumi** (Prestige Cyber Cat), Hươu Sao → **Lillia** (Petals of Spring). Mọi bản sao cùng loại dùng chung một ảnh.
+- 130 lá còn lại nhận 130 tướng/skin khác nhau (không trùng 5 tướng thú); `deckBuilder.js` gán `lolImage`, `lolName`, `lolSkinName`.
+- `Card.jsx`: tiêu đề lá thú là tên tướng; các lá khác giữ tên chức năng, phụ đề là tên skin; emoji thú đổi theo tướng (🦊🐺🦡🐱🦌).
+- `socketHandlers.js`: đổi `nameVN` của lá thú sang tên tướng khi theme `lol` để game log không còn hiện tên con vật cũ.
 - Preview lobby và ảnh Nope dùng mapping tĩnh (`Ahri`, `Garen`, `Jinx`, `Lux`, `Darius`).
 - Ảnh loading 308×560, CSS cover/crop; không upscale, không thêm dependency.
 - Lưu ý: art tướng thuộc Riot Games, dùng cho mục đích cá nhân/fan; không affiliate.

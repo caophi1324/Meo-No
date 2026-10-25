@@ -42,6 +42,16 @@ const PHASE2_WEIGHTS = {
   [CARD_TYPES.TIET_LO_TUONG_LAI]: 3,
 };
 
+// Bộ Liên Minh: 5 lá thú dùng đúng 5 tướng này; mọi bản sao cùng loại dùng chung 1 ảnh.
+const LOL_BEAST_CHAMPIONS = {
+  [CARD_TYPES.CAO_LUA]: 'Ahri',
+  [CARD_TYPES.HO_VAN]: 'Nasus',
+  [CARD_TYPES.CHIM_UNG]: 'Teemo',
+  [CARD_TYPES.CA_CHEP]: 'Yuumi',
+  [CARD_TYPES.HUOU_SAO]: 'Lillia',
+};
+const LOL_BEAST_IDS = new Set(Object.values(LOL_BEAST_CHAMPIONS));
+
 export function getDeckCounts(playerCount) {
   const counts = {
     [CARD_TYPES.EXPLODING_KITTEN]: Math.max(1, playerCount - 1),
@@ -77,15 +87,20 @@ export function getDeckCounts(playerCount) {
 
 export function createDeck(playerCount = 4) {
   const deck = [];
+  const pool = LOL_CHAMPIONS.filter(c => !LOL_BEAST_IDS.has(c.id));
   let lolIndex = 0;
   for (const [type, count] of Object.entries(getDeckCounts(playerCount))) {
     for (let i = 0; i < count; i++) {
       const meta = CARD_META[type];
       if (!meta) throw new Error(`Thiếu CARD_META cho ${type}`);
-      const champion = LOL_CHAMPIONS.length
-        ? LOL_CHAMPIONS[lolIndex % LOL_CHAMPIONS.length]
-        : null;
-      lolIndex += 1;
+      const beastId = LOL_BEAST_CHAMPIONS[type];
+      let champion = null;
+      if (beastId) {
+        champion = LOL_CHAMPIONS.find(c => c.id === beastId) || null;
+      } else if (pool.length) {
+        champion = pool[lolIndex % pool.length];
+        lolIndex += 1;
+      }
       deck.push({
         id: uuidv4(),
         type,
@@ -94,7 +109,11 @@ export function createDeck(playerCount = 4) {
         emoji: meta.emoji,
         image: meta.image,
         ...(champion
-          ? { lolImage: `/cards/lol/${champion.id}.jpg`, lolName: champion.name }
+          ? {
+              lolImage: `/cards/lol/${champion.id}.jpg`,
+              lolName: champion.name,
+              lolSkinName: champion.skinName || champion.name,
+            }
           : {}),
         ...(type === CARD_TYPES.IMPLODING_KITTEN ? { faceUp: false } : {}),
       });

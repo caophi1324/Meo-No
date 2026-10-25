@@ -1,8 +1,10 @@
-# Downloads League of Legends champion loading art for the "lol" deck theme.
+# Downloads League of Legends champion SKIN loading art for the "lol" deck theme.
+# Picks the highest rarity tier (Transcendent > Mythic > Legendary > Epic > base),
+# prefers non-legacy then newest. The five beast cards use fixed high-tier skins.
 # Champion art belongs to Riot Games; personal/fan use only, not affiliated with Riot.
-# Re-run to refresh; existing files under 10 KB are re-downloaded.
 param(
-  [int]$Count = 150
+  [int]$Count = 150,
+  [switch]$Reuse
 )
 
 $ErrorActionPreference = 'Stop'
@@ -16,24 +18,95 @@ New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
 $version = (Invoke-RestMethod -Uri 'https://ddragon.leagueoflegends.com/api/versions.json' -TimeoutSec 30)[0]
 $data = Invoke-RestMethod -Uri "https://ddragon.leagueoflegends.com/cdn/$version/data/en_US/champion.json" -TimeoutSec 60
-$champs = @($data.data.PSObject.Properties.Value | Sort-Object id | Select-Object -First $Count)
+$all = @($data.data.PSObject.Properties.Value | Sort-Object id)
+$champs = @($all | Select-Object -First $Count)
 
-$picked = @()
+# Bắt buộc có 5 tướng thú; nếu nằm ngoài 150 đầu bảng chữ cái thì thay vào.
+$required = @('Ahri', 'Lillia', 'Nasus', 'Teemo', 'Yuumi')
+$list = [System.Collections.Generic.List[object]]::new()
+foreach ($c in $champs) { $list.Add($c) }
+foreach ($id in $required) {
+  if (-not ($list | Where-Object { $_.id -eq $id })) {
+    $add = $all | Where-Object { $_.id -eq $id } | Select-Object -First 1
+    if ($add) { $list.Add($add) }
+  }
+}
+while ($list.Count -gt $Count) {
+  $remove = $list | Where-Object { $required -notcontains $_.id } | Select-Object -Last 1
+  if (-not $remove) { break }
+  $list.Remove($remove)
+}
+$champs = @($list | Sort-Object id)
+
+$rank = @{ kTranscendent = 5; kMythic = 4; kLegendary = 3; kEpic = 2; kNoRarity = 1 }
+$forced = @{
+  Ahri   = 85  # Risen Legend Ahri (Transcendent)
+  Lillia = 46  # Petals of Spring Lillia (Legendary)
+  Nasus  = 5   # Infernal Nasus (Legendary)
+  Teemo  = 8   # Omega Squad Teemo (Legendary)
+  Yuumi  = 50  # Prestige Cyber Cat Yuumi (Mythic)
+}
+
+function Get-ChampionSkins($champ) {
+  $url = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champions/$($champ.key).json"
+  for ($try = 0; $try -lt 3; $try++) {
+    try {
+      return @((Invoke-RestMethod -Uri $url -TimeoutSec 30).skins)
+    } catch {
+      if ($try -eq 2) {
+        Write-Host ("  skin data failed: {0}" -f $champ.id)
+        return @()
+      }
+      Start-Sleep -Seconds 2
+    }
+  }
+}
+
+function Get-SkinCandidates($champ) {
+  $skins = @(Get-ChampionSkins $champ | Where-Object { -not $_.isBase })
+  if ($skins.Count -eq 0) { return @() }
+
+  if ($forced.ContainsKey($champ.id)) {
+    $num = $forced[$champ.id]
+    $picked = @($skins | Where-Object { ([int]$_.id % 1000) -eq $num })
+    if ($picked.Count -gt 0) { return $picked }
+  }
+
+  return @($skins | Sort-Object `
+    @{ Expression = { if ($rank.ContainsKey([string]$_.rarity)) { $rank[[string]$_.rarity] } else { 0 } }; Descending = $true }, `
+    @{ Expression = { if ($_.isLegacy) { 0 } else { 1 } }; Descending = $true }, `
+    @{ Expression = { [int]$_.id }; Descending = $true })
+}
+
+$pickedChamps = @()
 $i = 0
 foreach ($c in $champs) {
   $i++
-  $file = Join-Path $outDir ($c.id + '.jpg')
-  if (-not (Test-Path -LiteralPath $file) -or (Get-Item -LiteralPath $file).Length -lt 10000) {
+  $candidates = @(Get-SkinCandidates $c)
+  $picked = $null
+
+  foreach ($skin in $candidates) {
+    $num = [int]$skin.id % 1000
+    $file = Join-Path $outDir ($c.id + '.jpg')
     try {
-      Invoke-WebRequest -Uri "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/$($c.id)_0.jpg" `
-        -OutFile $file -UseBasicParsing -UserAgent 'Mozilla/5.0' -TimeoutSec 60
+      if (-not ($Reuse -and (Test-Path -LiteralPath $file) -and (Get-Item -LiteralPath $file).Length -gt 20000)) {
+        Invoke-WebRequest -Uri "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/$($c.id)_$num.jpg" `
+          -OutFile $file -UseBasicParsing -UserAgent 'Mozilla/5.0' -TimeoutSec 60
+      }
+      $picked = @{ Skin = $skin; Num = $num }
+      break
     } catch {
-      Write-Host ("skip {0}: {1}" -f $c.id, $_.Exception.Message)
-      continue
+      Write-Host ("  art failed {0}_{1}: {2}" -f $c.id, $num, $_.Exception.Message)
     }
   }
-  $picked += $c
-  Write-Host ("[{0}/{1}] {2}" -f $i, $champs.Count, $c.id)
+
+  if (-not $picked) {
+    Write-Host ("skip {0}: no non-default skin art" -f $c.id)
+    continue
+  }
+
+  $pickedChamps += @{ Champion = $c; Skin = $picked.Skin; Num = $picked.Num }
+  Write-Host ("[{0}/{1}] {2} <- {3} (#{4})" -f $i, $champs.Count, $c.id, $picked.Skin.name, $picked.Num)
 }
 
 $lines = @(
@@ -41,11 +114,12 @@ $lines = @(
   '// Champion art belongs to Riot Games; personal/fan use only.',
   'export const LOL_CHAMPIONS = ['
 )
-foreach ($c in $picked) {
-  $name = $c.name.Replace("'", "\'")
-  $lines += "  { id: '$($c.id)', name: '$name' },"
+foreach ($entry in $pickedChamps) {
+  $name = $entry.Champion.name.Replace("'", "\'")
+  $skinName = $entry.Skin.name.Replace("'", "\'")
+  $lines += "  { id: '$($entry.Champion.id)', name: '$name', skinNum: $($entry.Num), skinName: '$skinName' },"
 }
 $lines += '];'
 [IO.File]::WriteAllText($listFile, ($lines -join "`n"), [Text.UTF8Encoding]::new($false))
 
-Write-Host ("Done. {0} champions -> {1}" -f $picked.Count, $listFile)
+Write-Host ("Done. {0} champions with non-default skins -> {1}" -f $pickedChamps.Count, $listFile)
