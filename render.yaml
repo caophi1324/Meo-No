@@ -7,5 +7,5 @@ services:
     startCommand: node src/index.js
     envVars:
       - key: CORS_ORIGINS
-        value: https://your-vercel-app.vercel.app
+        value: https://meo-no-six.vercel.app
     healthCheckPath: /health
