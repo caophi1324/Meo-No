@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: meo-no-server
+    runtime: node
+    rootDir: meo-no-game/server
+    buildCommand: npm install
+    startCommand: node src/index.js
+    envVars:
+      - key: CORS_ORIGINS
+        value: https://your-vercel-app.vercel.app
+    healthCheckPath: /health
