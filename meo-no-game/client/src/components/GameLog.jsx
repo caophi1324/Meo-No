@@ -25,16 +25,16 @@ export default function GameLog({ logs = [], compact = false, fill = false }) {
         return (
           <div
             key={i}
-            className={`text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors ${
+            className={`text-xs px-2.5 py-1.5 rounded-[3px] flex items-center gap-1.5 border-l-4 transition-colors ${
               isExplosion
-                ? 'bg-red-950/70 border border-red-700/60 text-red-200 font-bold'
+                ? 'bg-[#F3D8D2] border-[var(--oxblood)] text-[var(--oxblood)] font-bold'
                 : isDefuse
-                  ? 'bg-emerald-950/60 border border-emerald-700/50 text-emerald-200 font-semibold'
+                  ? 'bg-[#DDE9DD] border-[var(--felt)] text-[#1F4D3A] font-semibold'
                   : isAttack
-                    ? 'bg-orange-950/60 border border-orange-700/50 text-orange-200 font-semibold'
+                    ? 'bg-[#F5E7C8] border-[var(--mustard)] text-[#7B4B14] font-semibold'
                     : isNope
-                      ? 'bg-rose-950/60 border border-rose-700/50 text-rose-200'
-                      : 'bg-slate-900/60 border border-slate-800 text-slate-300'
+                      ? 'bg-[#F3D8D2] border-[var(--oxblood)] text-[var(--oxblood)]'
+                      : 'bg-[var(--paper-2)]/60 border-[var(--line)] text-[var(--ink-soft)]'
             }`}
           >
             <span className="leading-relaxed">{log}</span>
@@ -42,7 +42,7 @@ export default function GameLog({ logs = [], compact = false, fill = false }) {
         );
       })}
       {logs.length === 0 && (
-        <div className="text-xs text-slate-500 italic py-2 text-center">
+        <div className="text-xs text-[var(--ink-soft)] italic py-2 text-center">
           Ván đấu vừa khởi động...
         </div>
       )}

@@ -29,14 +29,14 @@ export default function GameOverModal({
         angle: 60,
         spread: 55,
         origin: { x: 0 },
-        colors: ['#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#EC4899'],
+        colors: ['#C9922E', '#7B2D26', '#1F4D3A', '#A9743F', '#F4EAD5'],
       });
       confetti({
         particleCount: 4,
         angle: 120,
         spread: 55,
         origin: { x: 1 },
-        colors: ['#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#EC4899'],
+        colors: ['#C9922E', '#7B2D26', '#1F4D3A', '#A9743F', '#F4EAD5'],
       });
 
       if (Date.now() < end) requestAnimationFrame(frame);
@@ -48,40 +48,38 @@ export default function GameOverModal({
     <ModalShell
       label="Kết thúc ván"
       overlayClassName="bg-black/90 backdrop-blur-md animate-in fade-in duration-300"
-      panelClassName="bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-8 border-2 border-amber-400 max-w-md w-full text-center shadow-2xl shadow-amber-500/30 relative overflow-hidden"
+      panelClassName="paper-modal max-w-md w-full p-6 text-center sm:p-8"
     >
       {/* Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="text-6xl sm:text-7xl mb-3 animate-bounce motion-reduce:animate-none filter drop-shadow">
+      <div className="text-6xl sm:text-7xl mb-3 filter drop-shadow">
         {isWinner ? '🏆' : '💥'}
       </div>
 
-      <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-400 bg-clip-text text-transparent mb-1 font-display tracking-wider">
+      <h1 className="text-3xl sm:text-4xl font-black text-[var(--ink)] mb-1 font-display tracking-wider">
         {isWinner ? 'CHIẾN THẮNG!' : 'VÁN KẾT THÚC'}
       </h1>
-      <p className="text-xs sm:text-sm text-slate-400 mb-4">
+      <p className="text-xs sm:text-sm text-[var(--ink-soft)] mb-4">
         {isWinner ? 'Bạn là người sống sót cuối cùng!' : 'Bạn đã bị loại khỏi ván này.'}
       </p>
 
-      <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 my-5">
-        <div className="text-xs uppercase tracking-widest text-slate-400 mb-1 font-bold">
+      <div className="paper-panel paper-panel--soft my-5 p-4">
+        <div className="landing-overline mb-1">
           👑 NGƯỜI SỐNG SÓT CUỐI CÙNG
         </div>
-        <div className="text-2xl sm:text-3xl font-black text-amber-300 font-display truncate">
+        <div className="text-2xl sm:text-3xl font-black text-[var(--oxblood)] font-display truncate">
           {winnerName}
         </div>
       </div>
 
       {stats && (
         <div className="mb-5 grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded-xl border border-slate-700 bg-slate-800/70 px-3 py-2">
-            <div className="text-lg font-black text-amber-300">{stats.cardsPlayed || 0}</div>
-            <div className="font-semibold text-slate-400">lá đã chơi</div>
+          <div className="rounded-[4px] border-2 border-[var(--ink)] bg-[var(--paper-2)] px-3 py-2">
+            <div className="text-lg font-black text-[var(--oxblood)]">{stats.cardsPlayed || 0}</div>
+            <div className="font-semibold text-[var(--ink-soft)]">lá đã chơi</div>
           </div>
-          <div className="rounded-xl border border-slate-700 bg-slate-800/70 px-3 py-2">
-            <div className="text-lg font-black text-sky-300">{stats.nopes || 0}</div>
-            <div className="font-semibold text-slate-400">lần Phủ Nhận</div>
+          <div className="rounded-[4px] border-2 border-[var(--ink)] bg-[var(--paper-2)] px-3 py-2">
+            <div className="text-lg font-black text-[var(--felt)]">{stats.nopes || 0}</div>
+            <div className="font-semibold text-[var(--ink-soft)]">lần Phủ Nhận</div>
           </div>
         </div>
       )}
@@ -92,7 +90,7 @@ export default function GameOverModal({
             soundEffects.playClick();
             onPlayAgain();
           }}
-          className="flex-1 py-3.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white rounded-xl font-black text-sm sm:text-base font-display transition-all shadow-lg shadow-orange-500/30 cursor-pointer"
+          className="landing-btn landing-btn--oxblood flex-1 py-3.5 text-sm sm:text-base"
         >
           🔄 CHƠI LẠI
         </button>
@@ -101,7 +99,7 @@ export default function GameOverModal({
             soundEffects.playClick();
             onHome();
           }}
-          className="flex-1 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-bold text-sm sm:text-base font-display transition-all border border-slate-700 cursor-pointer"
+          className="landing-btn landing-btn--paper flex-1 py-3.5 text-sm sm:text-base"
         >
           🏠 VỀ TRANG CHỦ
         </button>

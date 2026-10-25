@@ -32,27 +32,27 @@ export default function CustomCard({
       }}
       whileHover={interactive ? { y: -4 } : undefined}
       whileTap={interactive ? { scale: 0.97 } : undefined}
-      className={`relative aspect-[5/7] shrink-0 overflow-hidden rounded-xl border-2 bg-slate-900 shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${SIZES[size] || SIZES.normal} ${
+      className={`relative aspect-[5/7] shrink-0 overflow-hidden rounded-[4px] border-2 bg-[var(--paper-2)] shadow-[3px_3px_0_var(--hard-shadow)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mustard)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--paper)] ${SIZES[size] || SIZES.normal} ${
         selected
-          ? 'border-amber-300 ring-4 ring-amber-400/40'
+          ? 'border-[var(--oxblood)] ring-2 ring-[var(--mustard)] ring-offset-2 ring-offset-[var(--paper)]'
           : highlighted
-            ? 'nope-glow border-red-400'
-            : 'border-slate-700'
+            ? 'border-[var(--oxblood)] nope-glow'
+            : 'border-[var(--ink)]'
       } ${interactive ? 'cursor-pointer' : ''} ${className}`}
     >
       <img
         src={card.image}
         alt={card.name}
-        className="h-full w-full object-cover"
+        className="h-full w-full rounded-[2px] object-cover"
         loading="lazy"
       />
       {selected && (
-        <div className="absolute right-1 top-1 rounded-full border border-white bg-amber-400 px-1.5 py-0.5 text-[9px] font-black text-slate-950">
+        <div className="absolute right-1 top-1 rounded-[2px] border-2 border-[var(--ink)] bg-[var(--mustard)] px-1.5 py-0.5 text-[9px] font-black text-[var(--ink)] shadow-[1px_1px_0_var(--hard-shadow)]">
           ✓
         </div>
       )}
       {highlighted && (
-        <div className="absolute left-1/2 top-1 -translate-x-1/2 rounded-full border border-red-200 bg-red-600 px-2 py-0.5 text-[9px] font-black tracking-wider text-white shadow-lg animate-pulse motion-reduce:animate-none">
+        <div className="absolute left-1/2 top-1 -translate-x-1/2 rounded-[2px] border-2 border-[var(--ink)] bg-[var(--oxblood)] px-2 py-0.5 text-[9px] font-black tracking-wider text-[var(--paper)] shadow-[1px_1px_0_var(--hard-shadow)]">
           NOPE!
         </div>
       )}

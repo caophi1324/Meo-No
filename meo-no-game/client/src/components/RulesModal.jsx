@@ -17,150 +17,160 @@ const ACTION_TYPES = [
 ];
 
 export default function RulesModal({ onClose }) {
-  const actionTypes = ACTION_TYPES;
-
   return (
     <ModalShell
       label="Luật chơi Mèo Nổ"
       onClose={onClose}
-      overlayClassName="bg-black/80"
-      panelClassName="bg-slate-800 rounded-2xl border border-orange-500 max-w-2xl w-full max-h-[88vh] flex flex-col"
+      overlayClassName="bg-[#0B1410]/80 backdrop-blur-[2px]"
+      panelClassName="paper-modal flex max-h-[88vh] w-full max-w-3xl flex-col"
     >
-        <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white">📖 LUẬT CHƠI MÈO NỔ</h2>
-          <button
-            onClick={onClose}
-            className="text-slate-300 hover:text-white text-xl leading-none px-1"
-          >
-            ✕
-          </button>
+      <div className="flex items-start justify-between gap-4 border-b-2 border-[var(--ink)] bg-[var(--paper-2)] px-5 py-4 sm:px-7">
+        <div>
+          <span className="landing-stamp">Sổ tay bàn chơi</span>
+          <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-[var(--ink)] sm:text-3xl">
+            Luật chơi Mèo Nổ
+          </h2>
+          <p className="mt-1 text-xs font-semibold text-[var(--ink-soft)]">
+            Tóm tắt đủ để vào bàn, không cần học thuộc.
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Đóng luật chơi"
+          className="landing-icon-btn shrink-0"
+        >
+          ✕
+        </button>
+      </div>
 
-        <div className="px-6 py-4 overflow-y-auto space-y-5 text-sm text-slate-200">
-          <section>
-            <h3 className="font-bold text-orange-400 mb-1">🎯 Mục tiêu</h3>
-            <p>
-              Là người chơi CUỐI CÙNG không nổ tung. Mỗi lượt bạn có thể chơi bao nhiêu lá bài tùy
-              thích, sau đó RÚT 1 LÁ để kết thúc lượt. Rút trúng Mèo Nổ 💥 mà không có Gỡ Bom 🔧 là
-              bay màu!
-            </p>
-          </section>
+      <div className="space-y-7 overflow-y-auto px-5 py-6 text-sm leading-relaxed text-[var(--ink-soft)] sm:px-7">
+        <section>
+          <div className="landing-overline">Mục tiêu</div>
+          <p className="mt-2 max-w-2xl text-base leading-relaxed text-[var(--ink)]">
+            Là người chơi <strong className="font-bold">cuối cùng không nổ tung</strong>. Mỗi lượt
+            bạn có thể chơi bao nhiêu lá tùy thích, sau đó rút 1 lá để kết thúc lượt. Rút trúng Mèo
+            Nổ mà không có Gỡ Bom là bị loại.
+          </p>
+        </section>
 
-          <section>
-            <h3 className="font-bold text-orange-400 mb-1">🔄 Lượt chơi</h3>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Lượt bình thường: chơi bài thoải mái → rút 1 lá → chuyển người kế tiếp.</li>
-              <li>
-                <b>Tấn Công ⚔️:</b> kết thúc lượt ngay (không rút bài), người kế tiếp phải đi 2 lượt.
-              </li>
-              <li>
-                <b>Bỏ Lượt ⏭️:</b> kết thúc toàn bộ lượt hiện tại ngay lập tức, không cần rút bài.
-              </li>
-              <li>
-                <b>Đảo Chiều 🔄:</b> kết thúc lượt hiện tại và đổi chiều rút bài.
-              </li>
-              <li>
-                <b>Siêu Bỏ Lượt ⏩:</b> kết thúc toàn bộ lượt còn lại của bạn, khỏi rút bài.
-              </li>
-              <li>
-                <b>Nạp Nhiên Liệu ⛽:</b> lá Tấn Công kế tiếp của bạn đẩy đối thủ đi 3 lượt thay vì
-                2. Hiệu ứng mất khi lượt bạn kết thúc.
-              </li>
-              <li>
-                <b>Kiến Tạo Tương Lai 🌌:</b> xem và sắp xếp lại 3 lá trên cùng chồng bài rút.
-              </li>
-              <li>
-                Rút trúng Mèo Nổ mà có Gỡ Bom: lén nhét nó lại vào vị trí bất kỳ trong chồng bài
-                (vị trí 1 = trên cùng — hại người kế tiếp!).
-              </li>
-            </ul>
-          </section>
+        <section>
+          <div className="landing-overline">Một lượt chơi</div>
+          <ul className="mt-3 space-y-2.5 border-t-2 border-[var(--ink)] pt-3">
+            <li className="border-b border-[var(--line)] pb-2.5">
+              <b className="text-[var(--ink)]">Lượt bình thường:</b> chơi bài thoải mái, rút 1 lá,
+              chuyển người kế tiếp.
+            </li>
+            <li className="border-b border-[var(--line)] pb-2.5">
+              <b className="text-[var(--ink)]">Tấn Công:</b> kết thúc lượt ngay, không rút bài; người
+              kế tiếp phải đi 2 lượt.
+            </li>
+            <li className="border-b border-[var(--line)] pb-2.5">
+              <b className="text-[var(--ink)]">Bỏ Lượt:</b> kết thúc toàn bộ lượt hiện tại, không cần
+              rút bài.
+            </li>
+            <li className="border-b border-[var(--line)] pb-2.5">
+              <b className="text-[var(--ink)]">Đảo Chiều:</b> kết thúc lượt hiện tại và đổi chiều rút
+              bài.
+            </li>
+            <li className="border-b border-[var(--line)] pb-2.5">
+              <b className="text-[var(--ink)]">Siêu Bỏ Lượt:</b> kết thúc toàn bộ lượt còn lại của
+              bạn, khỏi rút bài.
+            </li>
+            <li className="border-b border-[var(--line)] pb-2.5">
+              <b className="text-[var(--ink)]">Nạp Nhiên Liệu:</b> lá Tấn Công kế tiếp đẩy đối thủ đi
+              3 lượt thay vì 2. Hiệu ứng mất khi lượt bạn kết thúc.
+            </li>
+            <li>
+              <b className="text-[var(--ink)]">Kiến Tạo Tương Lai:</b> xem và sắp xếp lại 3 lá trên
+              cùng chồng bài rút.
+            </li>
+          </ul>
+        </section>
 
-          <section>
-            <h3 className="font-bold text-orange-400 mb-1">🚫 Phủ Nhận (Nope)</h3>
-            <p>
-              Khi ai đó chơi lá hành động, cửa sổ Phủ Nhận mở theo <b>cài đặt của phòng</b>. Ai có lá Phủ Nhận
-              đều có thể bấm để hủy hành động đó — kể cả Phủ Nhận chính cái Phủ Nhận vừa rồi (nope
-              chẵn → hành động chạy, nope lẻ → hành động bị hủy). Riêng lá ghi “không thể Nope” thì
-              không mở cửa sổ này.
-            </p>
-          </section>
+        <section className="paper-callout">
+          <div className="landing-overline">Phủ Nhận (Nope)</div>
+          <p className="mt-2">
+            Khi ai đó chơi lá hành động, cửa sổ Phủ Nhận mở theo cài đặt của phòng. Ai có lá Phủ Nhận
+            đều có thể bấm để hủy hành động đó, kể cả Phủ Nhận chính cái Phủ Nhận vừa rồi. Nope lẻ
+            hủy hành động, nope chẵn thi hành. Lá ghi “không thể Nope” thì không mở cửa sổ này.
+          </p>
+        </section>
 
-          <section>
-            <h3 className="font-bold text-orange-400 mb-1">🐱 Combo mèo</h3>
-            <ul className="list-disc list-inside space-y-1">
-              <li>
-                <b>2 lá mèo giống nhau:</b> cướp ngẫu nhiên 1 lá từ tay đối thủ.
-              </li>
-              <li>
-                <b>3 lá mèo giống nhau:</b> đòi 1 lá cụ thể — nếu đối thủ không có thì xui thôi!
-              </li>
-              <li>
-                <b>5 lá mèo khác loại:</b> lấy 1 lá bất kỳ từ chồng bài đã đánh.
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h3 className="font-bold text-orange-400 mb-1">🦊 Combo thú</h3>
-            <p className="text-xs text-slate-300">
-              2 lá cùng loại (hoặc 1 thú + Siêu Thú Cưng) → cướp 1 lá úp. 3 lá cùng loại → đòi
-              đúng loại bài. 5 loại khác nhau (tối đa 1 Siêu Thú) → lấy 1 lá từ chồng hạ.
-              <b> Không trộn mèo với thú.</b>
-            </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {[...BEAST_CARDS, WILD_BEAST].map((type) => (
-                <span key={type} className="rounded-md border border-slate-600 bg-slate-700/50 px-2 py-1 text-[10px] text-slate-200">
-                  {CARD_DATA[type]?.emoji} {CARD_DATA[type]?.nameVN || type}
-                </span>
-              ))}
+        <section>
+          <div className="landing-overline">Combo mèo và thú</div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="paper-panel paper-panel--soft p-3">
+              <div className="font-display text-sm font-bold text-[var(--ink)]">Mèo</div>
+              <p className="mt-1 text-xs">
+                2 lá giống nhau: cướp 1 lá úp. 3 lá giống nhau: đòi đúng loại bài. 5 lá khác loại:
+                lấy 1 lá từ chồng bài hạ.
+              </p>
             </div>
-          </section>
+            <div className="paper-panel paper-panel--soft p-3">
+              <div className="font-display text-sm font-bold text-[var(--ink)]">Thú</div>
+              <p className="mt-1 text-xs">
+                2 lá cùng loại (hoặc 1 thú + Siêu Thú Cưng): cướp 1 lá úp. 3 lá: đòi đúng loại. 5
+                loại khác nhau: lấy 1 lá từ chồng hạ. Không trộn mèo với thú.
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {[...BEAST_CARDS, WILD_BEAST].map((type) => (
+              <span key={type} className="landing-chip">
+                {CARD_DATA[type]?.emoji} {CARD_DATA[type]?.nameVN || type}
+              </span>
+            ))}
+          </div>
+        </section>
 
-          <section>
-            <h3 className="font-bold text-orange-400 mb-2">🃏 Các lá bài hành động</h3>
-            <div className="space-y-2">
-              {actionTypes.map((type) => {
-                const c = CARD_DATA[type];
-                return (
-                  <div key={type} className="flex gap-3 items-start bg-slate-700/50 rounded-xl p-2.5">
-                    <span className="text-2xl">{c.emoji}</span>
-                    <div>
-                      <div className="font-bold text-white text-xs">{c.nameVN}</div>
-                      <div className="text-xs text-slate-300">{c.descriptionVN}</div>
-                    </div>
+        <section>
+          <div className="landing-overline">Các lá hành động</div>
+          <div className="mt-3 border-t-2 border-[var(--ink)]">
+            {ACTION_TYPES.map((type) => {
+              const c = CARD_DATA[type];
+              return (
+                <div key={type} className="paper-ledger-row">
+                  <span className="text-xl leading-none" aria-hidden="true">
+                    {c.emoji}
+                  </span>
+                  <div>
+                    <div className="font-display text-sm font-bold text-[var(--ink)]">{c.nameVN}</div>
+                    <p className="mt-0.5 text-xs leading-relaxed">{c.descriptionVN}</p>
                   </div>
-                );
-              })}
-            </div>
-          </section>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
-          <section>
-            <h3 className="font-bold text-orange-400 mb-2">💣 Bom trong bàn</h3>
-            <div className="space-y-2 text-xs text-slate-300">
-              <p>
-                <b>Exploding Kitten:</b> bốc phải mà không có Gỡ Bom thì bị loại; lá bài bị hủy
-                khỏi ván.
-              </p>
-              <p>
-                <b>Imploding Kitten:</b> lần đầu bốc mặt úp thì lật ngửa và đặt lại; lần sau bốc mặt ngửa thì chết.
-              </p>
-              <p>
-                <b>Boom Nguyên Tử:</b> khi bốc phải, đưa tất cả Exploding Kitten lên đầu chồng bài,
-                kết thúc lượt và lá Boom bị hủy khỏi ván.
-              </p>
-            </div>
-          </section>
-        </div>
+        <section>
+          <div className="landing-overline">Bom trên bàn</div>
+          <div className="mt-3 space-y-2 border-t-2 border-[var(--ink)] pt-3 text-xs">
+            <p>
+              <b className="text-[var(--ink)]">Exploding Kitten:</b> bốc phải mà không có Gỡ Bom thì
+              bị loại; lá bài bị hủy khỏi ván.
+            </p>
+            <p>
+              <b className="text-[var(--ink)]">Imploding Kitten:</b> lần đầu bốc mặt úp thì lật ngửa
+              và đặt lại; lần sau bốc mặt ngửa thì chết.
+            </p>
+            <p>
+              <b className="text-[var(--ink)]">Boom Nguyên Tử:</b> khi bốc phải, đưa tất cả Exploding
+              Kitten lên đầu chồng bài, kết thúc lượt và lá Boom bị hủy khỏi ván.
+            </p>
+          </div>
+        </section>
+      </div>
 
-        <div className="px-6 py-3 border-t border-slate-700 text-right">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-xl font-bold transition-all"
-          >
-            Đã hiểu! Vào chơi 🎮
-          </button>
-        </div>
+      <div className="flex flex-col gap-3 border-t-2 border-[var(--ink)] bg-[var(--paper-2)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+        <p className="text-[11px] font-semibold text-[var(--ink-soft)]">
+          Mẹo: giữ một lá Phủ Nhận đến cuối ván. Không ai đoán được bạn sẽ dùng lúc nào.
+        </p>
+        <button type="button" onClick={onClose} className="landing-btn landing-btn--oxblood shrink-0 text-xs">
+          Đã hiểu, vào bàn
+        </button>
+      </div>
     </ModalShell>
   );
 }

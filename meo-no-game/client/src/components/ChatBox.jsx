@@ -23,20 +23,20 @@ export default function ChatBox({ messages = [], onSend, playerId }) {
           <div key={m.id} className="text-xs leading-snug">
             <span
               className={`font-bold ${
-                m.playerId === playerId ? 'text-emerald-400' : 'text-sky-300'
+                m.playerId === playerId ? 'text-[var(--oxblood)]' : 'text-[#1F5A7A]'
               }`}
             >
               {m.playerName}:
             </span>{' '}
-            <span className="text-slate-200 break-words">{m.message}</span>
+            <span className="text-[var(--ink)] break-words">{m.message}</span>
           </div>
         ))}
         {messages.length === 0 && (
-          <div className="text-xs text-slate-500 text-center py-4">Chưa có tin nhắn nào...</div>
+          <div className="text-xs text-[var(--ink-soft)] text-center py-4">Chưa có tin nhắn nào...</div>
         )}
       </div>
 
-      <div className="flex gap-1.5 p-2 border-t border-slate-800">
+      <div className="flex gap-1.5 p-2 border-t-2 border-[var(--ink)]">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -44,13 +44,13 @@ export default function ChatBox({ messages = [], onSend, playerId }) {
           maxLength={200}
           placeholder="Nhập tin nhắn..."
           aria-label="Nhập tin nhắn"
-          className="min-w-0 flex-1 rounded-lg border border-slate-600 bg-slate-800 px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+          className="landing-input min-w-0 flex-1 py-1.5 text-xs"
         />
         <button
           type="button"
           onClick={handleSend}
           disabled={!text.trim()}
-          className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-40"
+          className="landing-btn landing-btn--ink px-3 py-1.5 text-xs"
         >
           Gửi
         </button>

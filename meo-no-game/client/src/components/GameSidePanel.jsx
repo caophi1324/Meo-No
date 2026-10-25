@@ -67,22 +67,22 @@ export default function GameSidePanel({
         type="button"
         aria-label="Đóng bảng trò chuyện và diễn biến"
         onClick={onClose}
-        className="fixed inset-0 z-40 cursor-default bg-black/60 backdrop-blur-sm lg:hidden"
+        className="fixed inset-0 z-40 cursor-default bg-[#0B1410]/70 backdrop-blur-[2px] lg:hidden"
       />
 
       <aside
         aria-label="Trò chuyện và diễn biến"
         style={{ width: `${effectiveWidth}px` }}
-        className={`fixed inset-y-0 z-50 flex max-w-[92vw] flex-col overflow-hidden border-slate-700 bg-slate-950/98 shadow-2xl backdrop-blur-xl lg:sticky lg:top-3 lg:z-20 lg:h-[calc(100vh-5.5rem)] lg:max-w-none lg:self-start lg:rounded-2xl lg:border ${
+        className={`fixed inset-y-0 z-50 flex max-w-[92vw] flex-col overflow-hidden border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] shadow-[4px_4px_0_var(--hard-shadow)] lg:sticky lg:top-3 lg:z-20 lg:h-[calc(100vh-5.5rem)] lg:max-w-none lg:self-start lg:rounded-[6px] lg:border-2 ${
           side === 'left' ? 'left-0 border-r lg:order-first' : 'right-0 border-l lg:order-last'
         }`}
       >
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-800 bg-slate-900/95 px-3 py-2.5">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b-2 border-[var(--ink)] bg-[var(--paper-2)] px-3 py-2.5">
           <div className="min-w-0">
-            <div className="truncate font-display text-sm font-black text-white">
-              💬 Bàn bên lề
+            <div className="truncate font-display text-sm font-black text-[var(--ink)]">
+              Bàn bên lề
             </div>
-            <div className="truncate text-[10px] font-semibold text-slate-500">
+            <div className="truncate text-[10px] font-semibold text-[var(--ink-soft)]">
               Trò chuyện &amp; diễn biến
             </div>
           </div>
@@ -93,23 +93,23 @@ export default function GameSidePanel({
               onClick={changeSide}
               title={side === 'left' ? 'Chuyển sang bên phải' : 'Chuyển sang bên trái'}
               aria-label={side === 'left' ? 'Chuyển sang bên phải' : 'Chuyển sang bên trái'}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 text-sm font-black text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-[3px] border-2 border-[var(--ink)] bg-[var(--paper)] text-sm font-black text-[var(--ink)] shadow-[1px_1px_0_var(--hard-shadow)] transition-colors hover:bg-[var(--paper-2)]"
             >
               {side === 'left' ? '⇥' : '⇤'}
             </button>
 
-            <div className="flex h-8 items-center rounded-lg border border-slate-700 bg-slate-800">
+            <div className="flex h-8 items-center rounded-[3px] border-2 border-[var(--ink)] bg-[var(--paper)] shadow-[1px_1px_0_var(--hard-shadow)]">
               <button
                 type="button"
                 onClick={() => changeWidth(-STEP)}
                 disabled={effectiveWidth <= MIN_WIDTH}
                 title="Thu nhỏ bảng"
                 aria-label="Thu nhỏ bảng"
-                className="flex h-full w-7 items-center justify-center text-base font-black text-slate-300 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-full w-7 items-center justify-center text-base font-black text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-30"
               >
                 −
               </button>
-              <span className="w-8 text-center text-[9px] font-bold tabular-nums text-slate-500">
+              <span className="w-8 text-center text-[9px] font-bold tabular-nums text-[var(--ink-soft)]">
                 {effectiveWidth}
               </span>
               <button
@@ -118,7 +118,7 @@ export default function GameSidePanel({
                 disabled={effectiveWidth >= maxWidth}
                 title="Phóng to bảng"
                 aria-label="Phóng to bảng"
-                className="flex h-full w-7 items-center justify-center text-base font-black text-slate-300 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                className="flex h-full w-7 items-center justify-center text-base font-black text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-30"
               >
                 +
               </button>
@@ -129,7 +129,7 @@ export default function GameSidePanel({
               onClick={onClose}
               title="Đóng bảng"
               aria-label="Đóng bảng"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-[3px] text-[var(--ink-soft)] transition-colors hover:bg-[var(--paper-2)] hover:text-[var(--ink)]"
             >
               ✕
             </button>
@@ -138,22 +138,20 @@ export default function GameSidePanel({
 
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="flex shrink-0 items-center justify-between px-3 pt-2.5 pb-1.5">
-            <span className="text-[10px] font-black tracking-[0.16em] text-slate-500">
-              📜 DIỄN BIẾN
+            <span className="text-[10px] font-black tracking-[0.16em] text-[var(--ink-soft)]">
+              DIỄN BIẾN
             </span>
-            <span className="rounded-full border border-slate-800 bg-slate-900 px-2 py-0.5 text-[9px] font-bold text-slate-500">
-              {logs.length}
-            </span>
+            <span className="landing-chip">{logs.length}</span>
           </div>
           <div className="min-h-[120px] flex-1 px-2 pb-2">
             <GameLog logs={logs} fill />
           </div>
         </div>
 
-        <div className="flex h-60 shrink-0 flex-col border-t border-slate-800 bg-slate-900/40">
+        <div className="flex h-60 shrink-0 flex-col border-t-2 border-[var(--ink)] bg-[var(--paper-2)]/60">
           <div className="shrink-0 px-3 py-2">
-            <span className="text-[10px] font-black tracking-[0.16em] text-slate-500">
-              💬 TRÒ CHUYỆN
+            <span className="text-[10px] font-black tracking-[0.16em] text-[var(--ink-soft)]">
+              TRÒ CHUYỆN
             </span>
           </div>
           <ChatBox messages={messages} onSend={onSend} playerId={playerId} />

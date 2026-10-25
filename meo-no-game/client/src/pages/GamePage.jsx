@@ -229,7 +229,7 @@ export default function GamePage() {
   // ===== Phân tích lựa chọn để gợi ý combo =====
   const combo = useMemo(() => {
     const cards = myHand.filter((c) => selectedCards.includes(c.id));
-    if (cards.length === 0) return { valid: false, label: '🃏 CHỌN BÀI ĐỂ ĐÁNH', reason: '' };
+    if (cards.length === 0) return { valid: false, label: 'CHỌN BÀI ĐỂ ĐÁNH', reason: '' };
     if (cards.length === 1) {
       const c = cards[0];
       if (c.type === CARD_TYPES.DEFUSE)
@@ -503,10 +503,10 @@ export default function GamePage() {
   const turnClock =
     turnSecondsLeft !== null ? (
       <span
-        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-black tabular-nums ${
+        className={`inline-flex items-center gap-1 rounded-[3px] border-2 border-[var(--ink)] px-2 py-0.5 text-[10px] font-black tabular-nums shadow-[1px_1px_0_var(--hard-shadow)] ${
           turnSecondsLeft <= 10
-            ? 'border-red-400/60 bg-red-950/80 text-red-200'
-            : 'border-amber-400/50 bg-amber-950/70 text-amber-200'
+            ? 'bg-[var(--oxblood)] text-[var(--paper)]'
+            : 'bg-[var(--paper-2)] text-[var(--ink)]'
         }`}
         aria-label={`Còn ${turnSecondsLeft} giây`}
       >
@@ -522,7 +522,7 @@ export default function GamePage() {
           ? 'Bạn'
           : opponents.find((o) => o.id === choiceOwnerId)?.name || 'Ai đó';
       statusBanner = (
-        <div className="bg-gradient-to-r from-violet-700 to-indigo-800 text-white border-2 border-violet-400 py-2.5 px-4 rounded-2xl shadow-lg shadow-violet-700/30 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 animate-pulse">
+        <div className="game-status game-status--waiting flex items-center justify-center gap-2 text-center text-xs font-black sm:text-sm">
           <span className="text-lg">🎴</span>
           <span>
             {choiceOwnerId === playerId
@@ -534,7 +534,7 @@ export default function GamePage() {
       );
     } else if (waitingFor === 'nope') {
       statusBanner = (
-        <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white border-2 border-red-400 py-2.5 px-4 rounded-2xl shadow-lg shadow-red-600/30 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 animate-pulse">
+        <div className="game-status game-status--danger flex items-center justify-center gap-2 text-center text-xs font-black sm:text-sm">
           <span className="text-lg">🚫</span>
           <span>ĐANG CHỜ PHỦ NHẬN...</span>
         </div>
@@ -542,7 +542,7 @@ export default function GamePage() {
     } else if (waitingFor === 'defuse_place') {
       const actorName = pendingOwner === playerId ? 'Bạn' : opponents.find((o) => o.id === pendingOwner)?.name || 'Ai đó';
       statusBanner = (
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white border-2 border-emerald-400 py-2.5 px-4 rounded-2xl shadow-lg shadow-emerald-600/30 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 animate-pulse">
+        <div className="game-status flex items-center justify-center gap-2 text-center text-xs font-black sm:text-sm">
           <span className="text-lg">🔧</span>
           <span>{actorName} ĐANG BÍ MẬT GỠ BOM VÀ NHÉT MÈO NỔ...</span>
           {turnClock}
@@ -551,7 +551,7 @@ export default function GamePage() {
     } else if (waitingFor === 'imploding_place') {
       const actorName = pendingOwner === playerId ? 'Bạn' : opponents.find((o) => o.id === pendingOwner)?.name || 'Ai đó';
       statusBanner = (
-        <div className="bg-gradient-to-r from-sky-700 to-cyan-800 text-white border-2 border-sky-400 py-2.5 px-4 rounded-2xl shadow-lg shadow-sky-700/30 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 animate-pulse">
+        <div className="game-status flex items-center justify-center gap-2 text-center text-xs font-black text-[var(--oxblood)] sm:text-sm">
           <span className="text-lg">💣</span>
           <span>{actorName} ĐANG ĐẶT LẠI IMPLODING KITTEN MẶT NGỬA...</span>
           {turnClock}
@@ -560,7 +560,7 @@ export default function GamePage() {
     } else if (waitingFor === 'favor_give') {
       const isTarget = gameState?.favorTarget === playerId;
       statusBanner = (
-        <div className="bg-gradient-to-r from-amber-600 to-yellow-600 text-white border-2 border-amber-300 py-2.5 px-4 rounded-2xl shadow-lg shadow-amber-600/30 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2">
+        <div className="game-status game-status--turn flex items-center justify-center gap-2 text-center text-xs font-black sm:text-sm">
           <span className="text-lg">🙏</span>
           <span>
             {isTarget
@@ -572,7 +572,7 @@ export default function GamePage() {
       );
     } else if (waitingFor === 'alter_future') {
       statusBanner = (
-        <div className="bg-gradient-to-r from-purple-700 via-violet-700 to-indigo-800 text-white border-2 border-purple-400 py-2.5 px-4 rounded-2xl shadow-lg shadow-purple-700/40 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 animate-pulse">
+        <div className="game-status game-status--waiting flex items-center justify-center gap-2 text-center text-xs font-black sm:text-sm">
           <span className="text-lg">🌌</span>
           <span>
             {gameState?.alterFutureOwner === playerId
@@ -584,10 +584,8 @@ export default function GamePage() {
     } else if (isMyTurn) {
       statusBanner = (
         <div
-          className={`py-2.5 px-4 rounded-2xl shadow-xl font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 border-2 ${
-            turnsRemaining > 1
-              ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white border-orange-300 shadow-orange-600/40 animate-pulse'
-              : 'bg-gradient-to-r from-emerald-500 to-green-600 text-slate-950 border-emerald-200 shadow-emerald-500/30'
+          className={`game-status flex items-center justify-center gap-2 text-center text-xs font-black sm:text-sm ${
+            turnsRemaining > 1 ? 'game-status--danger' : 'game-status--turn'
           }`}
         >
           <span className="text-lg">{turnsRemaining > 1 ? '⚔️' : '🎯'}</span>
@@ -601,7 +599,7 @@ export default function GamePage() {
       );
     } else if (attackInfo?.targetId === currentPlayerId) {
       statusBanner = (
-        <div className="bg-gradient-to-r from-red-700 to-rose-800 text-white border-2 border-red-400 py-2.5 px-4 rounded-2xl shadow-lg shadow-red-700/40 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 animate-pulse">
+        <div className="game-status game-status--danger flex items-center justify-center gap-2 text-center text-xs font-black sm:text-sm">
           <span className="text-lg">⚔️</span>
           <span>
             {currentName} ĐANG BỊ {attackerName.toUpperCase()} TẤN CÔNG — CÒN {turnsRemaining} LƯỢT!
@@ -611,9 +609,9 @@ export default function GamePage() {
       );
     } else {
       statusBanner = (
-        <div className="bg-slate-900/80 text-slate-300 border border-slate-700 py-2.5 px-4 rounded-2xl shadow-md font-bold text-xs sm:text-sm text-center flex items-center justify-center gap-2 backdrop-blur-xs">
+        <div className="game-status game-status--waiting flex items-center justify-center gap-2 text-center text-xs font-bold sm:text-sm">
           <span className="text-base">⏳</span>
-          <span>Đang chờ <strong className="text-white">{currentName}</strong> đi nước bài...</span>
+          <span>Đang chờ <strong className="font-black text-[var(--ink)]">{currentName}</strong> đi nước bài...</span>
           {turnClock}
         </div>
       );
@@ -622,14 +620,14 @@ export default function GamePage() {
 
   if (!gameState) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="game-root flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="text-6xl animate-bounce mb-3 filter drop-shadow">🐱💣</div>
-          <div className="text-slate-300 font-bold font-display text-lg">Đang kết nối bàn chơi...</div>
+          <div className="text-[var(--paper)] font-bold font-display text-lg">Đang kết nối bàn chơi...</div>
           <button
             type="button"
             onClick={handleExitRoom}
-            className="mt-5 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="landing-btn landing-btn--paper mt-5 text-xs"
           >
             ← Về trang chủ
           </button>
@@ -643,13 +641,13 @@ export default function GamePage() {
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-b from-[#090d16] via-[#0f172a] to-[#090d16] text-white flex flex-col justify-between selection:bg-orange-500 selection:text-white transition-transform ${
+      className={`game-root min-h-screen flex flex-col justify-between selection:bg-[var(--mustard)] selection:text-[var(--ink)] transition-transform ${
         screenShake ? 'animate-[wiggle_0.2s_ease-in-out_infinite]' : ''
       }`}
       style={
         tableBackground
           ? {
-              backgroundImage: `linear-gradient(rgba(3, 7, 18, 0.68), rgba(3, 7, 18, 0.82)), url("${tableBackground}")`,
+              backgroundImage: `linear-gradient(rgba(22, 56, 43, 0.86), rgba(11, 20, 16, 0.92)), url("${tableBackground}")`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }
@@ -657,20 +655,21 @@ export default function GamePage() {
       }
     >
       {/* Top Bar Gaming HUD */}
-      <header className="px-2 sm:px-4 py-2.5 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md flex items-center justify-between gap-2 z-30">
+      <header className="game-header px-2 sm:px-4 py-2 flex items-center justify-between gap-2 z-30">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-slate-900 border border-slate-700 rounded-xl shadow-inner">
-            <span className="hidden sm:inline text-xs text-slate-400">Phòng:</span>
-            <span className="font-black text-xs sm:text-sm tracking-[0.18em] sm:tracking-widest text-amber-400 font-display">
+          <div className="flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--paper-2)] px-2.5 sm:px-3 py-1.5 rounded-[4px] shadow-[2px_2px_0_var(--hard-shadow)]">
+            <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--ink-soft)]">Phòng:</span>
+            <span className="font-black text-xs sm:text-sm tracking-[0.18em] sm:tracking-widest text-[var(--oxblood)] font-display">
               {roomCode}
             </span>
             <button
               onClick={handleCopyCode}
               title="Sao chép mã phòng"
               aria-label="Sao chép mã phòng"
-              className="text-xs text-slate-400 hover:text-white p-0.5 cursor-pointer"
+              className="text-[10px] font-bold text-[var(--ink-soft)] hover:text-[var(--ink)] px-0.5 cursor-pointer"
             >
-              📋
+              <span className="hidden sm:inline">Sao chép</span>
+              <span className="sm:hidden">Chép</span>
             </button>
           </div>
         </div>
@@ -679,7 +678,7 @@ export default function GamePage() {
         <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             onClick={handleToggleMute}
-            className="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 flex items-center justify-center text-sm shadow transition-all cursor-pointer"
+            className="landing-icon-btn"
             title={isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'}
             aria-label={isMuted ? 'Bật âm thanh' : 'Tắt âm thanh'}
           >
@@ -691,13 +690,9 @@ export default function GamePage() {
             aria-pressed={showSidePanel}
             aria-label={showSidePanel ? 'Đóng chat và diễn biến' : 'Mở chat và diễn biến'}
             title={showSidePanel ? 'Đóng chat và diễn biến' : 'Mở chat và diễn biến'}
-            className={`px-2.5 sm:px-3 py-1.5 border rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow cursor-pointer ${
-              showSidePanel
-                ? 'bg-sky-950/60 border-sky-700 text-sky-200'
-                : 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200'
-            }`}
+            className={`landing-btn landing-btn--compact ${showSidePanel ? 'landing-btn--mustard' : 'landing-btn--paper'}`}
           >
-            <span>💬</span>
+            <span className="sm:hidden">Chat</span>
             <span className="hidden sm:inline">Bên lề</span>
           </button>
 
@@ -705,7 +700,7 @@ export default function GamePage() {
             onClick={() => setShowSettings(true)}
             title="Cài đặt"
             aria-label="Cài đặt"
-            className="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 flex items-center justify-center text-sm shadow transition-all cursor-pointer"
+            className="landing-icon-btn"
           >
             ⚙️
           </button>
@@ -713,20 +708,18 @@ export default function GamePage() {
           <button
             onClick={() => setShowRules(true)}
             aria-label="Luật chơi"
-            className="px-2.5 sm:px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow cursor-pointer"
+            className="landing-btn landing-btn--compact landing-btn--paper"
           >
-            <span>📖</span>
-            <span className="hidden sm:inline">Luật</span>
+            Luật
           </button>
 
           <button
             onClick={() => setShowExitConfirm(true)}
             title="Thoát phòng"
             aria-label="Thoát phòng"
-            className="px-2.5 sm:px-3 py-1.5 bg-red-950/50 hover:bg-red-900/70 border border-red-800/80 text-red-200 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow cursor-pointer"
+            className="landing-btn landing-btn--compact landing-btn--oxblood"
           >
-            <span>🚪</span>
-            <span className="hidden sm:inline">Thoát</span>
+            Thoát
           </button>
         </div>
       </header>
@@ -759,31 +752,23 @@ export default function GamePage() {
               fueledPlayerId={fueledPlayerId}
             />
           ) : (
-            <div className="text-center text-xs text-slate-500 py-1">Chờ đối thủ kết nối...</div>
+            <div className="text-center text-xs text-[var(--paper)]/60 py-1">Chờ đối thủ kết nối...</div>
           )}
         </div>
 
         {/* Khu vực trung tâm: Thảm Bàn Bài Đấu Casino */}
-        <div className="relative w-full max-w-2xl mx-auto my-0.5 py-2.5 sm:py-4 px-4 rounded-3xl bg-radial from-emerald-950/40 via-slate-900/60 to-slate-950/80 border-2 border-emerald-900/40 shadow-2xl shadow-emerald-950/40 flex items-center justify-around gap-6 sm:gap-12 overflow-hidden">
-          {/* Subtle felt texture glow */}
-          <div className="absolute inset-0 bg-radial from-emerald-500/5 to-transparent pointer-events-none" />
-
+        <div className="game-table relative w-full max-w-2xl mx-auto my-1 py-3 sm:py-5 px-4 flex items-center justify-around gap-6 sm:gap-12 overflow-hidden">
           {/* Vùng chồng bài rút */}
           <div className="flex flex-col items-center">
             <DrawPile count={drawPileCount} topCard={drawPileTop} onClick={handleDraw} disabled={!canAct} />
           </div>
 
           {/* Biểu tượng VS + chiều lượt */}
-          <div className="flex flex-col items-center justify-center text-slate-600 select-none gap-0.5">
-            <span className="text-xl sm:text-2xl font-black font-display opacity-40">VS</span>
-            <span
-              className={`text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border ${
-                turnDirection === -1
-                  ? 'text-cyan-300 border-cyan-700 bg-cyan-950/60'
-                  : 'text-slate-400 border-slate-700 bg-slate-900/60'
-              }`}
-              title="Chiều lượt chơi"
-            >
+          <div className="flex flex-col items-center justify-center select-none gap-1.5">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[var(--ink)] bg-[var(--paper)] font-display text-sm font-black text-[var(--ink)] shadow-[2px_2px_0_var(--hard-shadow)]">
+              VS
+            </span>
+            <span className="landing-chip" title="Chiều lượt chơi">
               {turnDirection === -1 ? '↺ NGƯỢC' : '↻ XUÔI'}
             </span>
           </div>
@@ -799,50 +784,48 @@ export default function GamePage() {
           <button
             type="button"
             onClick={() => setShowSidePanel(true)}
-            className="w-full max-w-md mx-auto py-1 px-3 bg-slate-900/70 border border-slate-800 rounded-xl text-center text-[11px] text-slate-400 hover:text-white cursor-pointer transition-all flex items-center justify-between"
+            className="w-full max-w-md mx-auto py-1.5 px-3 bg-[var(--paper)] border-2 border-[var(--ink)] rounded-[4px] text-left text-[11px] text-[var(--ink-soft)] shadow-[2px_2px_0_var(--hard-shadow)] hover:bg-[var(--paper-2)] transition-colors flex items-center justify-between"
           >
-            <span className="truncate">📜 {gameLog[gameLog.length - 1]}</span>
-            <span className="text-[10px] text-orange-400 font-bold ml-2">Mở bên lề</span>
+            <span className="truncate">{gameLog[gameLog.length - 1]}</span>
+            <span className="text-[10px] text-[var(--oxblood)] font-bold ml-2 shrink-0">Mở bên lề</span>
           </button>
         )}
 
         {/* Khu vực tay bài người chơi */}
         <div
-          className={`w-full rounded-3xl p-3 sm:p-4 bg-gradient-to-t from-slate-950 via-slate-900/95 to-slate-900/80 border-2 transition-all shadow-2xl relative ${
+          className={`game-hand w-full rounded-[6px] p-3 sm:p-4 relative transition-all ${
             attackInfo?.targetId === playerId
-              ? 'border-red-500/80 shadow-red-600/20 attack-blink'
+              ? 'game-hand--attacked'
               : canAct
-                ? 'border-emerald-400/80 shadow-emerald-500/20 turn-blink'
-                : 'border-slate-800 shadow-black/80'
+                ? 'game-hand--turn'
+                : ''
           }`}
         >
           {/* Tiêu đề khay bài */}
-          <div className="flex items-center justify-between gap-2 mb-1 px-2">
-            <div className="text-xs sm:text-sm font-black text-white font-display flex flex-wrap items-center gap-2">
+          <div className="flex flex-col gap-1.5 border-b border-[var(--line)] px-1 pb-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs sm:text-sm font-black text-[var(--ink)] font-display flex flex-wrap items-center gap-2">
               <span>🐱 TAY BÀI CỦA BẠN</span>
-              <span className="text-amber-400 font-bold bg-amber-950/80 border border-amber-800/60 px-2 py-0.5 rounded-full text-xs">
-                {myHand.length} lá
-              </span>
+              <span className="landing-chip">{myHand.length} lá</span>
               {attackInfo?.targetId === playerId ? (
-                <span className="text-red-200 font-bold bg-red-950/80 border border-red-700/70 px-2 py-0.5 rounded-full text-[10px]">
+                <span className="landing-stamp border-[var(--oxblood)] text-[var(--oxblood)]">
                   ⚔️ BỊ TẤN CÔNG
                 </span>
               ) : canAct ? (
-                <span className="text-emerald-200 font-bold bg-emerald-950/80 border border-emerald-700/70 px-2 py-0.5 rounded-full text-[10px]">
+                <span className="landing-stamp border-[var(--mustard)] text-[var(--oxblood)]">
                   🎯 ĐẾN LƯỢT
                 </span>
               ) : null}
               {isFueled && (
-                <span className="inline-flex items-center gap-1.5 text-amber-200 font-bold bg-orange-950/80 border border-orange-700/70 px-2 py-0.5 rounded-full text-[10px] animate-pulse">
-                  <span className="h-1.5 w-12 overflow-hidden rounded-full border border-orange-700/80 bg-orange-950">
-                    <span className="fuel-fill block h-full w-full bg-gradient-to-r from-amber-400 to-orange-500" />
+                <span className="inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--paper-2)] px-2 py-0.5 text-[10px] font-bold text-[var(--ink)]">
+                  <span className="h-1.5 w-12 overflow-hidden rounded-full border border-[var(--ink)] bg-[var(--paper)]">
+                    <span className="fuel-fill block h-full w-full bg-[var(--mustard)]" />
                   </span>
                   ⛽ Tấn Công kế tiếp ×3
                 </span>
               )}
             </div>
             {combo.reason && (
-              <div className="text-[10px] sm:text-xs text-amber-300 font-medium animate-pulse">
+              <div className="text-[10px] sm:text-xs text-[var(--oxblood)] font-semibold sm:text-right">
                 💡 {combo.reason}
               </div>
             )}
@@ -873,7 +856,7 @@ export default function GamePage() {
       {showDefuse && defuseDismissed && (
         <button
           onClick={() => setDefuseDismissed(false)}
-          className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-black text-sm shadow-2xl border-2 border-emerald-300 animate-bounce cursor-pointer"
+          className="landing-btn landing-btn--oxblood fixed bottom-28 left-1/2 -translate-x-1/2 z-40 text-sm"
         >
           🔧 MỞ LẠI HỘP THOẠI NHÉT MÈO NỔ!
         </button>
@@ -949,9 +932,9 @@ export default function GamePage() {
         <ModalShell
           label="Giao bài"
           overlayClassName="bg-black/85 backdrop-blur-sm"
-          panelClassName="bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 rounded-3xl p-6 border-2 border-pink-500 max-w-md w-full text-center shadow-2xl shadow-pink-500/20"
+          panelClassName="paper-modal max-w-md w-full p-6 text-center"
         >
-            <h2 className="text-xl font-black text-white mb-1 font-display">🙏 BẠN BỊ XIN BÀI!</h2>
+            <h2 className="text-xl font-black text-[var(--ink)] mb-1 font-display">🙏 BẠN BỊ XIN BÀI!</h2>
             <p className="text-xs text-slate-300 mb-4">
               <span className="font-bold text-amber-300">{favorGiveInfo?.requesterName || 'Ai đó'}</span> muốn 1 lá — hãy chọn 1 lá bạn tự nguyện đưa:
             </p>
@@ -968,7 +951,7 @@ export default function GamePage() {
                   <button
                     key={card.id}
                     onClick={() => handleFavorGive(card.id)}
-                    className="w-24 py-2.5 px-1 bg-slate-800 hover:bg-pink-600/30 border border-slate-700 hover:border-pink-400 rounded-2xl text-white transition-all cursor-pointer flex flex-col items-center gap-1 shadow"
+                    className="w-24 py-2.5 px-1 bg-[var(--paper-2)] hover:bg-[var(--paper)] border-2 border-[var(--line)] hover:border-[var(--oxblood)] rounded-[4px] text-[var(--ink)] transition-all cursor-pointer flex flex-col items-center gap-1 shadow-[2px_2px_0_var(--hard-shadow)]"
                   >
                     <div className="text-2xl">{lolBeast ? '🐾' : info.emoji}</div>
                     <div className="text-[11px] font-bold leading-tight truncate w-full text-center">
@@ -1011,9 +994,9 @@ export default function GamePage() {
           label="Chọn loại bài"
           onClose={() => setPicker(null)}
           overlayClassName="bg-black/85 backdrop-blur-sm"
-          panelClassName="bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 rounded-3xl p-6 border-2 border-amber-400 max-w-md w-full shadow-2xl"
+          panelClassName="paper-modal max-w-md w-full p-6"
         >
-            <h2 className="text-xl font-black text-white mb-1 text-center font-display">
+            <h2 className="text-xl font-black text-[var(--ink)] mb-1 text-center font-display">
               {picker.action === 'super_destroy'
                 ? '🧨 BẠN MUỐN HỦY LOẠI BÀI NÀO?'
                 : '🐱 BẠN MUỐN ĐÒI LOẠI BÀI NÀO?'}
@@ -1030,7 +1013,7 @@ export default function GamePage() {
                   <button
                     key={type}
                     onClick={() => handlePickType(type)}
-                    className="py-3 px-1 bg-slate-800 hover:bg-amber-600/30 border border-slate-700 hover:border-amber-400 rounded-2xl text-white transition-all cursor-pointer flex flex-col items-center gap-1 shadow"
+                    className="py-3 px-1 bg-[var(--paper-2)] hover:bg-[var(--paper)] border-2 border-[var(--line)] hover:border-[var(--oxblood)] rounded-[4px] text-[var(--ink)] transition-all cursor-pointer flex flex-col items-center gap-1 shadow-[2px_2px_0_var(--hard-shadow)]"
                   >
                     <div className="text-2xl">{info.emoji}</div>
                     <div className="text-[10px] font-bold leading-tight truncate w-full text-center">
@@ -1043,7 +1026,7 @@ export default function GamePage() {
             <div className="text-center mt-4">
               <button
                 onClick={() => setPicker(null)}
-                className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all border border-slate-700 cursor-pointer"
+                className="landing-btn landing-btn--paper px-6 py-2 text-xs"
               >
                 Hủy bỏ
               </button>
@@ -1067,9 +1050,9 @@ export default function GamePage() {
         <ModalShell
           label="Cài đặt"
           onClose={() => setShowSettings(false)}
-          panelClassName="w-full max-w-lg rounded-3xl border-2 border-amber-400/70 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 p-5 shadow-2xl shadow-amber-500/20"
+          panelClassName="paper-modal w-full max-w-lg p-5"
         >
-          <h2 className="mb-1 font-display text-xl font-black text-white">⚙️ Cài đặt</h2>
+          <h2 className="mb-1 font-display text-xl font-black text-[var(--ink)]">⚙️ Cài đặt</h2>
           <p className="mb-4 text-xs text-slate-400">
             Timer do chủ phòng chỉnh. Ảnh nền chỉ lưu trên máy của bạn.
           </p>
@@ -1080,6 +1063,7 @@ export default function GamePage() {
               <TimerSettings
                 values={gameState?.timers}
                 applyLabel="Lưu thay đổi"
+                tone="paper"
                 onApply={(timers) => {
                   setTimers(roomCode, timers);
                   setShowSettings(false);
@@ -1093,13 +1077,13 @@ export default function GamePage() {
           )}
 
           <div className="mt-5 border-t border-slate-700 pt-4">
-            <div className="mb-2 text-xs font-black text-slate-300">🖼 Nền bàn chơi</div>
+            <div className="mb-2 text-xs font-black text-slate-300">🖼️ Nền bàn chơi</div>
             <input
               type="file"
               accept="image/*"
               onChange={handleBackgroundFile}
               aria-label="Chọn ảnh nền"
-              className="block w-full rounded-xl border border-slate-700 bg-slate-800 p-2 text-xs text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-1.5 file:text-xs file:font-black file:text-slate-950"
+              className="block w-full rounded-xl border border-slate-700 bg-slate-800 p-2 text-xs text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--mustard)] file:px-3 file:py-1.5 file:text-xs file:font-black file:text-[var(--ink)]"
             />
             {tableBackground && (
               <>
@@ -1128,9 +1112,9 @@ export default function GamePage() {
           label="Rời khỏi phòng"
           onClose={() => setShowExitConfirm(false)}
           overlayClassName="z-[60] bg-black/85 backdrop-blur-sm"
-          panelClassName="w-full max-w-sm rounded-3xl border-2 border-red-500/60 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 p-5 shadow-2xl shadow-red-950/40"
+          panelClassName="paper-modal w-full max-w-sm p-5"
         >
-            <h2 className="font-display text-xl font-black text-white">🚪 Rời khỏi phòng?</h2>
+            <h2 className="font-display text-xl font-black text-[var(--ink)]">🚪 Rời khỏi phòng?</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-300">
               {gameState?.status === 'playing'
                 ? 'Bạn sẽ về trang chủ. Ván đấu vẫn tiếp tục và bot sẽ đánh thay bạn.'
@@ -1141,14 +1125,14 @@ export default function GamePage() {
               <button
                 type="button"
                 onClick={() => setShowExitConfirm(false)}
-                className="flex-1 rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-xs font-bold text-slate-200 transition-colors hover:bg-slate-700"
+                className="landing-btn landing-btn--paper flex-1 py-2.5 text-xs"
               >
                 Ở lại
               </button>
               <button
                 type="button"
                 onClick={handleExitRoom}
-                className="flex-1 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 py-2.5 text-xs font-black text-white shadow-lg shadow-red-600/25 transition-all hover:from-red-500 hover:to-rose-500 active:scale-95"
+                className="landing-btn landing-btn--oxblood flex-1 py-2.5 text-xs"
               >
                 Rời phòng
               </button>
@@ -1158,7 +1142,7 @@ export default function GamePage() {
 
       {/* Viền đỏ cảnh báo khi chính bạn đang bị tấn công */}
       {attackInfo?.targetId === playerId && (
-        <div className="pointer-events-none fixed inset-0 z-30 ring-4 ring-inset ring-red-600/40 shadow-[inset_0_0_90px_rgba(220,38,38,0.35)] animate-pulse" />
+        <div className="pointer-events-none fixed inset-0 z-30 ring-4 ring-inset ring-[var(--oxblood)]/40 shadow-[inset_0_0_90px_rgba(123,45,38,0.3)]" />
       )}
 
       {/* Hiệu ứng chia bài / rút bài */}

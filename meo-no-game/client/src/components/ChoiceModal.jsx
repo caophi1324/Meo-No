@@ -74,10 +74,10 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
     <ModalShell
       label={title}
       overlayClassName="bg-black/85 backdrop-blur-sm animate-in fade-in duration-200"
-      panelClassName="bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 rounded-3xl p-6 border-2 border-amber-400 max-w-xl w-full shadow-2xl shadow-amber-500/20"
+      panelClassName="paper-modal max-w-xl w-full p-6"
     >
-      <h2 className="mb-1 text-center font-display text-xl font-black text-white">{title}</h2>
-      <p className="mb-3 text-center text-xs text-slate-400">{hint}</p>
+      <h2 className="mb-1 text-center font-display text-xl font-black text-[var(--ink)]">{title}</h2>
+      <p className="mb-3 text-center text-xs text-[var(--ink-soft)]">{hint}</p>
       {secondsLeft !== null && (
         <p className="mb-3 text-center text-[11px] font-black text-amber-300" aria-live="polite">
           ⏳ Còn {secondsLeft}s — hết giờ hệ thống sẽ tự chọn
@@ -112,7 +112,7 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
           <button
             type="button"
             onClick={() => respond(position)}
-            className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 py-3 text-sm font-black text-slate-950 shadow-lg shadow-amber-500/25"
+            className="landing-btn landing-btn--oxblood w-full py-3 text-sm"
           >
             XÁC NHẬN VỊ TRÍ {position + 1}
           </button>
@@ -174,11 +174,7 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
             type="button"
             disabled={!canSubmitMulti}
             onClick={() => respond(picked)}
-            className={`w-full rounded-2xl py-3 text-sm font-black shadow-lg ${
-              canSubmitMulti
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 shadow-emerald-500/25'
-                : 'cursor-not-allowed border border-slate-700 bg-slate-800 text-slate-500'
-            }`}
+            className="landing-btn landing-btn--oxblood w-full py-3 text-sm"
           >
             {choice.kind === 'revive_cards'
               ? 'XÁC NHẬN HỒI SINH'
@@ -214,11 +210,7 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
             type="button"
             disabled={picked.length !== needed}
             onClick={() => respond(picked)}
-            className={`w-full rounded-2xl py-3 text-sm font-black shadow-lg ${
-              picked.length === needed
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 shadow-emerald-500/25'
-                : 'cursor-not-allowed border border-slate-700 bg-slate-800 text-slate-500'
-            }`}
+            className="landing-btn landing-btn--oxblood w-full py-3 text-sm"
           >
             {choice.kind === 'reaction_pick'
               ? 'XÁC NHẬN PHẢN ĐÒN'
@@ -236,7 +228,7 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
               key={target.id}
               type="button"
               onClick={() => respond(target.id)}
-              className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm font-bold text-white transition-colors hover:border-amber-400 hover:bg-amber-600/30"
+              className="landing-btn landing-btn--paper w-full text-sm"
             >
               {target.name}
             </button>

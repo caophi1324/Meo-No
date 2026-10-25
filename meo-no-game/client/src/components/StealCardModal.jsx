@@ -30,12 +30,12 @@ export default function StealCardModal({
       label={title || 'Cướp bài'}
       onClose={onClose}
       overlayClassName="bg-black/85 backdrop-blur-sm animate-in fade-in duration-200"
-      panelClassName="bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 rounded-3xl p-6 border-2 border-amber-400 max-w-lg w-full shadow-2xl shadow-amber-500/20 relative overflow-hidden"
+      panelClassName="paper-modal relative max-w-lg w-full overflow-hidden p-6"
     >
         {/* Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 bg-amber-500/20 rounded-full blur-2xl pointer-events-none" />
 
-        <h2 className="text-xl sm:text-2xl font-black text-white mb-2 text-center font-display tracking-wide">
+        <h2 className="text-xl sm:text-2xl font-black text-[var(--ink)] mb-2 text-center font-display tracking-wide">
           {title || '🐱 CƯỚP BÀI'}
         </h2>
         <p className="text-xs text-slate-400 text-center mb-4">
@@ -57,7 +57,7 @@ export default function StealCardModal({
               <button
                 key={t.id}
                 onClick={() => handleTarget(t.id)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-slate-800/90 hover:bg-amber-600/30 border border-slate-700 hover:border-amber-400 rounded-2xl text-white transition-all shadow cursor-pointer group"
+                className="w-full flex items-center justify-between px-4 py-3 bg-[var(--paper-2)] hover:bg-[var(--paper)] border-2 border-[var(--ink)] hover:border-[var(--oxblood)] rounded-[4px] text-[var(--ink)] transition-all shadow-[2px_2px_0_var(--hard-shadow)] cursor-pointer group"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-slate-700 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
@@ -119,7 +119,7 @@ export default function StealCardModal({
                 soundEffects.playClick();
                 onClose();
               }}
-              className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold text-sm transition-all border border-slate-700 cursor-pointer"
+              className="landing-btn landing-btn--paper px-6 py-2.5 text-sm"
             >
               Hủy bỏ
             </button>

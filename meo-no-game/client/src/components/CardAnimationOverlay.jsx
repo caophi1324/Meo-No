@@ -65,7 +65,7 @@ export default function CardAnimationOverlay({ animation, onComplete }) {
               initial={{ opacity: 0, scale: 0.5, y: -40 }}
               animate={{ opacity: 1, scale: 1, y: -60 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute px-5 py-2 rounded-2xl bg-amber-500 text-slate-950 font-black text-sm uppercase tracking-wider font-display shadow-2xl border-2 border-white"
+              className="absolute px-5 py-2 rounded-[4px] bg-[var(--mustard)] text-[var(--ink)] font-black text-sm uppercase tracking-wider font-display shadow-[3px_3px_0_var(--hard-shadow)] border-2 border-[var(--ink)]"
             >
               🎴 ĐANG CHIA BÀI...
             </motion.div>
@@ -95,7 +95,7 @@ export default function CardAnimationOverlay({ animation, onComplete }) {
                 }}
                 className="absolute"
               >
-                <div className="w-22 h-32 rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400">
+                <div className="w-22 h-32 rounded-[4px] overflow-hidden shadow-[3px_3px_0_var(--hard-shadow)] border-2 border-[var(--ink)]">
                   <img
                     src="/cards/card-back.svg"
                     alt="Lưng bài"
@@ -122,7 +122,7 @@ export default function CardAnimationOverlay({ animation, onComplete }) {
               transition={{ duration: 0.42, times: [0, 0.65, 1], ease: 'easeOut' }}
               className="absolute"
             >
-              <div className="w-20 h-28 rounded-xl overflow-hidden border-2 border-amber-400 bg-slate-950 shadow-2xl">
+              <div className="w-20 h-28 rounded-[4px] overflow-hidden border-2 border-[var(--ink)] bg-[var(--felt-dark)] shadow-[3px_3px_0_var(--hard-shadow)]">
                 <img src={playSrc} alt="" className="w-full h-full object-cover" />
               </div>
             </motion.div>
@@ -144,7 +144,7 @@ export default function CardAnimationOverlay({ animation, onComplete }) {
                 transition={{ duration: 0.65, times: [0, 0.3, 0.7, 1], ease: 'easeInOut' }}
                 className="absolute"
               >
-                <div className="w-20 h-28 rounded-xl overflow-hidden shadow-2xl border-2 border-amber-400">
+                <div className="w-20 h-28 rounded-[4px] overflow-hidden shadow-[3px_3px_0_var(--hard-shadow)] border-2 border-[var(--ink)]">
                   <img src="/cards/card-back.svg" alt="" className="w-full h-full object-cover" />
                 </div>
               </motion.div>
@@ -159,7 +159,7 @@ export default function CardAnimationOverlay({ animation, onComplete }) {
               initial={{ rotateY: -90, scale: 0.8, opacity: 0 }}
               animate={{ rotateY: 0, scale: 1, opacity: [0, 1, 1, 0] }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="absolute w-24 h-36 rounded-xl overflow-hidden border-2 border-sky-400 bg-slate-950"
+              className="absolute w-24 h-36 rounded-[4px] overflow-hidden border-2 border-[var(--oxblood)] bg-[var(--felt-dark)] shadow-[3px_3px_0_var(--hard-shadow)]"
             >
               <img src={implodingSrc} alt="Imploding Kitten" className="w-full h-full object-cover" />
             </motion.div>
@@ -191,7 +191,7 @@ export default function CardAnimationOverlay({ animation, onComplete }) {
               }}
               className="absolute"
             >
-              <div className="w-24 h-36 rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400 ring-4 ring-orange-500/40">
+              <div className="w-24 h-36 rounded-[4px] overflow-hidden shadow-[4px_4px_0_var(--hard-shadow)] border-2 border-[var(--ink)] ring-4 ring-[var(--mustard)]/25">
                 <img
                   src="/cards/card-back.svg"
                   alt="Rút bài"

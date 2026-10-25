@@ -28,15 +28,13 @@ export default function AlterFutureModal({ cards = [], onSubmit }) {
     <ModalShell
       label="Kiến tạo tương lai"
       overlayClassName="bg-black/85 backdrop-blur-sm"
-      panelClassName="bg-gradient-to-b from-indigo-950/95 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-7 border-2 border-violet-500 max-w-xl w-full text-center shadow-2xl shadow-violet-600/30 relative overflow-hidden"
+      panelClassName="paper-modal max-w-xl w-full p-6 text-center sm:p-7"
     >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-24 bg-violet-600/20 rounded-full blur-2xl pointer-events-none" />
-
         <div className="text-4xl mb-1">🌌</div>
-        <h2 className="text-xl sm:text-2xl font-black text-white mb-1 font-display tracking-wide">
+        <h2 className="text-xl sm:text-2xl font-black text-[var(--ink)] mb-1 font-display tracking-wide">
           KIẾN TẠO TƯƠNG LAI
         </h2>
-        <p className="text-xs sm:text-sm text-violet-300/80 mb-5">
+        <p className="text-xs sm:text-sm text-[var(--ink-soft)] mb-5">
           Dùng nút ← → để đổi thứ tự. Lá đầu tiên sẽ nằm trên cùng chồng bài!
         </p>
 
@@ -44,10 +42,10 @@ export default function AlterFutureModal({ cards = [], onSubmit }) {
           {order.map((card, i) => (
             <div key={card.id} className="flex flex-col items-center">
               <div
-                className={`text-[10px] sm:text-xs font-bold mb-1.5 px-2 py-0.5 rounded-full border ${
+                className={`text-[10px] sm:text-xs font-bold mb-1.5 px-2 py-0.5 rounded-[3px] border-2 ${
                   i === 0
-                    ? 'bg-red-950/80 border-red-500/80 text-red-300'
-                    : 'bg-slate-800/80 border-slate-700 text-slate-300'
+                    ? 'bg-[#F3D8D2] border-[var(--oxblood)] text-[var(--oxblood)]'
+                    : 'bg-[var(--paper-2)] border-[var(--line)] text-[var(--ink-soft)]'
                 }`}
               >
                 {i === 0 ? '1. Trên cùng' : `Thứ ${i + 1}`}
@@ -57,7 +55,7 @@ export default function AlterFutureModal({ cards = [], onSubmit }) {
                 <button
                   onClick={() => move(i, -1)}
                   disabled={i === 0}
-                  className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-600 text-slate-200 font-bold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-violet-600/40 cursor-pointer"
+                  className="h-7 w-7 rounded-[3px] border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] font-bold shadow-[1px_1px_0_var(--hard-shadow)] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--paper-2)] cursor-pointer"
                   title="Đưa lên trước"
                 >
                   ←
@@ -65,7 +63,7 @@ export default function AlterFutureModal({ cards = [], onSubmit }) {
                 <button
                   onClick={() => move(i, 1)}
                   disabled={i === order.length - 1}
-                  className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-600 text-slate-200 font-bold disabled:opacity-30 disabled:cursor-not-allowed hover:bg-violet-600/40 cursor-pointer"
+                  className="h-7 w-7 rounded-[3px] border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] font-bold shadow-[1px_1px_0_var(--hard-shadow)] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--paper-2)] cursor-pointer"
                   title="Đưa ra sau"
                 >
                   →
@@ -77,7 +75,7 @@ export default function AlterFutureModal({ cards = [], onSubmit }) {
 
         <button
           onClick={handleSubmit}
-          className="px-8 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl font-black text-sm font-display transition-all shadow-lg shadow-violet-600/30 cursor-pointer"
+          className="landing-btn landing-btn--oxblood px-8 py-3 text-sm"
         >
           🌌 CHỐT THỨ TỰ & QUAY LẠI BÀN
         </button>

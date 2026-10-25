@@ -68,7 +68,7 @@ export default function Card({
         whileHover={!disabled && onClick ? { scale: 1.05, y: -4 } : {}}
         whileTap={!disabled && onClick ? { scale: 0.96 } : {}}
         onClick={disabled ? undefined : onClick}
-        className={`relative select-none flex-shrink-0 cursor-pointer overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${sizeClasses} ${selected ? 'ring-4 ring-yellow-400 ring-offset-2 ring-offset-slate-950 z-20' : ''} ${disabled ? 'opacity-50 grayscale-[0.35] ring-2 ring-red-500/80' : ''} ${className}`}
+        className={`relative select-none flex-shrink-0 cursor-pointer overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mustard)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--felt-dark)] ${sizeClasses} ${selected ? 'ring-4 ring-[var(--mustard)] ring-offset-2 ring-offset-[var(--felt-dark)] z-20' : ''} ${disabled ? 'opacity-50 grayscale-[0.35] ring-2 ring-[var(--oxblood)]' : ''} ${className}`}
         style={{
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0,0,0,0.3)',
           borderColor: disabled ? '#EF4444' : '#D97706',
@@ -82,7 +82,7 @@ export default function Card({
         {/* Subtle 3D Card Edge Highlight */}
         <div className="absolute inset-0 rounded-xl pointer-events-none border border-white/20 shadow-inner" />
         {selected && (
-          <div className="absolute right-1 top-1 z-30 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-yellow-400 text-xs font-black text-slate-950 shadow-md">
+          <div className="absolute right-1 top-1 z-30 flex h-5 w-5 items-center justify-center rounded-[3px] border-2 border-[var(--ink)] bg-[var(--mustard)] text-xs font-black text-[var(--ink)] shadow-[1px_1px_0_var(--hard-shadow)]">
             ✓
           </div>
         )}
@@ -101,16 +101,16 @@ export default function Card({
         whileHover={interactive ? { y: -4 } : undefined}
         whileTap={interactive ? { scale: 0.97 } : undefined}
         onClick={disabled ? undefined : onClick}
-        className={`relative select-none overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${sizeClasses} ${
+        className={`relative select-none overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mustard)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--felt-dark)] ${sizeClasses} ${
           selected
-            ? 'ring-4 ring-yellow-400 ring-offset-2 ring-offset-slate-900 z-20'
+            ? 'ring-4 ring-[var(--mustard)] ring-offset-2 ring-offset-[var(--felt-dark)] z-20'
             : highlighted
               ? 'nope-glow ring-2 ring-red-400 z-10'
               : disabled
-                ? 'opacity-50 grayscale-[0.35] ring-2 ring-red-500/80'
+                ? 'opacity-50 grayscale-[0.35] ring-2 ring-[var(--oxblood)]'
                 : ''
         } ${interactive ? 'cursor-pointer' : ''} ${className}`}
-        style={{ borderColor: disabled ? '#EF4444' : selected ? '#FACC15' : borderColor }}
+        style={{ borderColor: disabled ? 'var(--oxblood)' : selected ? 'var(--mustard)' : borderColor }}
       >
         <img
           src={themedImage(cardImage, deckTheme)}
@@ -125,17 +125,17 @@ export default function Card({
               {cardTitle || 'Lá bài'}
             </div>
             {cardSubtitle && (
-              <div className="truncate text-[7px] font-bold text-amber-300">{cardSubtitle}</div>
+              <div className="truncate text-[7px] font-bold text-[var(--mustard)]">{cardSubtitle}</div>
             )}
           </div>
         )}
         {selected && (
-          <div className="absolute right-1 top-1 z-30 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-yellow-400 text-xs font-black text-slate-950 shadow-md">
+          <div className="absolute right-1 top-1 z-30 flex h-5 w-5 items-center justify-center rounded-[3px] border-2 border-[var(--ink)] bg-[var(--mustard)] text-xs font-black text-[var(--ink)] shadow-[1px_1px_0_var(--hard-shadow)]">
             ✓
           </div>
         )}
         {highlighted && (
-          <div className="absolute left-1/2 top-1 z-30 -translate-x-1/2 rounded-full border border-red-200 bg-red-600 px-2 py-0.5 text-[9px] font-black tracking-wider text-white shadow-lg animate-pulse motion-reduce:animate-none">
+          <div className="absolute left-1/2 top-1 z-30 -translate-x-1/2 rounded-[2px] border-2 border-[var(--ink)] bg-[var(--oxblood)] px-2 py-0.5 text-[9px] font-black tracking-wider text-[var(--paper)] shadow-[1px_1px_0_var(--hard-shadow)]">
             NOPE!
           </div>
         )}
@@ -168,20 +168,20 @@ export default function Card({
         y: selected ? -14 : 0,
       }}
       transition={{ type: 'spring', stiffness: 350, damping: 26 }}
-      className={`group relative select-none flex flex-col justify-between overflow-hidden shadow-xl flex-shrink-0 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${sizeClasses} ${className} ${
+      className={`group relative select-none flex flex-col justify-between overflow-hidden shadow-xl flex-shrink-0 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mustard)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--felt-dark)] ${sizeClasses} ${className} ${
         selected
-          ? 'ring-4 ring-yellow-400 ring-offset-2 ring-offset-slate-900 z-20'
+          ? 'ring-4 ring-[var(--mustard)] ring-offset-2 ring-offset-[var(--felt-dark)] z-20'
           : highlighted
             ? 'nope-glow ring-2 ring-red-400 z-10'
             : disabled
-              ? 'opacity-50 grayscale-[0.35] ring-2 ring-red-500/80'
+              ? 'opacity-50 grayscale-[0.35] ring-2 ring-[var(--oxblood)]'
               : ''
       }`}
       style={{
         backgroundColor: cardInfo.bgColor || '#1E293B',
-        borderColor: disabled ? '#EF4444' : selected ? '#FACC15' : borderColor,
+        borderColor: disabled ? 'var(--oxblood)' : selected ? 'var(--mustard)' : borderColor,
         boxShadow: selected
-          ? `0 14px 28px rgba(250, 204, 21, 0.4), 0 0 15px ${borderColor}`
+          ? `0 14px 28px rgba(201, 146, 46, 0.35), 0 0 15px ${borderColor}`
           : `0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px ${glowColor}`,
       }}
     >
@@ -190,13 +190,13 @@ export default function Card({
 
       {/* Huy hiệu chọn bài */}
       {selected && (
-        <div className="absolute -top-1.5 -right-1.5 z-30 bg-yellow-400 text-slate-950 rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center font-black text-xs shadow-md border-2 border-white animate-bounce">
+        <div className="absolute -top-1.5 -right-1.5 z-30 bg-[var(--mustard)] text-[var(--ink)] rounded-[3px] w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center font-black text-xs shadow-[1px_1px_0_var(--hard-shadow)] border-2 border-[var(--ink)]">
           ✓
         </div>
       )}
 
       {highlighted && (
-        <div className="absolute -top-2 left-1/2 z-30 -translate-x-1/2 rounded-full border border-red-200 bg-red-600 px-2 py-0.5 text-[9px] font-black tracking-wider text-white shadow-lg animate-pulse motion-reduce:animate-none">
+        <div className="absolute -top-2 left-1/2 z-30 -translate-x-1/2 rounded-[2px] border-2 border-[var(--ink)] bg-[var(--oxblood)] px-2 py-0.5 text-[9px] font-black tracking-wider text-[var(--paper)] shadow-[1px_1px_0_var(--hard-shadow)]">
           NOPE!
         </div>
       )}
@@ -213,7 +213,7 @@ export default function Card({
       </div>
 
       {isLol && cardSubtitle && (
-        <div className="w-full px-1 text-center text-[7px] font-bold uppercase tracking-wider text-amber-300/90 truncate">
+        <div className="w-full px-1 text-center text-[7px] font-bold uppercase tracking-wider text-[var(--oxblood)] truncate">
           {cardSubtitle}
         </div>
       )}

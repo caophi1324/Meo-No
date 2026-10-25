@@ -7,12 +7,12 @@ export default function Toasts() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-[4.5rem] left-1/2 z-[70] w-max max-w-[92vw] -translate-x-1/2 space-y-2">
+    <div className="fixed bottom-24 left-3 z-[70] w-max max-w-[92vw] space-y-2 sm:bottom-4 sm:left-4">
       {toasts.map((t) => (
         <div
           key={t.id}
           onClick={() => removeToast(t.id)}
-          className="cursor-pointer bg-slate-800/95 border border-orange-500/60 text-white text-sm px-4 py-2.5 rounded-xl shadow-2xl animate-pulse-none"
+          className="cursor-pointer rounded-[4px] border-2 border-[#1F1A14] bg-[#F4EAD5] px-4 py-2.5 text-sm font-semibold text-[#1F1A14] shadow-[3px_3px_0_#1F1A14]"
         >
           {t.message}
         </div>

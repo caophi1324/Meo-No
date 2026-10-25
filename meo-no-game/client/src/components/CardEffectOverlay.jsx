@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { soundEffects } from '../utils/soundEffects';
-import useGameStore from '../store/gameStore';
-import { themedImage } from '../../../shared/decks.js';
 
 // Hiệu ứng riêng cho từng loại lá bài — chạy cho CẢ người đánh lẫn người xem.
 const EFFECT_META = {
@@ -69,242 +67,6 @@ function subtitleFor(effect, players) {
   }
 }
 
-function Decor({ type, color }) {
-  const deckTheme = useGameStore((s) => s.deckTheme);
-
-  if (type === 'attack') {
-    return (
-      <div className="absolute inset-0 overflow-hidden">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute left-0 top-1/2 h-1.5 w-[120%] origin-center"
-            style={{
-              background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-              rotate: `${-24 + i * 20}deg`,
-              y: `${(i - 1) * 46}px`,
-            }}
-            initial={{ x: '-110%', opacity: 0 }}
-            animate={{ x: '110%', opacity: [0, 1, 0] }}
-            transition={{ duration: 0.55, delay: i * 0.06, ease: 'easeOut' }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'skip' || type === 'super_skip') {
-    return (
-      <div className="absolute inset-0 overflow-hidden">
-        {[0, 1, 2, 3].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute left-0 h-0.5 w-[100%]"
-            style={{ top: `${35 + i * 9}%`, background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
-            initial={{ x: '-100%', opacity: 0 }}
-            animate={{ x: '100%', opacity: [0, 1, 0] }}
-            transition={{ duration: 0.4, delay: i * 0.05, ease: 'easeInOut' }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'favor_request' || type === 'favor_give') {
-    return (
-      <div className="absolute inset-0 overflow-hidden">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute text-2xl"
-            style={{ left: `${42 + (i - 2) * 7}%`, top: '58%' }}
-            initial={{ opacity: 0, y: 30, scale: 0.6 }}
-            animate={{ opacity: [0, 1, 0], y: -90 - i * 14, scale: 1 }}
-            transition={{ duration: 1, delay: i * 0.08, ease: 'easeOut' }}
-          >
-            💛
-          </motion.div>
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'shuffle') {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full border-2 border-dashed"
-            style={{
-              width: `${120 + i * 55}px`,
-              height: `${120 + i * 55}px`,
-              borderColor: `${color}88`,
-            }}
-            animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-            transition={{ duration: 1.4 + i * 0.4, repeat: Infinity, ease: 'linear' }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'see_the_future' || type === 'alter_future') {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full border"
-            style={{ width: `${130 + i * 60}px`, height: `${130 + i * 60}px`, borderColor: `${color}66` }}
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: [0.6, 1.1, 1.4], opacity: [0, 0.8, 0] }}
-            transition={{ duration: 1.1, delay: i * 0.12, ease: 'easeOut' }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'steal_random' || type === 'steal_specific' || type === 'steal_discard') {
-    return (
-      <div className="absolute inset-0 overflow-hidden">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute left-1/2 top-1/2 h-1 w-[55vw] rounded-full"
-            style={{
-              background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-              rotate: `${-32 + i * 32}deg`,
-            }}
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: [0, 1, 1], opacity: [0, 1, 0] }}
-            transition={{ duration: 0.5, delay: i * 0.05 }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'reverse') {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute text-5xl sm:text-7xl"
-            style={{ color, opacity: 0.35 }}
-            initial={{ scale: 0.5, rotate: 0, opacity: 0 }}
-            animate={{ scale: [0.5, 1.2, 1.6], rotate: i % 2 === 0 ? -360 : 360, opacity: [0, 0.7, 0] }}
-            transition={{ duration: 1.1, delay: i * 0.1, ease: 'easeOut' }}
-          >
-            {i % 2 === 0 ? '↻' : '↺'}
-          </motion.div>
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'fuel') {
-    return (
-      <div className="absolute inset-0 overflow-hidden">
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute text-xl sm:text-2xl"
-            style={{ left: `${38 + i * 5}%`, top: '62%' }}
-            initial={{ opacity: 0, y: 20, scale: 0.5 }}
-            animate={{ opacity: [0, 1, 0], y: -120 - i * 12, scale: 1.2 }}
-            transition={{ duration: 0.9, delay: i * 0.06, ease: 'easeOut' }}
-          >
-            🔥
-          </motion.div>
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'super_destroy') {
-    return (
-      <div className="absolute inset-0 overflow-hidden">
-        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute left-1/2 top-1/2 h-1.5 w-16 rounded-sm"
-            style={{ background: color, rotate: `${i * 28}deg` }}
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: [0, 1, 0], scaleX: [0, 1.4, 0.4], x: [0, (i - 3) * 34, (i - 3) * 70] }}
-            transition={{ duration: 0.7, delay: i * 0.03, ease: 'easeOut' }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'exploded' || type === 'boom_atomic') {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        {[0, 1].map((i) => (
-          <motion.div
-            key={`boom-ring-${i}`}
-            className="absolute rounded-full border-2"
-            style={{ width: 110, height: 110, borderColor: `${color}aa` }}
-            initial={{ scale: 0.45, opacity: 0 }}
-            animate={{ scale: [0.45, 1.6, 2.2], opacity: [0, 0.8, 0] }}
-            transition={{ duration: 0.55, delay: i * 0.18, ease: 'easeOut' }}
-          />
-        ))}
-        {Array.from({ length: 8 }).map((_, i) => (
-          <motion.div
-            key={`boom-bit-${i}`}
-            className="absolute h-1.5 w-1.5 rounded-full"
-            style={{ background: color }}
-            initial={{ opacity: 0, x: 0, y: 0 }}
-            animate={{
-              opacity: [0, 1, 0],
-              x: Math.cos((i * Math.PI) / 4) * 92,
-              y: Math.sin((i * Math.PI) / 4) * 92,
-            }}
-            transition={{ duration: 0.5, delay: 0.36, ease: 'easeOut' }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === 'action_cancelled') {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        <motion.img
-          src={themedImage('/cards/custom/MN012.jpg', deckTheme)}
-          alt=""
-          className="absolute w-24 h-36 rounded-xl border-2 object-cover shadow-2xl"
-          style={{ borderColor: color }}
-          initial={{ y: -180, rotate: -16, scale: 1.3, opacity: 0 }}
-          animate={{ y: 20, rotate: -8, scale: 1, opacity: 1 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-        />
-        <motion.div
-          className="absolute flex items-center justify-center"
-          initial={{ scale: 2.4, opacity: 0, rotate: -18 }}
-          animate={{ scale: 1, opacity: 1, rotate: -12 }}
-          exit={{ scale: 1.2, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 18, delay: 0.24 }}
-        >
-          <div
-            className="px-10 py-4 rounded-2xl border-4 text-5xl sm:text-6xl font-black tracking-widest font-display"
-            style={{ borderColor: color, color, boxShadow: `0 0 60px ${color}88`, background: 'rgba(15,23,42,0.75)' }}
-          >
-            NOPE!
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  return null;
-}
-
 export default function CardEffectOverlay({ effect, players = [], onDone }) {
   const meta = effect ? EFFECT_META[effect.type] : null;
   const reduceMotion = useReducedMotion();
@@ -321,16 +83,16 @@ export default function CardEffectOverlay({ effect, players = [], onDone }) {
     if (!effect || !meta) return null;
     return (
       <div className="fixed inset-0 z-40 pointer-events-none flex items-center justify-center" aria-hidden="true">
-        <div
-          className="relative z-10 flex flex-col items-center gap-1 px-6 py-4 rounded-3xl border-2 bg-slate-950/85 backdrop-blur-sm shadow-2xl"
-          style={{ borderColor: meta.color, boxShadow: `0 0 50px ${meta.color}66` }}
-        >
-          <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
-          <div className="font-black text-lg sm:text-2xl font-display tracking-wider" style={{ color: meta.color }}>
-            {meta.label}
-          </div>
-          <div className="text-xs sm:text-sm font-bold text-slate-200">
-            {subtitleFor(effect, players)}
+        <div className="paper-panel relative z-10 w-full max-w-md overflow-hidden">
+          <div className="h-2 w-full" style={{ backgroundColor: meta.color }} />
+          <div className="flex flex-col items-center gap-1 px-6 py-4">
+            <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
+            <div className="font-display text-lg sm:text-2xl font-black tracking-wider text-[var(--ink)]">
+              {meta.label}
+            </div>
+            <div className="text-xs sm:text-sm font-bold text-[var(--ink-soft)]">
+              {subtitleFor(effect, players)}
+            </div>
           </div>
         </div>
       </div>
@@ -350,36 +112,28 @@ export default function CardEffectOverlay({ effect, players = [], onDone }) {
         >
           <motion.div
             className="absolute inset-0"
-            style={{ background: `radial-gradient(circle at 50% 45%, ${meta.color}33 0%, transparent 60%)` }}
+            style={{ background: `radial-gradient(circle at 50% 45%, ${meta.color}1f 0%, transparent 62%)` }}
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.9, 0.5, 0] }}
+            animate={{ opacity: [0, 0.8, 0.4, 0] }}
             transition={{ duration: 1.2 }}
           />
 
           <motion.div
-            className="absolute w-40 h-40 rounded-full border-4"
-            style={{ borderColor: meta.color }}
-            initial={{ scale: 0.3, opacity: 0.9 }}
-            animate={{ scale: 2.8, opacity: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-          />
-
-          <Decor type={effect.type} color={meta.color} />
-
-          <motion.div
-            className="relative z-10 flex flex-col items-center gap-1 px-6 py-4 rounded-3xl border-2 bg-slate-950/85 backdrop-blur-sm shadow-2xl"
-            style={{ borderColor: meta.color, boxShadow: `0 0 50px ${meta.color}66` }}
-            initial={{ opacity: 0, scale: 0.6, y: 24 }}
+            className="paper-panel relative z-10 w-full max-w-md overflow-hidden"
+            initial={{ opacity: 0, scale: 0.88, y: 18 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 1.15, y: -20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            exit={{ opacity: 0, scale: 1.06, y: -12 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 22 }}
           >
-            <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
-            <div className="font-black text-lg sm:text-2xl font-display tracking-wider" style={{ color: meta.color }}>
-              {meta.label}
-            </div>
-            <div className="text-xs sm:text-sm font-bold text-slate-200">
-              {subtitleFor(effect, players)}
+            <div className="h-2 w-full" style={{ backgroundColor: meta.color }} />
+            <div className="flex flex-col items-center gap-1 px-6 py-4">
+              <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
+              <div className="font-display text-lg sm:text-2xl font-black tracking-wider text-[var(--ink)]">
+                {meta.label}
+              </div>
+              <div className="text-xs sm:text-sm font-bold text-[var(--ink-soft)]">
+                {subtitleFor(effect, players)}
+              </div>
             </div>
           </motion.div>
         </motion.div>

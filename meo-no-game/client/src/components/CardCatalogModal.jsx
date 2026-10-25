@@ -11,28 +11,26 @@ export default function CardCatalogModal({ onClose }) {
     <ModalShell
       label="Bộ bài custom"
       onClose={onClose}
-      overlayClassName="bg-black/90 backdrop-blur-sm"
-      panelClassName="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl border-2 border-amber-400/60 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-950 shadow-2xl"
+      overlayClassName="bg-[#0B1410]/85 backdrop-blur-[2px]"
+      panelClassName="paper-modal flex max-h-[92vh] w-full max-w-6xl flex-col"
     >
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-700 px-5 py-4">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b-2 border-[var(--ink)] bg-[var(--paper-2)] px-5 py-4">
         <div>
-          <h2 className="font-display text-xl font-black text-white">🃏 Bộ bài custom</h2>
-          <p className="text-xs text-slate-400">
-            {CUSTOM_CARD_LIST.length} lá · bấm một lá để xem nội dung
+          <span className="landing-stamp">Danh mục</span>
+          <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-[var(--ink)]">
+            Bộ bài custom
+          </h2>
+          <p className="mt-1 text-xs font-semibold text-[var(--ink-soft)]">
+            {CUSTOM_CARD_LIST.length} lá · bấm một lá để đọc hiệu ứng
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Đóng bộ bài"
-          className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
-        >
+        <button type="button" onClick={onClose} aria-label="Đóng bộ bài" className="landing-icon-btn shrink-0">
           ✕
         </button>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--paper)] p-4">
           <div className="grid grid-cols-5 gap-2 sm:grid-cols-8 lg:grid-cols-10">
             {CUSTOM_CARD_LIST.map((card) => (
               <CustomCard
@@ -47,25 +45,34 @@ export default function CardCatalogModal({ onClose }) {
         </div>
 
         {selected && (
-          <aside className="shrink-0 border-t border-slate-700 bg-slate-950/60 p-4 lg:w-80 lg:border-l lg:border-t-0">
+          <aside className="paper-index-card shrink-0 border-t-2 border-[var(--ink)] p-4 lg:w-80 lg:border-l-2 lg:border-t-0">
             <div className="flex gap-3">
               <CustomCard card={selected} size="small" />
               <div className="min-w-0">
-                <h3 className="font-display text-lg font-black text-white">{selected.name}</h3>
-                <div className="mt-1 text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                  {selected.category}
-                  {selected.multiplier ? ` · ${selected.multiplier}` : ''}
-                </div>
+                <div className="landing-overline">{selected.category}</div>
+                <h3 className="mt-1 font-display text-xl font-bold leading-tight text-[var(--ink)]">
+                  {selected.name}
+                </h3>
+                {selected.multiplier && (
+                  <span className="landing-chip mt-1.5">{selected.multiplier}</span>
+                )}
                 {selected.subtitle && (
-                  <p className="mt-1 text-[10px] text-slate-500">{selected.subtitle}</p>
+                  <p className="mt-1.5 text-[10px] italic leading-snug text-[var(--ink-soft)]">
+                    {selected.subtitle}
+                  </p>
                 )}
               </div>
             </div>
-            <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-slate-300">
-              {selected.effect}
-            </p>
-            <p className="mt-4 text-[10px] text-slate-500">
-              Mã: {selected.id} · Nguồn ảnh: {selected.id}
+
+            <div className="mt-4 border-t-2 border-[var(--ink)] pt-3">
+              <div className="landing-overline">Hiệu ứng</div>
+              <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-[var(--ink)]">
+                {selected.effect}
+              </p>
+            </div>
+
+            <p className="mt-4 text-[10px] font-semibold text-[var(--ink-soft)]">
+              Mã thẻ {selected.id} · Bộ custom
             </p>
           </aside>
         )}
