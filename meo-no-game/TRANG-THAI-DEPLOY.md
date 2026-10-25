@@ -25,40 +25,32 @@ Tất cả đã được **push lên GitHub** (`caophi1324/Meo-No`, commit `4a1e
 
 ---
 
-## Đang dở dang ⚠️
+## Đã hoàn thành 100% 🎉
 
-### Render (Server) — chưa rõ trạng thái
-- Đã kết nối repo GitHub bằng tài khoản Render mới
-- Config cần điền:
-  - Root Directory: `meo-no-game/server`
-  - Build Command: `npm install`
-  - Start Command: `node src/index.js`
-  - Env var: `CORS_ORIGINS=https://your-vercel-app.vercel.app`
-- **Chưa biết URL server** (dạng `https://xxx.onrender.com`)
+### URL Production chính thức
+- **Frontend (Vercel)**: [https://meo-no-six.vercel.app](https://meo-no-six.vercel.app)
+- **Backend (Render)**: [https://meo-no-server-uxi1.onrender.com](https://meo-no-server-uxi1.onrender.com)
+- **Health Check**: [https://meo-no-server-uxi1.onrender.com/health](https://meo-no-server-uxi1.onrender.com/health) (`{"status":"ok"}`)
 
-### Vercel (Client) — gần xong
-- Đã deploy nhưng bị lỗi Output Directory có dấu cách thừa: `"dist "` → phải sửa thành `"dist"`
-- **Cần fix:** Settings → Build & Output Settings → Output Directory → sửa `dist ` thành `dist` → Redeploy
-- Env var `VITE_SOCKET_URL` chưa điền URL Render thật
+### Kết quả kiểm tra kết nối
+- ✅ **Frontend**: Load trang HTML, CSS, Assets thành công trên Vercel.
+- ✅ **Backend API**: `GET /health` trả về `200 OK`.
+- ✅ **Socket.IO Handshake**: Kết nối thành công từ origin Vercel tới Render server.
+- ✅ **Game Flow**: Test tạo phòng `create_room` qua Socket.IO hoạt động hoàn hảo.
 
 ---
 
-## Việc cần làm tiếp theo
+## Biến môi trường đã cấu hình
 
-1. **Render**: Đợi build xong → lấy URL `https://xxx.onrender.com`
-2. **Vercel**: Sửa Output Directory `dist ` → `dist` → Redeploy
-3. **Vercel**: Cập nhật `VITE_SOCKET_URL` = URL Render thật → Redeploy
-4. **Render**: Cập nhật `CORS_ORIGINS` = URL Vercel thật → Save
+| Nơi | Key | Value | Trạng thái |
+|---|---|---|---|
+| **Vercel** | `VITE_SOCKET_URL` | `https://meo-no-server-uxi1.onrender.com` | ✅ Đã cấu hình & build |
+| **Render** | `CORS_ORIGINS` | `https://meo-no-six.vercel.app` | ✅ Đã cho phép CORS |
 
 ---
 
-## Lưu ý quan trọng
+## Lưu ý khi chơi trên Render Free Tier
 
-> Render free tier **ngủ sau 15 phút** không dùng → lần đầu vào game chờ ~30 giây để server wake up. Bình thường!
+> 💡 **Lưu ý server "ngủ" (Spin down)**:
+> Gói Free của Render tự động tạm dừng sau 15 phút không có request. Nếu lâu không vào game, lần đầu truy cập người chơi chỉ cần đợi ~30–50 giây để server khởi động lại (wake up), sau đó game sẽ kết nối và chơi mượt mà bình thường!
 
-## Biến môi trường quan trọng
-
-| Nơi | Key | Value |
-|---|---|---|
-| Vercel | `VITE_SOCKET_URL` | URL Render (vd: `https://meo-no-server.onrender.com`) |
-| Render | `CORS_ORIGINS` | URL Vercel (vd: `https://meo-no.vercel.app`) |

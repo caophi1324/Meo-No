@@ -23,6 +23,12 @@ for (const image of new Set(createDeck(2).map((card) => card.image))) {
 
 console.log('PASS: both themes have art for the 150-card deck');
 
+for (const card of createDeck(2)) {
+  const file = path.join(PUBLIC, card.lolImage.replace(/^\//, ''));
+  if (!fs.existsSync(file)) throw new Error(`missing lol art: ${card.lolImage}`);
+}
+console.log('PASS: LoL theme has art for the 150-card deck');
+
 let server;
 let host;
 let guest;

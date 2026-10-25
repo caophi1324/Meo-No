@@ -24,6 +24,7 @@ const EFFECT_META = {
   steal_random: { label: 'CƯỚP BÀI', emoji: '🐱', color: '#F472B6', sound: 'playCat' },
   steal_specific: { label: 'ĐÒI BÀI', emoji: '🐱', color: '#F472B6', sound: 'playCat' },
   steal_discard: { label: 'LẤY BÀI HẠ', emoji: '🐱', color: '#F472B6', sound: 'playBeast' },
+  reaction_steal: { label: 'PHẢN ĐÒN', emoji: '🛡️', color: '#F472B6', sound: 'playBeast' },
   action_cancelled: { label: 'BỊ PHỦ NHẬN', emoji: '🚫', color: '#EF4444', sound: 'playNopeSlam' },
   exploded: { label: 'NỔ TUNG', emoji: '💥', color: '#EF4444', sound: null },
 };
@@ -59,6 +60,10 @@ function subtitleFor(effect, players) {
     }
     case 'action_cancelled':
       return `${owner} vừa bị chặn`;
+    case 'reaction_steal':
+      return effect.blocked
+        ? `${owner} bị chặn phản đòn`
+        : `${owner} 🛡️ ${target} (${effect.stolen || 0} lá)`;
     default:
       return owner;
   }

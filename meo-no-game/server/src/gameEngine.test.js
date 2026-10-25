@@ -5,6 +5,7 @@ import { CONFIG } from './constants.js';
 import { getDeckCounts, createDeck } from './deckBuilder.js';
 import { sanitizeStateForPlayer } from './stateSanitizer.js';
 import { CUSTOM_PHASE3_EFFECTS } from './customPhase3Effects.js';
+import { getTimeoutAction } from './turnTimer.js';
 import {
   BOOSTABLE_TYPES,
   BEAST_CARDS,
@@ -374,4 +375,269 @@ test('Mỗi hiệu ứng Phase 3 chạy được trên state xếp tay', () => {
     gs.discardPile = [card(CARD_TYPES.SKIP)];
     assert.doesNotThrow(() => handler(gs, 'p1', { targetPlayerId: 'p2' }), type);
   }
+});
+
+test('Chia Sẻ: người bị chọn tự chọn nửa bài, boost chọn hết', () => {
+  const { engine, gs } = setup();
+  const chia = card(CARD_TYPES.CHIA_SE);
+  gs.players[0].hand = [chia];
+  const victimHand = Array.from({ length: 6 }, () => card(CARD_TYPES.SKIP));
+  gs.players[1].hand = [...victimHand];
+
+  const result = playResolve(engine, gs, 'p1', [chia], { targetPlayerId: 'p2' });
+  assert.equal(result.response.type, 'choice_request');
+  assert.equal(result.response.playerId, 'p2');
+  assert.equal(gs.pendingChoice.kind, 'discard_half_pick');
+  assert.equal(gs.pendingChoice.playerId, 'p2');
+  assert.equal(gs.pendingChoice.count, 3);
+  assert.equal(gs.pendingChoice.cards.length, 6);
+  assert.equal(sanitizeStateForPlayer(gs, 'p1').choice, null);
+  assert.equal(sanitizeStateForPlayer(gs, 'p2').choice.kind, 'discard_half_pick');
+
+  const picked = victimHand.slice(0, 3).map(c => c.id);
+  const pickedResult = engine.handleChoiceResponse(gs, 'p2', gs.pendingChoice.id, picked);
+  assert.equal(pickedResult.response.type, 'choice_resolved');
+  assert.equal(gs.players[1].hand.length, 3);
+  assert.equal(gs.discardPile.length, 4); // lá Chia Sẻ + 3 lá bị hủy
+
+  const boosted = setup();
+  const boost = card(CARD_TYPES.TANG_CUONG);
+  const chia2 = card(CARD_TYPES.CHIA_SE);
+  boosted.gs.players[0].hand = [boost, chia2];
+  boosted.gs.players[1].hand = Array.from({ length: 6 }, () => card(CARD_TYPES.SKIP));
+  playResolve(boosted.engine, boosted.gs, 'p1', [boost, chia2], { targetPlayerId: 'p2' });
+  assert.equal(boosted.gs.pendingChoice.kind, 'discard_half_pick');
+  assert.equal(boosted.gs.pendingChoice.count, 6);
+});
+
+test('Hủy Bài: người đánh chọn 2/4 lá úp, index sai bị từ chối', () => {
+  const { engine, gs } = setup();
+  const huy = card(CARD_TYPES.HUY_BAI);
+  gs.players[0].hand = [huy];
+  gs.players[1].hand = Array.from({ length: 4 }, () => card(CARD_TYPES.SKIP));
+
+  const result = playResolve(engine, gs, 'p1', [huy], { targetPlayerId: 'p2' });
+  assert.equal(result.response.type, 'choice_request');
+  assert.equal(gs.pendingChoice.kind, 'destroy_pick');
+  assert.equal(gs.pendingChoice.playerId, 'p1');
+  assert.equal(gs.pendingChoice.cardCount, 4);
+  assert.equal(gs.pendingChoice.count, 2);
+
+  const ownerView = sanitizeStateForPlayer(gs, 'p1');
+  assert.equal(ownerView.choice.kind, 'destroy_pick');
+  assert.equal(ownerView.choice.cards, null);
+  assert.equal(ownerView.choice.cardCount, 4);
+  assert.equal(sanitizeStateForPlayer(gs, 'p2').choice, null);
+
+  assert.match(engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, [0, 0]).response.error, /đủ 2 lá/);
+  assert.match(engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, [0, 9]).response.error, /hợp lệ/);
+  assert.equal(gs.players[1].hand.length, 4);
+
+  const picked = engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, [0, 2]);
+  assert.equal(picked.response.type, 'choice_resolved');
+  assert.equal(gs.players[1].hand.length, 2);
+  assert.equal(gs.discardPile.length, 3); // lá Hủy Bài + 2 lá bị hủy
+
+  const boosted = setup();
+  const boost = card(CARD_TYPES.TANG_CUONG);
+  const huy2 = card(CARD_TYPES.HUY_BAI);
+  boosted.gs.players[0].hand = [boost, huy2];
+  boosted.gs.players[1].hand = Array.from({ length: 6 }, () => card(CARD_TYPES.SKIP));
+  playResolve(boosted.engine, boosted.gs, 'p1', [boost, huy2], { targetPlayerId: 'p2' });
+  assert.equal(boosted.gs.pendingChoice.count, 4);
+  boosted.engine.handleChoiceResponse(boosted.gs, 'p1', boosted.gs.pendingChoice.id, [0, 1, 2, 3]);
+  assert.equal(boosted.gs.players[1].hand.length, 2);
+});
+
+test('Móc Rác phản đòn: chọn lá, rồi tự chọn 2 lá úp từ người cướp', () => {
+  const { engine, gs } = setup();
+  const steal = card(CARD_TYPES.STEAL_CARD);
+  const moc = card(CARD_TYPES.MOC_RAC);
+  gs.players[0].hand = [steal, card(CARD_TYPES.SKIP), card(CARD_TYPES.SKIP)];
+  gs.players[1].hand = [moc, card(CARD_TYPES.SKIP)];
+
+  playResolve(engine, gs, 'p1', [steal], { targetPlayerId: 'p2' });
+  engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, 1);
+  assert.equal(gs.pendingChoice.kind, 'reaction');
+  assert.equal(gs.pendingChoice.playerId, 'p2');
+
+  const offered = engine.handleChoiceResponse(gs, 'p2', gs.pendingChoice.id, moc.id);
+  assert.equal(offered.response.type, 'choice_request');
+  assert.equal(gs.pendingChoice.kind, 'reaction_pick');
+  assert.equal(gs.pendingChoice.playerId, 'p2');
+  assert.equal(gs.pendingChoice.targetPlayerId, 'p1');
+  assert.equal(gs.pendingChoice.count, 2);
+  assert.equal(gs.pendingChoice.cardCount, 3);
+  assert.equal(sanitizeStateForPlayer(gs, 'p2').choice.cards, null);
+
+  const stolen = engine.handleChoiceResponse(gs, 'p2', gs.pendingChoice.id, [0, 1]);
+  assert.equal(stolen.response.type, 'reaction_steal');
+  assert.equal(gs.players[1].hand.length, 2);
+  assert.equal(gs.players[0].hand.length, 1);
+
+  const direct = setup();
+  const cardDirect = card(CARD_TYPES.MOC_RAC);
+  direct.gs.players[0].hand = [cardDirect];
+  const blocked = direct.engine.playCard(direct.gs, 'p1', [cardDirect.id]);
+  assert.match(blocked.response.error, /vừa bị cướp/);
+
+  const guarded = setup();
+  const steal2 = card(CARD_TYPES.STEAL_CARD);
+  const moc2 = card(CARD_TYPES.MOC_RAC);
+  guarded.gs.players[0].hand = [
+    steal2,
+    card(CARD_TYPES.SKIP),
+    card(CARD_TYPES.SKIP),
+    card(CARD_TYPES.VUONG_NIEM),
+  ];
+  guarded.gs.players[1].hand = [moc2, card(CARD_TYPES.SKIP)];
+  playResolve(guarded.engine, guarded.gs, 'p1', [steal2], { targetPlayerId: 'p2' });
+  guarded.engine.handleChoiceResponse(guarded.gs, 'p1', guarded.gs.pendingChoice.id, 1);
+  const stopped = guarded.engine.handleChoiceResponse(guarded.gs, 'p2', guarded.gs.pendingChoice.id, moc2.id);
+  assert.equal(stopped.response.type, 'reaction_steal');
+  assert.equal(stopped.response.stolen, 0);
+  assert.equal(stopped.response.blocked, true);
+  assert.equal(guarded.gs.pendingChoice, null);
+});
+
+test('Sao Chép không random mục tiêu: mở picker khi target cũ không hợp lệ', () => {
+  const { engine, gs } = setup(3);
+  const sao = card(CARD_TYPES.SAO_CHEP);
+  gs.players[0].hand = [sao];
+  gs.players[1].hand = [card(CARD_TYPES.SKIP)];
+  gs.players[2].hand = [card(CARD_TYPES.SKIP)];
+  gs.players[2].lastAction = { type: CARD_TYPES.FAVOR, payload: {} };
+
+  const result = playResolve(engine, gs, 'p1', [sao]);
+  assert.equal(result.response.type, 'choice_request');
+  assert.equal(gs.pendingChoice.kind, 'copy_target');
+  assert.equal(gs.pendingChoice.playerId, 'p1');
+  assert.deepEqual(gs.pendingChoice.cards.map(c => c.id).sort(), ['p2', 'p3']);
+
+  engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, 'p2');
+  assert.equal(gs.waitingFor, 'favor_give');
+  assert.equal(gs.favorTarget, 'p2');
+  assert.equal(gs.favorRequester, 'p1');
+});
+
+test('Giờ Giải Lao: người đánh tự chọn 3 lá úp để xem', () => {
+  const { engine, gs } = setup();
+  const gio = card(CARD_TYPES.GIO_GIAI_LAO);
+  gs.players[0].hand = [gio];
+  const targetHand = Array.from({ length: 5 }, () => card(CARD_TYPES.SKIP));
+  gs.players[1].hand = [...targetHand];
+
+  const result = playResolve(engine, gs, 'p1', [gio], { targetPlayerId: 'p2' });
+  assert.equal(result.response.type, 'choice_request');
+  assert.equal(gs.pendingChoice.kind, 'reveal_pick');
+  assert.equal(gs.pendingChoice.playerId, 'p1');
+  assert.equal(gs.pendingChoice.cardCount, 5);
+  assert.equal(gs.pendingChoice.count, 3);
+  assert.equal(sanitizeStateForPlayer(gs, 'p1').choice.cards, null);
+  assert.equal(sanitizeStateForPlayer(gs, 'p2').choice, null);
+
+  const seen = engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, [0, 2, 4]);
+  assert.equal(seen.response.type, 'see_the_future');
+  assert.equal(seen.response.forPlayer, 'p1');
+  assert.equal(seen.response.cards.length, 3);
+  assert.equal(gs.players[1].hand.length, 5);
+  assert.equal(gs.players[1].hand[0].id, targetHand[0].id);
+
+  const boosted = setup();
+  const boost = card(CARD_TYPES.TANG_CUONG);
+  const gio2 = card(CARD_TYPES.GIO_GIAI_LAO);
+  boosted.gs.players[0].hand = [boost, gio2];
+  boosted.gs.players[1].hand = Array.from({ length: 4 }, () => card(CARD_TYPES.SKIP));
+  playResolve(boosted.engine, boosted.gs, 'p1', [boost, gio2], { targetPlayerId: 'p2' });
+  assert.equal(boosted.gs.pendingChoice.kind, 'reveal_pick');
+  assert.equal(boosted.gs.pendingChoice.count, 4);
+});
+
+test('Tiệc Tùng: từng người tự chọn 1 lá úp theo vòng', () => {
+  const { engine, gs } = setup(3);
+  const party = card(CARD_TYPES.TIEC_TUNG);
+  const p1Card = card(CARD_TYPES.SKIP);
+  const p2Card = card(CARD_TYPES.SKIP);
+  const p3Card = card(CARD_TYPES.SKIP);
+  gs.players[0].hand = [party, p1Card];
+  gs.players[1].hand = [p2Card];
+  gs.players[2].hand = [p3Card];
+
+  const result = playResolve(engine, gs, 'p1', [party]);
+  assert.equal(result.response.type, 'choice_request');
+  assert.equal(gs.pendingChoice.kind, 'party_pick');
+  assert.equal(gs.pendingChoice.playerId, 'p1');
+  assert.equal(sanitizeStateForPlayer(gs, 'p2').choice, null);
+
+  engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, p1Card.id);
+  assert.equal(gs.drawPile[0].id, p1Card.id);
+  assert.equal(gs.pendingChoice.kind, 'party_pick');
+  assert.equal(gs.pendingChoice.playerId, 'p2');
+
+  engine.handleChoiceResponse(gs, 'p2', gs.pendingChoice.id, p2Card.id);
+  assert.equal(gs.drawPile[0].id, p2Card.id);
+  assert.equal(gs.pendingChoice.playerId, 'p3');
+
+  const done = engine.handleChoiceResponse(gs, 'p3', gs.pendingChoice.id, p3Card.id);
+  assert.equal(done.response.type, 'choice_resolved');
+  assert.equal(gs.pendingParty, null);
+  assert.equal(gs.waitingFor, null);
+  assert.equal(gs.drawPile.length, 3);
+  assert.equal(gs.drawPile[0].id, p3Card.id);
+  assert.equal(gs.players[0].hand.length, 0);
+  assert.equal(gs.players[1].hand.length, 0);
+  assert.equal(gs.players[2].hand.length, 0);
+});
+
+test('Mỗi ván có đúng 1 Nạp Nhiên Liệu', () => {
+  for (let n = 2; n <= 5; n++) {
+    const counts = getDeckCounts(n);
+    assert.equal(counts[CARD_TYPES.NAP_NHIEN_LIEU], 1);
+    assert.equal(Object.values(counts).reduce((sum, x) => sum + x, 0), 150);
+  }
+});
+
+test('Bộ Liên Minh: 150 lá, mỗi lá một tướng riêng', () => {
+  const deck = createDeck(4);
+  assert.equal(deck.length, 150);
+  assert.equal(new Set(deck.map(c => c.lolImage)).size, 150);
+  assert.ok(deck.every(c => c.lolImage?.startsWith('/cards/lol/') && c.lolName));
+});
+
+test('Choice mới có giá trị timeout/bot hợp lệ', () => {
+  const { gs } = setup();
+  gs.waitingFor = 'choice';
+
+  gs.pendingChoice = { id: 'c1', playerId: 'p1', kind: 'destroy_pick', cardCount: 5, count: 2, targetPlayerId: 'p2' };
+  let action = getTimeoutAction(gs, 'p1');
+  assert.equal(action.type, 'choice_response');
+  assert.equal(action.value.length, 2);
+  assert.equal(new Set(action.value).size, 2);
+  assert.ok(action.value.every(i => i >= 0 && i < 5));
+
+  gs.pendingChoice = { id: 'c2', playerId: 'p1', kind: 'reaction_pick', cardCount: 4, count: 2 };
+  action = getTimeoutAction(gs, 'p1');
+  assert.equal(action.value.length, 2);
+  assert.ok(action.value.every(i => i >= 0 && i < 4));
+
+  const hand = Array.from({ length: 6 }, () => card(CARD_TYPES.SKIP));
+  gs.pendingChoice = { id: 'c3', playerId: 'p1', kind: 'discard_half_pick', count: 3, cards: hand };
+  action = getTimeoutAction(gs, 'p1');
+  assert.equal(action.value.length, 3);
+  assert.equal(new Set(action.value).size, 3);
+  assert.ok(action.value.every(id => hand.some(c => c.id === id)));
+
+  gs.pendingChoice = { id: 'c5', playerId: 'p1', kind: 'party_pick', count: 1, cards: [{ id: 'a' }, { id: 'b' }] };
+  action = getTimeoutAction(gs, 'p1');
+  assert.ok(['a', 'b'].includes(action.value));
+
+  gs.pendingChoice = { id: 'c6', playerId: 'p1', kind: 'reveal_pick', cardCount: 4, count: 3 };
+  action = getTimeoutAction(gs, 'p1');
+  assert.equal(action.value.length, 3);
+  assert.equal(new Set(action.value).size, 3);
+  assert.ok(action.value.every(i => i >= 0 && i < 4));
+
+  gs.pendingChoice = { id: 'c7', playerId: 'p1', kind: 'copy_target', cards: [{ id: 'p2' }, { id: 'p3' }] };
+  action = getTimeoutAction(gs, 'p1');
+  assert.ok(['p2', 'p3'].includes(action.value));
 });

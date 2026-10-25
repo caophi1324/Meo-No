@@ -6,6 +6,8 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
   // Danger indicator if deck has very few cards
   const isDanger = count > 0 && count <= 8;
   const deckTheme = useGameStore((s) => s.deckTheme);
+  const isLol = deckTheme === 'lol';
+  const topImage = isLol && topCard?.lolImage ? topCard.lolImage : topCard?.image;
 
   return (
     <div className="flex flex-col items-center gap-2 group">
@@ -68,9 +70,10 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
         >
           {topCard ? (
             <img
-              src={themedImage(topCard.image || '/cards/custom/MN001.jpg', deckTheme)}
+              src={themedImage(topImage || '/cards/custom/MN001.jpg', deckTheme)}
               alt={topCard.nameVN || 'Imploding Kitten mặt ngửa'}
               className="w-full h-full object-cover rounded-xl"
+              style={isLol ? { objectPosition: 'center 20%' } : undefined}
             />
           ) : (
             <img

@@ -1,8 +1,8 @@
 import { CARD_TYPES, BOOSTABLE_TYPES, getPetCombo } from '../../shared/cardTypes.js';
 import { createDeck, shuffleDeck, dealCards } from './deckBuilder.js';
 import * as cardEffects from './cardEffects.js';
-import { advanceTurn } from './cardEffects.js';
-import { CUSTOM_PHASE3_EFFECTS } from './customPhase3Effects.js';
+import { advanceTurn, setChoice } from './cardEffects.js';
+import { CUSTOM_PHASE3_EFFECTS, openPartyChoice } from './customPhase3Effects.js';
 
 const NOPEABLE_TYPES = [
   CARD_TYPES.ATTACK,
@@ -115,6 +115,7 @@ export class GameEngine {
       turnEndsAt: null,
       gameLog: [],
       pendingChoice: null,
+      pendingParty: null,
       napNhienLieuUsed: false,
     };
     return this.gameState;
@@ -476,7 +477,7 @@ export class GameEngine {
           type: 'imploding_flipped',
           playerId,
           playerName: player.name,
-          card: { id: drawnCard.id, type: drawnCard.type, nameVN: drawnCard.nameVN, emoji: drawnCard.emoji, image: drawnCard.image, faceUp: true },
+          card: { id: drawnCard.id, type: drawnCard.type, nameVN: drawnCard.nameVN, emoji: drawnCard.emoji, image: drawnCard.image, lolImage: drawnCard.lolImage, lolName: drawnCard.lolName, faceUp: true },
         },
       };
     }
@@ -805,11 +806,35 @@ export class GameEngine {
           return { gameState, response: { error: 'Chưa có lá bài nào để Sao Chép' } };
         }
         const payload = { ...(last.payload || {}) };
-        const target = gameState.players.find(p => p.id === payload.targetPlayerId);
-        if (target && (!target.isAlive || target.id === pa.playerId)) delete payload.targetPlayerId;
-        if ((TARGET_REQUIRED_TYPES.has(last.type) || last.type === CARD_TYPES.FAVOR) && !payload.targetPlayerId) {
-          const candidates = gameState.players.filter(p => p.isAlive && p.id !== pa.playerId && p.hand.length > 0);
-          payload.targetPlayerId = candidates[Math.floor(Math.random() * candidates.length)]?.id;
+        const needsTarget =
+          TARGET_REQUIRED_TYPES.has(last.type) ||
+          last.type === CARD_TYPES.FAVOR ||
+          last.type === CARD_TYPES.SUPER_DESTROY;
+        if (needsTarget) {
+          const needsHand =
+            TARGET_NEEDS_HAND.has(last.type) ||
+            last.type === CARD_TYPES.FAVOR ||
+            last.type === CARD_TYPES.SUPER_DESTROY;
+          const candidates = gameState.players.filter(
+            p => p.isAlive && p.id !== pa.playerId && (!needsHand || p.hand.length > 0)
+          );
+          const currentTarget = candidates.find(p => p.id === payload.targetPlayerId);
+          if (!currentTarget) {
+            if (candidates.length === 0) {
+              return { gameState, response: { error: 'Không có mục tiêu hợp lệ để Sao Chép' } };
+            }
+            setChoice(gameState, {
+              playerId: pa.playerId,
+              kind: 'copy_target',
+              sourceType: CARD_TYPES.SAO_CHEP,
+              count: 1,
+              cards: candidates.map(p => ({ id: p.id, name: p.name })),
+              copyAction: { type: last.type, payload: { ...payload } },
+            });
+            gameState.gameLog.push(`🐊 ${actor?.name || 'Người chơi'} đang chọn mục tiêu để Sao Chép ${last.type}.`);
+            return { gameState, response: { type: 'choice_request', playerId: pa.playerId } };
+          }
+          payload.targetPlayerId = currentTarget.id;
         }
         gameState.gameLog.push(`🐊 Người chơi đã Sao Chép hiệu ứng ${last.type}.`);
         return this.runAction(gameState, {
@@ -935,6 +960,114 @@ export class GameEngine {
       return { gameState, response: { type: 'choice_resolved', playerId } };
     }
 
+    if (choice.kind === 'discard_half_pick') {
+      const needed = choice.count || 1;
+      const ids = Array.isArray(value) ? [...new Set(value.map(String))] : [];
+      if (ids.length !== needed) return fail(`Phải chọn đủ ${needed} lá`);
+      const indexes = [];
+      for (const id of ids) {
+        const idx = player.hand.findIndex(c => c.id === id);
+        if (idx === -1) return fail('Lá bài không có trên tay');
+        indexes.push(idx);
+      }
+      indexes.sort((a, b) => b - a).forEach(idx => {
+        gameState.discardPile.push(player.hand.splice(idx, 1)[0]);
+      });
+      gameState.pendingChoice = null;
+      gameState.waitingFor = null;
+      gameState.gameLog.push(`🍕 ${player.name} đã tự hủy ${ids.length} lá.`);
+      return { gameState, response: { type: 'choice_resolved', playerId } };
+    }
+
+    if (choice.kind === 'party_pick') {
+      const id = String(Array.isArray(value) ? value[0] : value);
+      const idx = player.hand.findIndex(c => c.id === id);
+      if (idx === -1) return fail('Lá bài không có trên tay');
+      const [card] = player.hand.splice(idx, 1);
+      gameState.drawPile.unshift(card);
+      gameState.pendingChoice = null;
+      gameState.waitingFor = null;
+      if (gameState.pendingParty) gameState.pendingParty.index += 1;
+      gameState.gameLog.push(`🎂 ${player.name} đã úp 1 lá lên đầu chồng bài.`);
+      return openPartyChoice(gameState);
+    }
+
+    if (choice.kind === 'reveal_pick') {
+      const target = gameState.players.find(p => p.id === choice.targetPlayerId);
+      if (!target) return fail('Người chơi mục tiêu không tồn tại');
+      const needed = choice.count || 1;
+      const raw = Array.isArray(value) ? value : [value];
+      const indexes = raw.map(Number);
+      if (
+        indexes.length !== needed ||
+        new Set(indexes).size !== indexes.length ||
+        indexes.some(i => !Number.isInteger(i) || i < 0 || i >= target.hand.length)
+      ) {
+        return fail(`Phải chọn đủ ${needed} lá úp hợp lệ`);
+      }
+      const cards = indexes.map(i => target.hand[i]).map(cardEffects.cardView);
+      gameState.pendingChoice = null;
+      gameState.waitingFor = null;
+      gameState.gameLog.push(`👁️ ${player.name} đã xem ${needed} lá úp của ${target.name}.`);
+      return {
+        gameState,
+        response: {
+          type: 'see_the_future',
+          forPlayer: playerId,
+          sourceType: CARD_TYPES.GIO_GIAI_LAO,
+          cards,
+        },
+      };
+    }
+
+    if (choice.kind === 'destroy_pick' || choice.kind === 'reaction_pick') {
+      const target = gameState.players.find(p => p.id === choice.targetPlayerId);
+      if (!target) return fail('Người chơi mục tiêu không tồn tại');
+      const needed = choice.count || 1;
+      const raw = Array.isArray(value) ? value : [value];
+      const indexes = raw.map(Number);
+      if (
+        indexes.length !== needed ||
+        new Set(indexes).size !== indexes.length ||
+        indexes.some(i => !Number.isInteger(i) || i < 0 || i >= target.hand.length)
+      ) {
+        return fail(`Phải chọn đủ ${needed} lá úp hợp lệ`);
+      }
+      indexes.sort((a, b) => b - a);
+      if (choice.kind === 'destroy_pick') {
+        indexes.forEach(idx => gameState.discardPile.push(target.hand.splice(idx, 1)[0]));
+      } else {
+        indexes.forEach(idx => player.hand.push(target.hand.splice(idx, 1)[0]));
+      }
+      gameState.pendingChoice = null;
+      gameState.waitingFor = null;
+      const verb = choice.kind === 'destroy_pick' ? 'hủy' : 'cướp lại';
+      gameState.gameLog.push(`🛡️ ${player.name} đã ${verb} ${needed} lá úp từ ${target.name}.`);
+      return {
+        gameState,
+        response:
+          choice.kind === 'destroy_pick'
+            ? { type: 'choice_resolved', playerId }
+            : { type: 'reaction_steal', playerId, targetPlayerId: target.id, stolen: needed },
+      };
+    }
+
+    if (choice.kind === 'copy_target') {
+      const targetId = String(value);
+      const allowed = (choice.cards || []).some(c => c.id === targetId);
+      const copy = choice.copyAction;
+      if (!allowed || !copy) return fail('Mục tiêu Sao Chép không hợp lệ');
+      gameState.pendingChoice = null;
+      gameState.waitingFor = null;
+      return this.runAction(gameState, {
+        type: copy.type,
+        playerId,
+        cardIds: [],
+        payload: { ...copy.payload, targetPlayerId: targetId },
+        copying: true,
+      });
+    }
+
     if (choice.kind === 'steal_pick') {
       const target = gameState.players.find(p => p.id === choice.targetPlayerId);
       const index = Number(value);
@@ -970,19 +1103,36 @@ export class GameEngine {
         c => c.id === value && [CARD_TYPES.TRA_DUA, CARD_TYPES.MOC_RAC].includes(c.type) && !c.disabled
       );
       if (idx === -1) return fail('Bạn không có lá phản đòn hợp lệ');
-      gameState.pendingChoice = null;
-      gameState.waitingFor = null;
       const [reactionCard] = player.hand.splice(idx, 1);
       gameState.discardPile.push(reactionCard);
-      let stolen = 0;
-      for (let i = 0; i < 2 && thief.hand.length > 0; i++) {
-        const pick = Math.floor(Math.random() * thief.hand.length);
-        const [card] = thief.hand.splice(pick, 1);
-        player.hand.push(card);
-        stolen += 1;
+
+      if (cardEffects.takeVuongNiem(gameState, thief)) {
+        gameState.pendingChoice = null;
+        gameState.waitingFor = null;
+        gameState.gameLog.push(`👑 ${thief.name} đã chặn phản đòn của ${player.name}.`);
+        return {
+          gameState,
+          response: { type: 'reaction_steal', playerId, targetPlayerId: thief.id, stolen: 0, blocked: true },
+        };
       }
-      gameState.gameLog.push(`🦍 ${player.name} phản đòn và cướp lại ${stolen} lá từ ${thief.name}.`);
-      return { gameState, response: { type: 'reaction_steal', playerId, targetPlayerId: thief.id, stolen } };
+
+      const count = Math.min(2, thief.hand.length);
+      if (count === 0) {
+        gameState.pendingChoice = null;
+        gameState.waitingFor = null;
+        return { gameState, response: { type: 'reaction_steal', playerId, targetPlayerId: thief.id, stolen: 0 } };
+      }
+      setChoice(gameState, {
+        playerId: player.id,
+        kind: 'reaction_pick',
+        sourceType: reactionCard.type,
+        targetPlayerId: thief.id,
+        targetName: thief.name,
+        cardCount: thief.hand.length,
+        count,
+      });
+      gameState.gameLog.push(`🛡️ ${player.name} phản đòn và đang chọn ${count} lá úp từ ${thief.name}.`);
+      return { gameState, response: { type: 'choice_request', playerId: player.id } };
     }
 
     return fail('Loại lựa chọn không được hỗ trợ');

@@ -3,7 +3,7 @@ import { CONFIG } from './constants.js';
 import { CARD_TYPES } from '../../shared/cardTypes.js';
 import { sanitizeStateForPlayer } from './stateSanitizer.js';
 import { BotAI } from './botAI.js';
-import { getTimeoutAction, getTurnTimeoutPlan } from './turnTimer.js';
+import { defaultChoiceValue, getTimeoutAction, getTurnTimeoutPlan } from './turnTimer.js';
 
 // ============================================================
 // Điều phối hành động chung cho CẢ người thật lẫn Bot (Bước 10)
@@ -113,7 +113,7 @@ function emitSideEffects(io, room, response) {
       target: response.target,
     });
   }
-  if (response.type === 'see_the_future' && response.forPlayer) {
+  if (response.type === 'see_the_future' && response.forPlayer && response.sourceType !== CARD_TYPES.GIO_GIAI_LAO) {
     const bot = room.bots?.[response.forPlayer];
     if (bot) {
       bot.memory.topCards = response.cards;
@@ -368,19 +368,6 @@ function findAutoAction(room) {
     if (cur && auto(cur.id)) return { playerId: cur.id };
   }
   return null;
-}
-
-function defaultChoiceValue(choice) {
-  if (choice.kind === 'search_top5') return choice.cards?.[0]?.id ?? null;
-  if (choice.kind === 'revive_cards') {
-    return (choice.cards || []).slice(0, choice.count || 2).map(c => c.id);
-  }
-  if (choice.kind === 'reaction') return 'pass';
-  if (choice.kind === 'steal_pick') {
-    return Math.floor(Math.random() * Math.max(1, choice.cardCount || 1));
-  }
-  if (choice.kind === 'disable_card') return 0;
-  return 0;
 }
 
 function zombieDecide(view) {

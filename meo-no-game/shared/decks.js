@@ -13,6 +13,12 @@ export const DECK_THEMES = [
     preview: '/cards/anime/MN006.jpg',
   },
   {
+    id: 'lol',
+    name: 'Liên Minh',
+    description: 'Tướng Liên Minh Huyền Thoại',
+    preview: '/cards/lol/Ahri.jpg',
+  },
+  {
     id: 'halloween',
     name: 'Halloween',
     description: 'Sắp ra mắt',
@@ -41,8 +47,19 @@ const ANIME_EXTRA_IMAGES = {
   '/cards/huou-sao.svg': '/cards/anime/beasts/huou-sao.jpg',
 };
 
+// Ảnh tĩnh (preview/lobby) cho theme LMHT; trong ván dùng card.lolImage riêng từng lá.
+const LOL_PREVIEW_IMAGES = {
+  '/cards/custom/MN006.jpg': '/cards/lol/Ahri.jpg',
+  '/cards/custom/MN003.jpg': '/cards/lol/Garen.jpg',
+  '/cards/custom/MN012.jpg': '/cards/lol/Jinx.jpg',
+  '/cards/custom/MN022.jpg': '/cards/lol/Lux.jpg',
+  '/cards/cao-lua.svg': '/cards/lol/Darius.jpg',
+};
+
 export function themedImage(image, theme) {
-  if (!image || theme !== 'anime') return image;
+  if (!image) return image;
+  if (theme === 'lol') return LOL_PREVIEW_IMAGES[image] || image;
+  if (theme !== 'anime') return image;
   // shortcut: every /cards/custom/MNxxx.jpg needs an anime twin; add both when adding cards.
   if (image.startsWith('/cards/custom/MN')) {
     return image.replace('/cards/custom/', '/cards/anime/');

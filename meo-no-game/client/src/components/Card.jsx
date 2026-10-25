@@ -15,10 +15,11 @@ export default function Card({
 }) {
   const cardInfo = card ? (CARD_DATA[card.type] || card) : {};
   const deckTheme = useGameStore((s) => s.deckTheme);
+  const isLol = deckTheme === 'lol';
+  const cardImage = isLol && card?.lolImage ? card.lolImage : cardInfo.image;
   const borderColor = cardInfo.borderColor || '#64748B';
   const glowColor = cardInfo.glowColor || 'rgba(100, 116, 139, 0.3)';
   const headerBg = cardInfo.headerBg || 'from-slate-700 to-slate-800';
-  const accentColor = cardInfo.accentColor || '#CBD5E1';
   const interactive = !disabled && !!onClick;
   const keyboardProps = interactive
     ? {
@@ -31,7 +32,7 @@ export default function Card({
           }
         },
         'aria-pressed': selected,
-        'aria-label': `${cardInfo.nameVN || 'Lá bài'}${selected ? ', đang chọn' : highlighted ? ', có thể dùng' : ''}`,
+        'aria-label': `${cardInfo.nameVN || 'Lá bài'}${isLol && card?.lolName ? ` (${card.lolName})` : ''}${selected ? ', đang chọn' : highlighted ? ', có thể dùng' : ''}`,
       }
     : {};
 
@@ -52,7 +53,7 @@ export default function Card({
         whileHover={!disabled && onClick ? { scale: 1.05, y: -4 } : {}}
         whileTap={!disabled && onClick ? { scale: 0.96 } : {}}
         onClick={disabled ? undefined : onClick}
-        className={`relative select-none flex-shrink-0 cursor-pointer overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${sizeClasses} ${disabled ? 'opacity-50 grayscale-[0.35] ring-2 ring-red-500/80' : ''} ${className}`}
+        className={`relative select-none flex-shrink-0 cursor-pointer overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${sizeClasses} ${selected ? 'ring-4 ring-yellow-400 ring-offset-2 ring-offset-slate-950 z-20' : ''} ${disabled ? 'opacity-50 grayscale-[0.35] ring-2 ring-red-500/80' : ''} ${className}`}
         style={{
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0,0,0,0.3)',
           borderColor: disabled ? '#EF4444' : '#D97706',
@@ -65,12 +66,17 @@ export default function Card({
         />
         {/* Subtle 3D Card Edge Highlight */}
         <div className="absolute inset-0 rounded-xl pointer-events-none border border-white/20 shadow-inner" />
+        {selected && (
+          <div className="absolute right-1 top-1 z-30 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-yellow-400 text-xs font-black text-slate-950 shadow-md">
+            ✓
+          </div>
+        )}
         {disabled && <div className="pointer-events-none absolute inset-0 z-40 bg-slate-950/25" />}
       </motion.div>
     );
   }
 
-  if (cardInfo.imageOnly && cardInfo.image) {
+  if (cardInfo.imageOnly && cardImage) {
     return (
       <motion.div
         {...keyboardProps}
@@ -92,11 +98,22 @@ export default function Card({
         style={{ borderColor: disabled ? '#EF4444' : selected ? '#FACC15' : borderColor }}
       >
         <img
-          src={themedImage(cardInfo.image, deckTheme)}
+          src={themedImage(cardImage, deckTheme)}
           alt={cardInfo.nameVN || card?.name || 'Lá bài'}
           className="h-full w-full object-cover"
+          style={isLol ? { objectPosition: 'center 20%' } : undefined}
           loading="lazy"
         />
+        {isLol && (
+          <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent px-1.5 pb-1 pt-6 text-center">
+            <div className="truncate text-[9px] font-black uppercase tracking-wide text-white">
+              {cardInfo.nameVN || card?.name || 'Lá bài'}
+            </div>
+            {card?.lolName && (
+              <div className="truncate text-[7px] font-bold text-amber-300">{card.lolName}</div>
+            )}
+          </div>
+        )}
         {selected && (
           <div className="absolute right-1 top-1 z-30 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-yellow-400 text-xs font-black text-slate-950 shadow-md">
             ✓
@@ -175,10 +192,16 @@ export default function Card({
       >
         <span className="text-[10px] sm:text-xs leading-none">{cardInfo.emoji || '🃏'}</span>
         <span className="font-extrabold uppercase tracking-wider text-[8px] sm:text-[9px] md:text-[10px] text-white font-display truncate px-0.5 drop-shadow">
-          {cardInfo.badgeText || cardInfo.nameVN}
+          {cardInfo.nameVN || cardInfo.badgeText}
         </span>
         <span className="text-[10px] sm:text-xs leading-none">{cardInfo.emoji || '🃏'}</span>
       </div>
+
+      {isLol && card?.lolName && (
+        <div className="w-full px-1 text-center text-[7px] font-bold uppercase tracking-wider text-amber-300/90 truncate">
+          {card.lolName}
+        </div>
+      )}
 
       {/* Khung hình minh họa trung tâm */}
       <div className="flex-1 w-full px-1 sm:px-1.5 py-0.5 sm:py-1 flex items-center justify-center relative overflow-hidden">
@@ -188,34 +211,20 @@ export default function Card({
             background: `radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.3) 100%)`,
           }}
         >
-          {cardInfo.image ? (
+          {cardImage ? (
             <img
-              src={themedImage(cardInfo.image, deckTheme)}
-              alt={cardInfo.nameVN}
-              className="w-full h-full object-contain filter drop-shadow group-hover:scale-105 transition-transform duration-300"
+              src={themedImage(cardImage, deckTheme)}
+              alt={`${cardInfo.nameVN}${isLol && card?.lolName ? ` — ${card.lolName}` : ''}`}
+              className={`w-full h-full filter drop-shadow group-hover:scale-105 transition-transform duration-300 ${
+                isLol ? 'object-cover' : 'object-contain'
+              }`}
+              style={isLol ? { objectPosition: 'center 30%' } : undefined}
               loading="lazy"
             />
           ) : (
             <div className="text-3xl">{cardInfo.emoji || '🐱'}</div>
           )}
         </div>
-      </div>
-
-      {/* Phần chân bài: Tên lá bài & Tip ngắn */}
-      <div className="w-full px-1 sm:px-2 pb-1 sm:pb-1.5 pt-0.5 flex flex-col items-center text-center bg-black/40 backdrop-blur-xs border-t border-white/10">
-        <div
-          className="font-black text-[10px] sm:text-xs md:text-sm leading-tight truncate w-full font-display drop-shadow"
-          style={{ color: accentColor }}
-        >
-          {cardInfo.nameVN || 'Lá bài'}
-        </div>
-
-        {/* Short rule tip (chỉ hiển thị ở size normal) */}
-        {size === 'normal' && cardInfo.shortTip && (
-          <div className="text-[8px] sm:text-[9px] text-slate-300/90 leading-tight mt-0.5 line-clamp-1 w-full font-medium">
-            {cardInfo.shortTip}
-          </div>
-        )}
       </div>
 
       {/* Khung viền 3D nổi viền trong */}

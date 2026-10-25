@@ -1,6 +1,17 @@
 import { CARD_TYPES, CAT_CARDS } from '../../shared/cardTypes.js';
 import { shuffleDeck } from './deckBuilder.js';
 
+// Dữ liệu lá bài an toàn để gửi cho người được xem/chọn (không thêm gì bí mật).
+export function cardView(card) {
+  return {
+    id: card.id,
+    type: card.type,
+    nameVN: card.nameVN,
+    emoji: card.emoji,
+    ...(card.lolImage ? { lolImage: card.lolImage, lolName: card.lolName } : {}),
+  };
+}
+
 // ============================================================
 // Chuyển lượt sang người kế tiếp còn sống.
 // turnsForNext = số lượt người kế phải đi (Tấn Công → 2).
@@ -152,7 +163,7 @@ export function handleShuffle(gameState, playerId) {
 // 🔮 Nhìn Tương Lai: trả 3 lá trên cùng — CHỈ cho người chơi này (không broadcast)
 export function handleSeeTheFuture(gameState, playerId) {
   const player = gameState.players.find(p => p.id === playerId);
-  const top3 = gameState.drawPile.slice(0, 3).map(c => ({ id: c.id, type: c.type, nameVN: c.nameVN, emoji: c.emoji }));
+  const top3 = gameState.drawPile.slice(0, 3).map(cardView);
   gameState.gameLog.push(`🔮 ${player ? player.name : 'Ai đó'} đã Nhìn Tương Lai.`);
   return { gameState, response: { type: 'see_the_future', cards: top3, forPlayer: playerId } };
 }
@@ -218,7 +229,7 @@ export function offerReaction(gameState, victim, thief) {
   if (!victim || !thief || victim.id === thief.id) return;
   const options = victim.hand
     .filter(c => !c.disabled && [CARD_TYPES.TRA_DUA, CARD_TYPES.MOC_RAC].includes(c.type))
-    .map(c => ({ id: c.id, type: c.type, nameVN: c.nameVN, emoji: c.emoji }));
+    .map(cardView);
   if (options.length === 0) return;
   setChoice(gameState, {
     playerId: victim.id,
@@ -262,12 +273,7 @@ export function handleSuperSkip(gameState, playerId) {
 // 🌌 Kiến Tạo Tương Lai: xem 3 lá trên cùng và sắp xếp lại.
 export function handleAlterFuture(gameState, playerId) {
   const player = gameState.players.find(p => p.id === playerId);
-  const cards = gameState.drawPile.slice(0, 3).map(c => ({
-    id: c.id,
-    type: c.type,
-    nameVN: c.nameVN,
-    emoji: c.emoji,
-  }));
+  const cards = gameState.drawPile.slice(0, 3).map(cardView);
   gameState.waitingFor = 'alter_future';
   gameState.alterFuture = { playerId, cardIds: cards.map(c => c.id) };
   gameState.nopeCount = 0;

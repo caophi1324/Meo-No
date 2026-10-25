@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CARD_TYPES, BOMB_TYPES, BEAST_CARDS } from '../../shared/cardTypes.js';
+import { LOL_CHAMPIONS } from '../../shared/lolChampions.js';
 import { CARD_META, CONFIG } from './constants.js';
 
 const PHASE2_WEIGHTS = {
@@ -64,15 +65,27 @@ export function getDeckCounts(playerCount) {
 
   // Bù chênh lệch vào Tấn Công để luôn đúng 150 lá.
   counts[CARD_TYPES.ATTACK] += targetOther - assigned;
+
+  // Nạp Nhiên Liệu chỉ có đúng 1 lá/ván; phần dư dồn sang Tấn Công.
+  const extraFuel = counts[CARD_TYPES.NAP_NHIEN_LIEU] - 1;
+  if (extraFuel > 0) {
+    counts[CARD_TYPES.NAP_NHIEN_LIEU] = 1;
+    counts[CARD_TYPES.ATTACK] += extraFuel;
+  }
   return counts;
 }
 
 export function createDeck(playerCount = 4) {
   const deck = [];
+  let lolIndex = 0;
   for (const [type, count] of Object.entries(getDeckCounts(playerCount))) {
     for (let i = 0; i < count; i++) {
       const meta = CARD_META[type];
       if (!meta) throw new Error(`Thiếu CARD_META cho ${type}`);
+      const champion = LOL_CHAMPIONS.length
+        ? LOL_CHAMPIONS[lolIndex % LOL_CHAMPIONS.length]
+        : null;
+      lolIndex += 1;
       deck.push({
         id: uuidv4(),
         type,
@@ -80,6 +93,9 @@ export function createDeck(playerCount = 4) {
         descriptionVN: meta.descriptionVN,
         emoji: meta.emoji,
         image: meta.image,
+        ...(champion
+          ? { lolImage: `/cards/lol/${champion.id}.jpg`, lolName: champion.name }
+          : {}),
         ...(type === CARD_TYPES.IMPLODING_KITTEN ? { faceUp: false } : {}),
       });
     }

@@ -27,6 +27,48 @@ export function getTurnTimeoutPlan(room) {
   return { actorId, waitingFor: gs.waitingFor || 'turn' };
 }
 
+function pickIndexes(total, count) {
+  const pool = Array.from({ length: Math.max(0, total | 0) }, (_, i) => i);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, Math.min(count || 1, pool.length));
+}
+
+// Giá trị mặc định hợp lệ cho bot / người hết giờ. Không dùng cho người thật.
+export function defaultChoiceValue(choice) {
+  if (!choice) return null;
+  if (choice.kind === 'search_top5') return choice.cards?.[0]?.id ?? null;
+  if (choice.kind === 'revive_cards') {
+    return (choice.cards || []).slice(0, choice.count || 2).map(c => c.id);
+  }
+  if (choice.kind === 'reaction') return 'pass';
+  if (choice.kind === 'steal_pick') {
+    return Math.floor(Math.random() * Math.max(1, choice.cardCount || 1));
+  }
+  if (choice.kind === 'discard_half_pick') {
+    const ids = (choice.cards || []).map(c => c.id);
+    for (let i = ids.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [ids[i], ids[j]] = [ids[j], ids[i]];
+    }
+    return ids.slice(0, Math.min(choice.count || 1, ids.length));
+  }
+  if (choice.kind === 'destroy_pick' || choice.kind === 'reaction_pick' || choice.kind === 'reveal_pick') {
+    return pickIndexes(choice.cardCount || 0, choice.count || 1);
+  }
+  if (choice.kind === 'party_pick') {
+    const list = choice.cards || [];
+    return list[Math.floor(Math.random() * list.length)]?.id ?? null;
+  }
+  if (choice.kind === 'copy_target') {
+    const list = choice.cards || [];
+    return list[Math.floor(Math.random() * list.length)]?.id ?? null;
+  }
+  return 0;
+}
+
 export function getTimeoutAction(gameState, actorId) {
   if (!gameState) return null;
 
@@ -48,14 +90,7 @@ export function getTimeoutAction(gameState, actorId) {
 
   if (gameState.waitingFor === 'choice' && gameState.pendingChoice) {
     const choice = gameState.pendingChoice;
-    let value = 0;
-    if (choice.kind === 'search_top5') value = choice.cards?.[0]?.id ?? null;
-    else if (choice.kind === 'revive_cards') {
-      value = (choice.cards || []).slice(0, choice.count || 2).map(c => c.id);
-    } else if (choice.kind === 'steal_pick') {
-      value = Math.floor(Math.random() * Math.max(1, choice.cardCount || 1));
-    } else if (choice.kind === 'reaction') value = 'pass';
-    return { type: 'choice_response', choiceId: choice.id, value };
+    return { type: 'choice_response', choiceId: choice.id, value: defaultChoiceValue(choice) };
   }
 
   return { type: 'draw_card' };

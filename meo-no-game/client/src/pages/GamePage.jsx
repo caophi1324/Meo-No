@@ -266,7 +266,7 @@ export default function GamePage() {
           valid: true,
           needsTarget: true,
           label: '🐧 TRỘM BÀI',
-          reason: 'Chọn người bị trộm 1 lá random',
+          reason: 'Chọn người bị trộm 1 lá úp',
         };
       if (c.type === CARD_TYPES.TAN_CONG_CHI_DINH)
         return {

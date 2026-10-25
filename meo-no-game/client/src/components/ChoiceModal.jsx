@@ -10,6 +10,12 @@ const TITLES = {
   disable_card: '🐱 LÀM PHIỀN',
   revive_cards: '🌱 HỒI SINH',
   reaction: '🛡️ PHẢN ĐÒN',
+  discard_half_pick: '🍕 CHIA SẺ',
+  destroy_pick: '💥 HỦY BÀI',
+  reaction_pick: '🛡️ PHẢN ĐÒN',
+  copy_target: '🐊 SAO CHÉP',
+  party_pick: '🎂 TIỆC TÙNG',
+  reveal_pick: '👁️ GIỜ GIẢI LAO',
 };
 
 const HINTS = {
@@ -19,6 +25,12 @@ const HINTS = {
   disable_card: 'Chọn 1 lá của đối thủ để khóa trong lượt tới.',
   revive_cards: 'Chọn đủ số lá từ những người đã bị loại.',
   reaction: 'Bạn vừa bị cướp. Có thể đánh lá phản đòn để cướp lại 2 lá.',
+  discard_half_pick: 'Bạn bị Chia Sẻ — tự chọn đúng số lá phải hủy.',
+  destroy_pick: 'Chọn các lá úp của người bị Hủy Bài.',
+  reaction_pick: 'Chọn 2 lá úp từ người vừa cướp bạn.',
+  copy_target: 'Chọn người để Sao Chép hành động.',
+  party_pick: 'Chọn 1 lá úp từ tay bạn để đặt lên đầu chồng bài.',
+  reveal_pick: 'Chọn các lá úp của người bị xem. Chỉ bạn thấy chúng.',
 };
 
 export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
@@ -33,7 +45,10 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
   const max = Math.max(0, choice?.maxPosition ?? 0);
   const title = TITLES[choice?.kind] || 'LỰA CHỌN';
   const hint = HINTS[choice?.kind] || '';
-  const isMulti = choice?.kind === 'revive_cards';
+  const isMulti =
+    choice?.kind === 'revive_cards' ||
+    choice?.kind === 'discard_half_pick' ||
+    choice?.kind === 'party_pick';
   const needed = choice?.count || 1;
 
   const canSubmitMulti = useMemo(
@@ -48,13 +63,11 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
 
   const togglePicked = (id) => {
     soundEffects.playClick();
-    setPicked((current) =>
-      current.includes(id)
-        ? current.filter(x => x !== id)
-        : current.length < needed
-          ? [...current, id]
-          : current
-    );
+    setPicked((current) => {
+      if (current.includes(id)) return current.filter(x => x !== id);
+      if (needed === 1) return [id];
+      return current.length < needed ? [...current, id] : current;
+    });
   };
 
   return (
@@ -149,9 +162,11 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
                   selected={picked.includes(card.id)}
                   onClick={() => togglePicked(card.id)}
                 />
-                <span className="max-w-20 truncate text-[10px] font-bold text-slate-400">
-                  {card.ownerName}
-                </span>
+                {card.ownerName && (
+                  <span className="max-w-20 truncate text-[10px] font-bold text-slate-400">
+                    {card.ownerName}
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -165,8 +180,67 @@ export default function ChoiceModal({ choice, secondsLeft = null, onRespond }) {
                 : 'cursor-not-allowed border border-slate-700 bg-slate-800 text-slate-500'
             }`}
           >
-            XÁC NHẬN HỒI SINH
+            {choice.kind === 'revive_cards'
+              ? 'XÁC NHẬN HỒI SINH'
+              : choice.kind === 'party_pick'
+                ? 'ÚP LÁ NÀY'
+                : 'XÁC NHẬN HỦY'}
           </button>
+        </div>
+      )}
+
+      {(choice?.kind === 'destroy_pick' ||
+        choice?.kind === 'reaction_pick' ||
+        choice?.kind === 'reveal_pick') && (
+        <div className="space-y-3">
+          <p className="text-center text-xs font-black text-amber-300">
+            Đã chọn {picked.length}/{needed}
+          </p>
+          <div className="flex max-h-80 flex-wrap justify-center gap-2.5 overflow-y-auto p-1">
+            {Array.from({ length: choice.cardCount || 0 }, (_, index) => (
+              <div key={index} className="flex flex-col items-center gap-1">
+                <Card
+                  card={{ id: `hidden-${index}`, type: 'hidden' }}
+                  faceDown
+                  size="small"
+                  selected={picked.includes(index)}
+                  onClick={() => togglePicked(index)}
+                />
+                <span className="text-[10px] font-bold text-slate-400">Lá {index + 1}</span>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            disabled={picked.length !== needed}
+            onClick={() => respond(picked)}
+            className={`w-full rounded-2xl py-3 text-sm font-black shadow-lg ${
+              picked.length === needed
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 shadow-emerald-500/25'
+                : 'cursor-not-allowed border border-slate-700 bg-slate-800 text-slate-500'
+            }`}
+          >
+            {choice.kind === 'reaction_pick'
+              ? 'XÁC NHẬN PHẢN ĐÒN'
+              : choice.kind === 'reveal_pick'
+                ? 'XEM LÁ'
+                : 'XÁC NHẬN HỦY'}
+          </button>
+        </div>
+      )}
+
+      {choice?.kind === 'copy_target' && (
+        <div className="space-y-2.5">
+          {(choice.cards || []).map((target) => (
+            <button
+              key={target.id}
+              type="button"
+              onClick={() => respond(target.id)}
+              className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm font-bold text-white transition-colors hover:border-amber-400 hover:bg-amber-600/30"
+            >
+              {target.name}
+            </button>
+          ))}
         </div>
       )}
 
