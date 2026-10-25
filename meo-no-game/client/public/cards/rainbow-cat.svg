@@ -1,0 +1,72 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="rainbowGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="40%" stop-color="#FDE047"/>
+      <stop offset="70%" stop-color="#F472B6"/>
+      <stop offset="100%" stop-color="#818CF8" stop-opacity="0.2"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Nền hào quang thần tiên lấp lánh -->
+  <circle cx="120" cy="120" r="110" fill="url(#rainbowGlow)" opacity="0.35"/>
+
+  <!-- Dải cầu vồng rực rỡ uốn lượn từ góc trái ra giữa -->
+  <g stroke-linecap="round" fill="none">
+    <!-- Đỏ -->
+    <path d="M15 175 Q60 170 95 140 Q130 110 175 110" stroke="#EF4444" stroke-width="7"/>
+    <!-- Cam -->
+    <path d="M18 181 Q62 176 97 146 Q132 116 177 116" stroke="#F97316" stroke-width="7"/>
+    <!-- Vàng -->
+    <path d="M21 187 Q64 182 99 152 Q134 122 179 122" stroke="#FACC15" stroke-width="7"/>
+    <!-- Xanh lá -->
+    <path d="M24 193 Q66 188 101 158 Q136 128 181 128" stroke="#22C55E" stroke-width="7"/>
+    <!-- Xanh cyan -->
+    <path d="M27 199 Q68 194 103 164 Q138 134 183 134" stroke="#06B6D4" stroke-width="7"/>
+    <!-- Tím -->
+    <path d="M30 205 Q70 200 105 170 Q140 140 185 140" stroke="#8B5CF6" stroke-width="7"/>
+  </g>
+
+  <!-- Các ngôi sao phép thuật lấp lánh -->
+  <text x="35" y="60" font-size="16" fill="#FACC15">✨</text>
+  <text x="180" y="45" font-size="18" fill="#FACC15">🌟</text>
+  <text x="60" y="120" font-size="14" fill="#EC4899">💖</text>
+  <text x="195" y="165" font-size="14" fill="#38BDF8">✨</text>
+
+  <!-- Chú Mèo Cầu Vồng Đang Bay Phấn Khích -->
+  <g transform="translate(70, 45) rotate(10 60 60)">
+    <!-- Đuôi mèo uốn lượn nối thẳng vào đầu dải cầu vồng -->
+    <path d="M5 65 Q-20 75 -35 80" stroke="#FB7185" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+    <!-- Thân mèo trắng muốt mũm mĩm -->
+    <ellipse cx="55" cy="55" rx="38" ry="26" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3"/>
+
+    <!-- Chân mèo dang rộng tung bay -->
+    <ellipse cx="28" cy="74" rx="8" ry="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <ellipse cx="78" cy="74" rx="8" ry="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+    <ellipse cx="88" cy="46" rx="8" ry="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+
+    <!-- Đầu mèo xinh xắn -->
+    <ellipse cx="82" cy="42" rx="28" ry="24" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="3"/>
+
+    <!-- Tai mèo có sắc cầu vồng -->
+    <polygon points="68,26 76,5 88,24" fill="#F472B6" stroke="#DB2777" stroke-width="2"/>
+    <polygon points="90,26 102,5 108,24" fill="#60A5FA" stroke="#2563EB" stroke-width="2"/>
+
+    <!-- Mắt híp cười tít vui vẻ ( ^ o ^ ) -->
+    <path d="M72 38 Q78 32 84 38" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M92 38 Q98 32 104 38" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Má hồng trái tim -->
+    <circle cx="68" cy="44" r="5" fill="#FDA4AF"/>
+    <circle cx="106" cy="44" r="5" fill="#FDA4AF"/>
+
+    <!-- Mũi hồng & Miệng mèo cười toe toét há miệng -->
+    <polygon points="86,41 90,41 88,44" fill="#F43F5E"/>
+    <path d="M84 46 Q88 52 92 46 Z" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5"/>
+
+    <!-- Bờm tóc màu cầu vồng bay trong gió -->
+    <path d="M60 30 Q70 20 80 28" stroke="#FACC15" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M55 35 Q65 24 75 32" stroke="#4ADE80" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

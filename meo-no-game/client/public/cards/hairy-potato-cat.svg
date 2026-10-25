@@ -1,0 +1,73 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="potatoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF3C7"/>
+      <stop offset="50%" stop-color="#FDE68A"/>
+      <stop offset="85%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#78350F" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="potatoSkin" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nền vàng đất khoai tây ấm áp -->
+  <circle cx="120" cy="120" r="110" fill="url(#potatoGlow)" opacity="0.35"/>
+  <circle cx="120" cy="120" r="95" fill="none" stroke="#D97706" stroke-width="2" stroke-dasharray="6 6" opacity="0.4"/>
+
+  <!-- MÈO KHOAI TÂY LÔNG LÁ BÙ XÙ -->
+  <g transform="translate(15, 15)">
+    <!-- Các túm lông bù xù chìa ra ngoài thân khoai tây -->
+    <path d="M40 75 Q20 60 30 90 Q15 95 28 115 Q10 125 32 140 Q15 155 45 165" stroke="#92400E" stroke-width="3" fill="#D97706"/>
+    <path d="M170 75 Q190 60 180 90 Q195 95 182 115 Q200 125 178 140 Q195 155 165 165" stroke="#92400E" stroke-width="3" fill="#D97706"/>
+    <path d="M70 50 Q80 25 100 45 Q115 20 130 45 Q145 28 150 55" stroke="#92400E" stroke-width="3" fill="#D97706"/>
+
+    <!-- Thân củ khoai tây béo tròn mập mạp lượn sóng -->
+    <path d="M45 100 C30 50 180 50 165 100 C185 170 25 170 45 100 Z" fill="url(#potatoSkin)" stroke="#78350F" stroke-width="3.5"/>
+
+    <!-- Mầm non khoai tây mọc trên đầu -->
+    <path d="M105 45 Q100 25 90 20 Q105 28 107 42" fill="#84CC16" stroke="#4D7C0F" stroke-width="2"/>
+    <path d="M107 42 Q115 22 125 24 Q116 32 108 44" fill="#84CC16" stroke="#4D7C0F" stroke-width="2"/>
+
+    <!-- Các đốm mắt khoai tây rải rác -->
+    <ellipse cx="60" cy="85" rx="5" ry="3" fill="#78350F" opacity="0.5"/>
+    <ellipse cx="145" cy="80" rx="6" ry="3.5" fill="#78350F" opacity="0.5"/>
+    <ellipse cx="75" cy="145" rx="5" ry="3" fill="#78350F" opacity="0.5"/>
+    <ellipse cx="135" cy="140" rx="6" ry="4" fill="#78350F" opacity="0.5"/>
+
+    <!-- Đôi tai mèo ngố lấp ló trong đám lông -->
+    <polygon points="62,65 72,32 90,60" fill="#F59E0B" stroke="#78350F" stroke-width="2.5"/>
+    <polygon points="68,62 74,40 84,58" fill="#FDE68A"/>
+    <polygon points="148,65 138,32 120,60" fill="#F59E0B" stroke="#78350F" stroke-width="2.5"/>
+    <polygon points="142,62 136,40 126,58" fill="#FDE68A"/>
+
+    <!-- Đôi mắt tròn xoe ngơ ngác đáng yêu -->
+    <ellipse cx="86" cy="98" rx="14" ry="16" fill="#FFFFFF" stroke="#78350F" stroke-width="2.5"/>
+    <ellipse cx="124" cy="98" rx="14" ry="16" fill="#FFFFFF" stroke="#78350F" stroke-width="2.5"/>
+    <circle cx="88" cy="98" r="6" fill="#000000"/>
+    <circle cx="122" cy="98" r="6" fill="#000000"/>
+    <circle cx="90" cy="95" r="2.5" fill="#FFFFFF"/>
+    <circle cx="124" cy="95" r="2.5" fill="#FFFFFF"/>
+
+    <!-- Má hồng khoai nướng -->
+    <circle cx="70" cy="114" r="7" fill="#F97316" opacity="0.6"/>
+    <circle cx="140" cy="114" r="7" fill="#F97316" opacity="0.6"/>
+
+    <!-- Mũi mèo & Miệng cười hiền khô :3 -->
+    <polygon points="102,106 108,106 105,110" fill="#78350F"/>
+    <path d="M98 114 Q105 120 105 116 Q105 120 112 114" stroke="#78350F" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Những sợi râu mèo dài ngoẵng bay phấp phới -->
+    <path d="M65 106 Q40 100 25 108" stroke="#78350F" stroke-width="2" fill="none"/>
+    <path d="M65 114 Q38 120 28 132" stroke="#78350F" stroke-width="2" fill="none"/>
+    <path d="M145 106 Q170 100 185 108" stroke="#78350F" stroke-width="2" fill="none"/>
+    <path d="M145 114 Q172 120 182 132" stroke="#78350F" stroke-width="2" fill="none"/>
+
+    <!-- 4 bàn chân ngắn củn thò ra dưới đáy -->
+    <circle cx="65" cy="155" r="9" fill="#B45309" stroke="#78350F" stroke-width="2"/>
+    <circle cx="85" cy="158" r="9" fill="#B45309" stroke="#78350F" stroke-width="2"/>
+    <circle cx="125" cy="158" r="9" fill="#B45309" stroke="#78350F" stroke-width="2"/>
+    <circle cx="145" cy="155" r="9" fill="#B45309" stroke="#78350F" stroke-width="2"/>
+  </g>
+</svg>

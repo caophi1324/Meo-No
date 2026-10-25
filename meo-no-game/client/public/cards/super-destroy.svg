@@ -1,0 +1,56 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="destroyGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFE4E6"/>
+      <stop offset="40%" stop-color="#FB7185"/>
+      <stop offset="75%" stop-color="#BE123C"/>
+      <stop offset="100%" stop-color="#4C0519" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="bombGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F43F5E"/>
+      <stop offset="100%" stop-color="#881337"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="120" cy="120" r="110" fill="url(#destroyGlow)" opacity="0.4"/>
+
+  <!-- mảnh vỡ -->
+  <path d="M28 58 l22 10 l-14 16 Z" fill="#FB7185" opacity="0.85"/>
+  <path d="M202 54 l-20 12 l16 14 Z" fill="#FDA4AF" opacity="0.7"/>
+  <path d="M30 178 l20 -8 l-10 22 Z" fill="#FDA4AF" opacity="0.7"/>
+  <path d="M210 172 l-22 -6 l8 20 Z" fill="#FB7185" opacity="0.8"/>
+
+  <!-- quả bom -->
+  <g>
+    <circle cx="150" cy="144" r="42" fill="url(#bombGrad)" stroke="#4C0519" stroke-width="4"/>
+    <rect x="142" y="96" width="16" height="14" rx="3" fill="#4C0519"/>
+    <path d="M150 96 q4 -22 24 -24" fill="none" stroke="#FDA4AF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M174 72 l-5 -14 l12 8 l12 -10 l-6 16" fill="none" stroke="#FDE047" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="138" cy="136" r="8" fill="#FDA4AF" opacity="0.5"/>
+    <path d="M128 164 q22 12 44 0" fill="none" stroke="#4C0519" stroke-width="3" opacity="0.5"/>
+  </g>
+
+  <!-- mèo phá bài -->
+  <g transform="translate(-16, 0)">
+    <polygon points="76,92 64,54 96,82" fill="#BE123C" stroke="#4C0519" stroke-width="3"/>
+    <polygon points="82,88 76,66 94,82" fill="#FDA4AF"/>
+    <polygon points="150,92 162,54 130,82" fill="#BE123C" stroke="#4C0519" stroke-width="3"/>
+    <polygon points="144,88 150,66 132,82" fill="#FDA4AF"/>
+    <ellipse cx="113" cy="126" rx="50" ry="44" fill="#FB7185" stroke="#4C0519" stroke-width="3.5"/>
+    <!-- mắt -->
+    <ellipse cx="94" cy="120" rx="12" ry="14" fill="#FFFFFF" stroke="#4C0519" stroke-width="2"/>
+    <ellipse cx="132" cy="120" rx="12" ry="14" fill="#FFFFFF" stroke="#4C0519" stroke-width="2"/>
+    <circle cx="94" cy="120" r="6" fill="#4C0519"/>
+    <circle cx="132" cy="120" r="6" fill="#4C0519"/>
+    <!-- miệng cười ác -->
+    <path d="M96 144 q17 16 34 0" fill="#4C0519" stroke="#4C0519" stroke-width="2"/>
+    <polygon points="103 145 109 154 113 145" fill="#FFFFFF"/>
+    <polygon points="117 145 123 154 127 145" fill="#FFFFFF"/>
+    <!-- tay giữ bom -->
+    <path d="M146 150 q14 10 16 0" fill="none" stroke="#4C0519" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- tia lửa -->
+  <path d="M42 96 l10 -18 l2 20 l16 -12" fill="none" stroke="#FDE047" stroke-width="3" stroke-linecap="round"/>
+  <path d="M196 102 l-8 18 l-2 -20 l-16 12" fill="none" stroke="#FDE047" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,46 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="revGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#CFFAFE"/>
+      <stop offset="45%" stop-color="#22D3EE"/>
+      <stop offset="80%" stop-color="#0891B2"/>
+      <stop offset="100%" stop-color="#164E63" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="revArrow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ECFEFF"/>
+      <stop offset="55%" stop-color="#67E8F9"/>
+      <stop offset="100%" stop-color="#0E7490"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="120" cy="120" r="110" fill="url(#revGlow)" opacity="0.4"/>
+  <circle cx="120" cy="120" r="92" fill="none" stroke="#A5F3FC" stroke-width="2" stroke-dasharray="5 9" opacity="0.7"/>
+
+  <!-- Vòng xoáy đảo chiều -->
+  <path d="M45 112 A75 75 0 0 1 195 112" fill="none" stroke="url(#revArrow)" stroke-width="9" stroke-linecap="round"/>
+  <path d="M195 128 A75 75 0 0 1 45 128" fill="none" stroke="url(#revArrow)" stroke-width="9" stroke-linecap="round" opacity="0.85"/>
+  <polygon points="195,112 208,100 208,128" fill="#CFFAFE"/>
+  <polygon points="45,128 32,140 32,112" fill="#CFFAFE"/>
+
+  <!-- Mèo choáng váng ở giữa -->
+  <g>
+    <polygon points="82,86 72,48 102,78" fill="#0891B2" stroke="#164E63" stroke-width="3"/>
+    <polygon points="88,82 82,60 100,76" fill="#A5F3FC"/>
+    <polygon points="158,86 168,48 138,78" fill="#0891B2" stroke="#164E63" stroke-width="3"/>
+    <polygon points="152,82 158,60 140,76" fill="#A5F3FC"/>
+    <ellipse cx="120" cy="126" rx="52" ry="46" fill="#67E8F9" stroke="#155E75" stroke-width="3.5"/>
+    <!-- mắt xoáy -->
+    <path d="M88 118 q10 -10 20 0 q-10 10 -20 0" fill="none" stroke="#164E63" stroke-width="3"/>
+    <path d="M132 118 q10 -10 20 0 q-10 10 -20 0" fill="none" stroke="#164E63" stroke-width="3"/>
+    <circle cx="98" cy="118" r="3" fill="#164E63"/>
+    <circle cx="142" cy="118" r="3" fill="#164E63"/>
+    <!-- mũi miệng -->
+    <polygon points="116,132 124,132 120,137" fill="#155E75"/>
+    <path d="M108 144 q12 8 24 0" fill="none" stroke="#155E75" stroke-width="3" stroke-linecap="round"/>
+    <!-- râu -->
+    <path d="M66 128 l-18 -6 M66 138 l-20 4 M174 128 l18 -6 M174 138 l20 4" stroke="#A5F3FC" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <text x="44" y="205" font-size="18" fill="#A5F3FC">↺</text>
+  <text x="178" y="205" font-size="18" fill="#A5F3FC">↻</text>
+</svg>

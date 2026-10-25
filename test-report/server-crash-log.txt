@@ -1,0 +1,21 @@
+🐱💣 Mèo Nổ Server đang chạy tại port 4000
+Người chơi kết nối: I81XB_mhFyGbwnL5AAAA
+Người chơi kết nối: lDRoVigXxB0efHO4AAAB
+Người chơi kết nối: JA9vHiwZdLDLLnzbAAAC
+Người chơi kết nối: WSXUYJHYlwWIp7K5AAAD
+Người chơi kết nối: gLLYnx8oS85IrlDzAAAE
+Người chơi kết nối: CY3gNckLnEGxtQZJAAAF
+file:///D:/meow%20no/meo-no-game/server/src/deckBuilder.js:42
+    for (let j = 0; j < CONFIG.INITIAL_HAND_SIZE; j++) {
+                        ^
+
+ReferenceError: CONFIG is not defined
+    at dealCards (file:///D:/meow%20no/meo-no-game/server/src/deckBuilder.js:42:25)
+    at GameEngine.initGame (file:///D:/meow%20no/meo-no-game/server/src/gameEngine.js:15:33)
+    at Socket.<anonymous> (file:///D:/meow%20no/meo-no-game/server/src/socketHandlers.js:44:32)
+    at Socket.emit (node:events:514:28)
+    at Socket.emitUntyped (D:\meow no\meo-no-game\server\node_modules\socket.io\dist\typed-events.js:69:22)
+    at D:\meow no\meo-no-game\server\node_modules\socket.io\dist\socket.js:693:39
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+
+Node.js v24.21.0

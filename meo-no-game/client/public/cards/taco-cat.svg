@@ -1,0 +1,88 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="tacoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF3C7"/>
+      <stop offset="50%" stop-color="#FDE68A"/>
+      <stop offset="85%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="tacoShell" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nền vàng Taco rực rỡ -->
+  <circle cx="120" cy="120" r="110" fill="url(#tacoGlow)" opacity="0.4"/>
+  <circle cx="120" cy="120" r="95" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="6 6" opacity="0.5"/>
+
+  <!-- Hạt mè / gia vị taco bay lượn -->
+  <circle cx="45" cy="55" r="3" fill="#D97706"/>
+  <circle cx="190" cy="65" r="3" fill="#D97706"/>
+  <circle cx="50" cy="175" r="3" fill="#D97706"/>
+  <circle cx="185" cy="175" r="3" fill="#D97706"/>
+
+  <!-- MÈO TACO - Thân hình nửa vầng trăng giòn rụm của bánh Taco -->
+  <g transform="translate(15, 20)">
+    <!-- Đuôi mèo thò ra phía sau bên trái -->
+    <path d="M25 125 Q-5 130 5 105 Q12 90 20 110" fill="#D97706" stroke="#92400E" stroke-width="2.5"/>
+
+    <!-- Nhân Taco bên trong thò ra: Xà lách xoăn xanh, Cà chua đỏ, Phô mai vàng vụn -->
+    <!-- Xà lách xanh tươi -->
+    <path d="M40 95 Q55 75 70 92 Q85 70 105 88 Q125 72 145 90 Q160 76 175 95" stroke="#22C55E" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M50 90 Q65 72 85 86 Q110 68 135 84 Q155 70 165 90" stroke="#16A34A" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+    <!-- Cà chua đỏ mọng xắt hạt lựu -->
+    <rect x="62" y="76" width="12" height="10" rx="3" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5" transform="rotate(15 62 76)"/>
+    <rect x="105" y="70" width="13" height="11" rx="3" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5" transform="rotate(-10 105 70)"/>
+    <rect x="142" y="78" width="12" height="10" rx="3" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5" transform="rotate(20 142 78)"/>
+
+    <!-- Sợi phô mai bào vàng cheddar -->
+    <path d="M55 82 Q70 85 80 75" stroke="#FACC15" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M95 76 Q110 82 125 74" stroke="#FACC15" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M130 78 Q145 84 155 76" stroke="#FACC15" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+    <!-- Vỏ bánh Taco giòn rụm ôm trọn phần thân dưới -->
+    <path d="M25 105 Q105 185 185 105 C190 125 180 175 105 175 C30 175 20 125 25 105 Z" fill="url(#tacoShell)" stroke="#92400E" stroke-width="3.5"/>
+    <!-- Chấm nướng giòn trên vỏ bánh -->
+    <circle cx="65" cy="142" r="3" fill="#B45309" opacity="0.6"/>
+    <circle cx="105" cy="155" r="4" fill="#B45309" opacity="0.6"/>
+    <circle cx="145" cy="140" r="3.5" fill="#B45309" opacity="0.6"/>
+
+    <!-- Đầu mèo nhô lên ở đầu bên phải của Taco -->
+    <g transform="translate(45, 0)">
+      <!-- Tai mèo xinh xắn -->
+      <polygon points="50,70 60,32 78,65" fill="#F59E0B" stroke="#92400E" stroke-width="2.5"/>
+      <polygon points="54,66 62,42 74,62" fill="#FECDD3"/>
+      <polygon points="95,65 112,32 122,70" fill="#F59E0B" stroke="#92400E" stroke-width="2.5"/>
+      <polygon points="100,62 110,42 118,66" fill="#FECDD3"/>
+
+      <!-- Khuôn mặt mèo tròn thỏa mãn -->
+      <ellipse cx="86" cy="85" rx="34" ry="28" fill="#FBBF24" stroke="#92400E" stroke-width="3"/>
+
+      <!-- Đôi mắt híp cong cười mãn nguyện kiểu Anime ( ^ _ ^ ) -->
+      <path d="M70 82 Q78 74 86 82" stroke="#78350F" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M96 82 Q104 74 112 82" stroke="#78350F" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+      <!-- Má hồng bánh bao -->
+      <circle cx="68" cy="92" r="5" fill="#F472B6" opacity="0.7"/>
+      <circle cx="114" cy="92" r="5" fill="#F472B6" opacity="0.7"/>
+
+      <!-- Mũi hồng & Miệng mèo :3 -->
+      <polygon points="88,88 94,88 91,92" fill="#F43F5E"/>
+      <path d="M85 94 Q88 98 91 95 Q94 98 97 94" stroke="#78350F" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+      <!-- Râu mèo -->
+      <line x1="62" y1="88" x2="48" y2="86" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+      <line x1="62" y1="94" x2="46" y2="96" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+      <line x1="118" y1="88" x2="132" y2="86" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+      <line x1="118" y1="94" x2="134" y2="96" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <!-- 4 bàn chân mèo mập mạp thò ra dưới bánh -->
+    <ellipse cx="60" cy="172" rx="10" ry="7" fill="#FBBF24" stroke="#92400E" stroke-width="2.5"/>
+    <ellipse cx="85" cy="175" rx="10" ry="7" fill="#FBBF24" stroke="#92400E" stroke-width="2.5"/>
+    <ellipse cx="125" cy="175" rx="10" ry="7" fill="#FBBF24" stroke="#92400E" stroke-width="2.5"/>
+    <ellipse cx="150" cy="172" rx="10" ry="7" fill="#FBBF24" stroke="#92400E" stroke-width="2.5"/>
+  </g>
+</svg>

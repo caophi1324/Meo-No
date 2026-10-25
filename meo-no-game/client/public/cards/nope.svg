@@ -1,0 +1,73 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="nopeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEE2E2"/>
+      <stop offset="50%" stop-color="#F87171"/>
+      <stop offset="85%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#7F1D1D" stop-opacity="0.3"/>
+    </radialGradient>
+    <linearGradient id="stopSign" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nền đỏ cảnh báo cấm đoán rực lửa -->
+  <circle cx="120" cy="120" r="110" fill="url(#nopeGlow)" opacity="0.45"/>
+
+  <!-- Vạch sọc cảnh báo nguy hiểm kiểu caution bar ở nền -->
+  <g opacity="0.2">
+    <line x1="20" y1="20" x2="60" y2="20" stroke="#EF4444" stroke-width="8"/>
+    <line x1="180" y1="20" x2="220" y2="20" stroke="#EF4444" stroke-width="8"/>
+    <line x1="20" y1="220" x2="60" y2="220" stroke="#EF4444" stroke-width="8"/>
+    <line x1="180" y1="220" x2="220" y2="220" stroke="#EF4444" stroke-width="8"/>
+  </g>
+
+  <!-- Tia chớp phủ nhận màu vàng -->
+  <polygon points="40,40 55,65 45,68 60,95 35,70 48,67" fill="#FACC15" stroke="#CA8A04" stroke-width="1.5"/>
+  <polygon points="200,40 185,65 195,68 180,95 205,70 192,67" fill="#FACC15" stroke="#CA8A04" stroke-width="1.5"/>
+
+  <!-- Mèo Tức Giận Từ Chối Thẳng Thừng -->
+  <g transform="translate(10, 10)">
+    <!-- Tai mèo bẻ ngang giận dữ -->
+    <polygon points="65,75 42,42 78,62" fill="#475569" stroke="#1E293B" stroke-width="3"/>
+    <polygon points="62,70 48,48 72,60" fill="#FDA4AF"/>
+    <polygon points="155,75 178,42 142,62" fill="#475569" stroke="#1E293B" stroke-width="3"/>
+    <polygon points="158,70 172,48 148,60" fill="#FDA4AF"/>
+
+    <!-- Đầu mèo xám đen dữ dằn -->
+    <ellipse cx="110" cy="100" rx="46" ry="40" fill="#64748B" stroke="#1E293B" stroke-width="3.5"/>
+
+    <!-- Mắt mèo cau mày chữ V giận dữ -->
+    <polygon points="80,90 98,96 84,104" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
+    <polygon points="140,90 122,96 136,104" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
+    <!-- Con ngươi trừng mắt -->
+    <circle cx="89" cy="98" r="4.5" fill="#DC2626"/>
+    <circle cx="131" cy="98" r="4.5" fill="#DC2626"/>
+
+    <!-- Lông mày cau lại -->
+    <path d="M74 82 L96 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M146 82 L124 92" stroke="#0F172A" stroke-width="3.5" stroke-linecap="round"/>
+
+    <!-- Mũi & Miệng quát 'NOPE!' -->
+    <polygon points="107,105 113,105 110,109" fill="#0F172A"/>
+    <path d="M100 115 Q110 110 120 115 Q110 128 100 115 Z" fill="#7F1D1D" stroke="#450A0A" stroke-width="2"/>
+    <polygon points="104,114 107,119 110,114" fill="#FFFFFF"/>
+    <polygon points="110,114 113,119 116,114" fill="#FFFFFF"/>
+
+    <!-- Biển Báo Bát Giác STOP / NOPE Khổng Lồ Giơ Lên Phía Trước -->
+    <!-- Cán cầm biển báo -->
+    <rect x="105" y="140" width="10" height="70" fill="#94A3B8" stroke="#475569" stroke-width="2"/>
+
+    <!-- Mặt biển báo bát giác -->
+    <polygon points="80,125 140,125 170,155 170,185 140,215 80,215 50,185 50,155" fill="url(#stopSign)" stroke="#FFFFFF" stroke-width="4"/>
+    <polygon points="83,129 137,129 165,157 165,183 137,211 83,211 55,183 55,157" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.8"/>
+
+    <!-- Chữ NOPE! In hoa đậm chất quyết đoán -->
+    <text x="110" y="177" font-family="'Fredoka', Impact, sans-serif" font-size="24" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">NOPE!</text>
+
+    <!-- Hai tay mèo nắm chặt biển báo đập xuống -->
+    <ellipse cx="62" cy="165" rx="14" ry="11" fill="#64748B" stroke="#1E293B" stroke-width="2.5"/>
+    <ellipse cx="158" cy="165" rx="14" ry="11" fill="#64748B" stroke="#1E293B" stroke-width="2.5"/>
+  </g>
+</svg>

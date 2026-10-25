@@ -1,0 +1,90 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="favorGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF9C3"/>
+      <stop offset="50%" stop-color="#FCD34D"/>
+      <stop offset="85%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0.2"/>
+    </radialGradient>
+    <radialGradient id="eyeGleam" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="40%" stop-color="#38BDF8"/>
+      <stop offset="90%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0C4A6E"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Nền vàng ánh hào quang lấp lánh -->
+  <circle cx="120" cy="120" r="110" fill="url(#favorGlow)" opacity="0.4"/>
+
+  <!-- Tia sáng toả ra như thiên thần -->
+  <g stroke="#FDE68A" stroke-width="2" opacity="0.7">
+    <line x1="120" y1="20" x2="120" y2="45"/>
+    <line x1="190" y1="50" x2="175" y2="70"/>
+    <line x1="220" y1="120" x2="195" y2="120"/>
+    <line x1="50" y1="50" x2="65" y2="70"/>
+    <line x1="20" y1="120" x2="45" y2="120"/>
+  </g>
+
+  <!-- Trái tim và ngôi sao lấp lánh trôi bồng bềnh -->
+  <g fill="#F43F5E">
+    <path d="M48 65 C48 58 55 54 60 60 C65 54 72 58 72 65 C72 73 60 82 60 82 C60 82 48 73 48 65 Z" transform="scale(0.8) translate(10,-10)"/>
+    <path d="M185 75 C185 68 192 64 197 70 C202 64 209 68 209 75 C209 83 197 92 197 92 C197 92 185 83 185 75 Z" transform="scale(0.9) translate(-10,-15)"/>
+  </g>
+  <text x="180" y="55" font-size="16" fill="#F59E0B">✨</text>
+  <text x="45" y="110" font-size="14" fill="#F59E0B">✨</text>
+
+  <!-- Mèo Con Cầu Xin Với Đôi Mắt Long Lanh -->
+  <g transform="translate(10, 15)">
+    <!-- Tai mèo mềm mại -->
+    <polygon points="65,85 78,38 102,78" fill="#FDE047" stroke="#D97706" stroke-width="3"/>
+    <polygon points="72,82 80,48 96,76" fill="#FBCFE8"/>
+    <polygon points="155,85 142,38 118,78" fill="#FDE047" stroke="#D97706" stroke-width="3"/>
+    <polygon points="148,82 140,48 124,76" fill="#FBCFE8"/>
+
+    <!-- Khuôn mặt mèo tròn xoe đáng yêu -->
+    <ellipse cx="110" cy="115" rx="50" ry="44" fill="#FEF08A" stroke="#D97706" stroke-width="3.5"/>
+
+    <!-- Má hồng chúm chím -->
+    <ellipse cx="74" cy="128" rx="12" ry="7" fill="#F472B6" opacity="0.6"/>
+    <ellipse cx="146" cy="128" rx="12" ry="7" fill="#F472B6" opacity="0.6"/>
+
+    <!-- Đôi mắt khổng lồ long lanh ngấn lệ cầu xin (Anime Puss in Boots) -->
+    <ellipse cx="88" cy="108" rx="20" ry="22" fill="#0C4A6E" stroke="#78350F" stroke-width="2.5"/>
+    <ellipse cx="132" cy="108" rx="20" ry="22" fill="#0C4A6E" stroke="#78350F" stroke-width="2.5"/>
+
+    <!-- Tròng mắt xanh biếc lung linh -->
+    <ellipse cx="88" cy="108" rx="17" ry="19" fill="url(#eyeGleam)"/>
+    <ellipse cx="132" cy="108" rx="17" ry="19" fill="url(#eyeGleam)"/>
+
+    <!-- Đốm sáng lấp lánh trong mắt -->
+    <circle cx="82" cy="100" r="7" fill="#FFFFFF"/>
+    <circle cx="95" cy="116" r="3.5" fill="#FFFFFF"/>
+    <circle cx="84" cy="118" r="2" fill="#FFFFFF"/>
+
+    <circle cx="126" cy="100" r="7" fill="#FFFFFF"/>
+    <circle cx="139" cy="116" r="3.5" fill="#FFFFFF"/>
+    <circle cx="128" cy="118" r="2" fill="#FFFFFF"/>
+
+    <!-- Mũi hồng nhỏ xíu & Miệng chúm chím kiểu mèo :3 -->
+    <polygon points="107,122 113,122 110,126" fill="#FB7185"/>
+    <path d="M103 128 Q107 133 110 128 Q113 133 117 128" stroke="#78350F" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Hai bàn chân trước chắp lại cầu xin 'Cho em xin một lá bài nha...' -->
+    <g transform="translate(85, 142)">
+      <!-- Chân trái -->
+      <ellipse cx="16" cy="15" rx="13" ry="16" fill="#FEF08A" stroke="#D97706" stroke-width="2.5" transform="rotate(-15 16 15)"/>
+      <circle cx="12" cy="7" r="3.5" fill="#FB7185"/>
+      <circle cx="17" cy="6" r="3.5" fill="#FB7185"/>
+      <circle cx="22" cy="8" r="3.5" fill="#FB7185"/>
+      <ellipse cx="17" cy="16" rx="6" ry="5" fill="#FB7185"/>
+
+      <!-- Chân phải chắp vào -->
+      <ellipse cx="34" cy="15" rx="13" ry="16" fill="#FEF08A" stroke="#D97706" stroke-width="2.5" transform="rotate(15 34 15)"/>
+      <circle cx="28" cy="8" r="3.5" fill="#FB7185"/>
+      <circle cx="33" cy="6" r="3.5" fill="#FB7185"/>
+      <circle cx="38" cy="7" r="3.5" fill="#FB7185"/>
+      <ellipse cx="33" cy="16" rx="6" ry="5" fill="#FB7185"/>
+    </g>
+  </g>
+</svg>

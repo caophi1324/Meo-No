@@ -1,0 +1,69 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="shufGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#D1FAE5"/>
+      <stop offset="50%" stop-color="#34D399"/>
+      <stop offset="85%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#064E3B" stop-opacity="0.2"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Nền xoáy xanh ngọc emerald -->
+  <circle cx="120" cy="120" r="110" fill="url(#shufGlow)" opacity="0.4"/>
+
+  <!-- Vòng xoáy lốc xoáy lốc xoáy xoay tít -->
+  <path d="M120 20 A100 100 0 0 1 220 120" stroke="#34D399" stroke-width="4" stroke-dasharray="10 8" fill="none" opacity="0.8"/>
+  <path d="M220 120 A100 100 0 0 1 120 220" stroke="#10B981" stroke-width="4" stroke-dasharray="10 8" fill="none" opacity="0.8"/>
+  <path d="M120 220 A100 100 0 0 1 20 120" stroke="#059669" stroke-width="4" stroke-dasharray="10 8" fill="none" opacity="0.8"/>
+  <path d="M20 120 A100 100 0 0 1 120 20" stroke="#6EE7B7" stroke-width="4" stroke-dasharray="10 8" fill="none" opacity="0.8"/>
+
+  <!-- Các lá bài bay vèo vèo theo vòng xoáy lốc -->
+  <g transform="translate(160, 40) rotate(25)">
+    <rect x="0" y="0" width="22" height="32" rx="4" fill="#FFFFFF" stroke="#059669" stroke-width="2"/>
+    <circle cx="11" cy="16" r="4" fill="#EF4444"/>
+  </g>
+  <g transform="translate(180, 140) rotate(-40)">
+    <rect x="0" y="0" width="22" height="32" rx="4" fill="#FFFFFF" stroke="#059669" stroke-width="2"/>
+    <circle cx="11" cy="16" r="4" fill="#3B82F6"/>
+  </g>
+  <g transform="translate(30, 60) rotate(-30)">
+    <rect x="0" y="0" width="22" height="32" rx="4" fill="#FFFFFF" stroke="#059669" stroke-width="2"/>
+    <circle cx="11" cy="16" r="4" fill="#F59E0B"/>
+  </g>
+  <g transform="translate(45, 160) rotate(45)">
+    <rect x="0" y="0" width="22" height="32" rx="4" fill="#FFFFFF" stroke="#059669" stroke-width="2"/>
+    <circle cx="11" cy="16" r="4" fill="#10B981"/>
+  </g>
+
+  <!-- Chú Mèo Chóng Mặt Quay Cuồng Ở Trung Tâm Cơn Lốc -->
+  <g transform="translate(10, 15)">
+    <!-- Tai mèo -->
+    <polygon points="68,85 75,38 102,76" fill="#F97316" stroke="#C2410C" stroke-width="3"/>
+    <polygon points="74,80 80,48 96,74" fill="#FECDD3"/>
+    <polygon points="152,85 145,38 118,76" fill="#F97316" stroke="#C2410C" stroke-width="3"/>
+    <polygon points="146,80 140,48 124,74" fill="#FECDD3"/>
+
+    <!-- Đầu mèo cam đang xoay mòng mòng -->
+    <ellipse cx="110" cy="115" rx="48" ry="42" fill="#FB923C" stroke="#C2410C" stroke-width="3.5"/>
+
+    <!-- Mắt xoắn ốc hoa mắt chóng mặt @ @ -->
+    <circle cx="88" cy="108" r="18" fill="#FFFFFF" stroke="#7C2D12" stroke-width="2.5"/>
+    <circle cx="132" cy="108" r="18" fill="#FFFFFF" stroke="#7C2D12" stroke-width="2.5"/>
+    <!-- Vòng xoáy ốc mắt trái -->
+    <path d="M88 108 A3 3 0 0 1 85 105 A6 6 0 0 1 91 102 A9 9 0 0 1 97 111 A12 12 0 0 1 82 117" stroke="#000000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Vòng xoáy ốc mắt phải -->
+    <path d="M132 108 A3 3 0 0 1 129 105 A6 6 0 0 1 135 102 A9 9 0 0 1 141 111 A12 12 0 0 1 126 117" stroke="#000000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Ngôi sao nhỏ bay quanh đầu vì choáng -->
+    <text x="55" y="70" font-size="16" fill="#FACC15">💫</text>
+    <text x="145" y="65" font-size="16" fill="#FACC15">💫</text>
+
+    <!-- Mũi hồng & Miệng ngoằn ngoèo cười ngố nghếch -->
+    <polygon points="107,122 113,122 110,126" fill="#F43F5E"/>
+    <path d="M96 135 Q104 142 110 135 Q116 128 124 135" stroke="#7C2D12" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Tay mèo xoay vòng múa may -->
+    <ellipse cx="65" cy="135" rx="14" ry="10" fill="#FB923C" stroke="#C2410C" stroke-width="2.5" transform="rotate(-35 65 135)"/>
+    <ellipse cx="155" cy="135" rx="14" ry="10" fill="#FB923C" stroke="#C2410C" stroke-width="2.5" transform="rotate(35 155 135)"/>
+  </g>
+</svg>

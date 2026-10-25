@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" data-landing-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F4EAD5" />
+    <meta name="color-scheme" content="light" />
+    <meta
+      name="description"
+      content="Mèo Nổ Online là board game 2–5 người: chơi bài, phủ nhận đối thủ và đừng rút trúng Mèo Nổ. Có bot, chơi ngay trên trình duyệt."
+    />
+    <meta property="og:title" content="Mèo Nổ Online | Board game 2–5 người" />
+    <meta
+      property="og:description"
+      content="Rút một lá. Giữ bình tĩnh. Đừng nổ. Chơi Mèo Nổ online với bạn bè hoặc bot."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Bitter:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('meo-no-theme');
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.setAttribute('data-landing-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+          var metaTheme = document.querySelector('meta[name="theme-color"]');
+          if (metaTheme) metaTheme.setAttribute('content', theme === 'dark' ? '#101C17' : '#F4EAD5');
+          var metaScheme = document.querySelector('meta[name="color-scheme"]');
+          if (metaScheme) metaScheme.setAttribute('content', theme === 'dark' ? 'dark' : 'light');
+        } catch (error) {
+          document.documentElement.setAttribute('data-landing-theme', 'light');
+        }
+      })();
+    </script>
+    <title>Mèo Nổ Online | Board game 2–5 người</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

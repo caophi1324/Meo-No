@@ -1,0 +1,100 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="blastGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="40%" stop-color="#F97316"/>
+      <stop offset="80%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#7F1D1D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fuseSpark" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="50%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#EA580C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="furGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+    <linearGradient id="tntGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="50%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nổ nền rực rỡ -->
+  <circle cx="120" cy="120" r="110" fill="url(#blastGlow)" opacity="0.6"/>
+  <!-- Tia lửa ngôi sao nổ -->
+  <path d="M120 15 L132 80 L195 45 L155 100 L225 118 L160 142 L205 195 L145 170 L122 230 L98 170 L35 200 L78 145 L15 120 L80 100 L40 45 L108 80 Z" fill="#FBBF24" opacity="0.75"/>
+  <path d="M120 35 L128 90 L175 62 L145 106 L200 120 L150 138 L180 180 L138 160 L120 210 L102 160 L60 182 L90 138 L40 120 L94 106 L65 62 L112 90 Z" fill="#F97316"/>
+
+  <!-- Khói nổ đen xám comic -->
+  <circle cx="50" cy="70" r="16" fill="#374151" opacity="0.6"/>
+  <circle cx="190" cy="80" r="20" fill="#374151" opacity="0.6"/>
+  <circle cx="45" cy="170" r="18" fill="#1F2937" opacity="0.5"/>
+  <circle cx="195" cy="165" r="16" fill="#1F2937" opacity="0.5"/>
+
+  <!-- Cọc thuốc nổ TNT gắn sau lưng -->
+  <g transform="rotate(-15 120 120)">
+    <rect x="75" y="65" width="22" height="60" rx="4" fill="url(#tntGrad)" stroke="#7F1D1D" stroke-width="2"/>
+    <rect x="100" y="62" width="22" height="63" rx="4" fill="url(#tntGrad)" stroke="#7F1D1D" stroke-width="2"/>
+    <rect x="125" y="66" width="22" height="59" rx="4" fill="url(#tntGrad)" stroke="#7F1D1D" stroke-width="2"/>
+    <!-- Dây đai vàng buộc TNT -->
+    <rect x="73" y="80" width="76" height="8" fill="#F59E0B" opacity="0.9"/>
+    <rect x="73" y="105" width="76" height="8" fill="#F59E0B" opacity="0.9"/>
+    <!-- Chữ TNT -->
+    <text x="111" y="99" font-family="Impact, sans-serif" font-size="11" font-weight="900" fill="#FEF08A" text-anchor="middle">TNT</text>
+    <!-- Ngòi nổ uốn lượn -->
+    <path d="M86 65 Q80 40 105 32 Q125 25 120 15" stroke="#78350F" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Tia lửa ngòi nổ -->
+    <circle cx="120" cy="15" r="18" fill="url(#fuseSpark)"/>
+    <path d="M120 8 L122 22 M113 15 L127 15 M115 10 L125 20 M115 20 L125 10" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Thân & Đầu Mèo Cam Phát Cuồng -->
+  <!-- Tai mèo -->
+  <polygon points="72,95 85,45 110,88" fill="url(#furGrad)" stroke="#C2410C" stroke-width="3"/>
+  <polygon points="78,90 87,55 104,85" fill="#FECDD3"/>
+  <polygon points="168,95 155,45 130,88" fill="url(#furGrad)" stroke="#C2410C" stroke-width="3"/>
+  <polygon points="162,90 153,55 136,85" fill="#FECDD3"/>
+
+  <!-- Khuôn mặt mèo tròn hoảng hốt -->
+  <ellipse cx="120" cy="130" rx="52" ry="46" fill="url(#furGrad)" stroke="#9A3412" stroke-width="3.5"/>
+  <!-- Lông má nhọn kiểu cartoon -->
+  <polygon points="68,135 52,142 70,148" fill="#EA580C"/>
+  <polygon points="172,135 188,142 170,148" fill="#EA580C"/>
+
+  <!-- Đôi mắt to tròn kinh hoàng lồi ra -->
+  <ellipse cx="98" cy="120" rx="19" ry="21" fill="#FFFFFF" stroke="#7C2D12" stroke-width="3"/>
+  <ellipse cx="142" cy="120" rx="19" ry="21" fill="#FFFFFF" stroke="#7C2D12" stroke-width="3"/>
+  <!-- Con ngươi đỏ rực co rút vì sốc -->
+  <circle cx="102" cy="122" r="7" fill="#DC2626"/>
+  <circle cx="103" cy="122" r="3.5" fill="#000000"/>
+  <circle cx="105" cy="119" r="2" fill="#FFFFFF"/>
+  <circle cx="138" cy="122" r="7" fill="#DC2626"/>
+  <circle cx="137" cy="122" r="3.5" fill="#000000"/>
+  <circle cx="139" cy="119" r="2" fill="#FFFFFF"/>
+
+  <!-- Miệng la hét BÙM há to -->
+  <ellipse cx="120" cy="153" rx="18" ry="16" fill="#7F1D1D" stroke="#450A0A" stroke-width="2.5"/>
+  <!-- Lưỡi đỏ run rẩy -->
+  <ellipse cx="120" cy="161" rx="10" ry="7" fill="#EF4444"/>
+  <!-- 2 răng nanh nhọn hoắt -->
+  <polygon points="110,140 113,147 116,140" fill="#FFFFFF"/>
+  <polygon points="124,140 127,147 130,140" fill="#FFFFFF"/>
+
+  <!-- Mũi hồng tam giác -->
+  <polygon points="116,134 124,134 120,139" fill="#F43F5E"/>
+
+  <!-- Râu mèo run rẩy ziczac -->
+  <path d="M78 135 L50 130 M78 142 L48 146 M78 148 L52 158" stroke="#7C2D12" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M162 135 L190 130 M162 142 L192 146 M162 148 L188 158" stroke="#7C2D12" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Chân mèo ôm đầu hoảng loạn -->
+  <ellipse cx="74" cy="155" rx="14" ry="11" fill="#FB923C" stroke="#9A3412" stroke-width="2.5" transform="rotate(30 74 155)"/>
+  <ellipse cx="166" cy="155" rx="14" ry="11" fill="#FB923C" stroke="#9A3412" stroke-width="2.5" transform="rotate(-30 166 155)"/>
+
+  <!-- Giọt mồ hôi bắn tung toé -->
+  <path d="M60 95 C55 90 55 82 62 82 C69 82 69 90 64 95 Z" fill="#60A5FA" stroke="#2563EB" stroke-width="1.5"/>
+  <path d="M180 92 C175 87 175 79 182 79 C189 79 189 87 184 92 Z" fill="#60A5FA" stroke="#2563EB" stroke-width="1.5"/>
+</svg>

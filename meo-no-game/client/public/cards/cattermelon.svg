@@ -1,0 +1,71 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="melonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#DCFCE7"/>
+      <stop offset="50%" stop-color="#86EFAC"/>
+      <stop offset="85%" stop-color="#22C55E"/>
+      <stop offset="100%" stop-color="#15803D" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="rindGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22C55E"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nền xanh tươi mát dưa hấu -->
+  <circle cx="120" cy="120" r="110" fill="url(#melonGlow)" opacity="0.35"/>
+  <circle cx="120" cy="120" r="95" fill="none" stroke="#22C55E" stroke-width="2" stroke-dasharray="6 6" opacity="0.5"/>
+
+  <!-- Chú Mèo Dưa Hấu Tròn Ủm Hình Miếng Dưa Hấu Đỏ Mọng -->
+  <g transform="translate(15, 20)">
+    <!-- Vỏ xanh dưa hấu cong vòng ở đáy -->
+    <path d="M25 90 C35 185 175 185 185 90 C185 195 25 195 25 90 Z" fill="url(#rindGrad)" stroke="#14532D" stroke-width="3"/>
+    <!-- Vằn xanh đậm trên vỏ dưa -->
+    <path d="M50 145 Q65 175 80 178" stroke="#14532D" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M95 160 Q105 180 115 180" stroke="#14532D" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M130 175 Q145 175 160 145" stroke="#14532D" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+    <!-- Lớp cùi dưa màu trắng/xanh nhạt -->
+    <path d="M28 92 C38 175 172 175 182 92 C178 165 32 165 28 92 Z" fill="#DCFCE7"/>
+
+    <!-- Phần ruột dưa đỏ hồng ngọt lịm (thân mèo) -->
+    <path d="M30 92 C42 165 168 165 180 92 Z" fill="#FB7185" stroke="#E11D48" stroke-width="3"/>
+
+    <!-- Tai mèo xanh dưa hấu có viền -->
+    <polygon points="50,92 65,45 88,86" fill="#4ADE80" stroke="#15803D" stroke-width="2.5"/>
+    <polygon points="58,88 68,58 82,84" fill="#FDA4AF"/>
+    <polygon points="160,92 145,45 122,86" fill="#4ADE80" stroke="#15803D" stroke-width="2.5"/>
+    <polygon points="152,88 142,58 128,84" fill="#FDA4AF"/>
+
+    <!-- Các hạt dưa đen hình giọt nước ngộ nghĩnh rải rác -->
+    <path d="M60 120 C60 115 64 112 64 118 C64 122 60 125 60 120 Z" fill="#1F2937" stroke="#111827" stroke-width="1"/>
+    <path d="M150 120 C150 115 146 112 146 118 C146 122 150 125 150 120 Z" fill="#1F2937" stroke="#111827" stroke-width="1"/>
+    <path d="M80 145 C80 140 84 137 84 143 C84 147 80 150 80 145 Z" fill="#1F2937" stroke="#111827" stroke-width="1"/>
+    <path d="M130 145 C130 140 126 137 126 143 C126 147 130 150 130 145 Z" fill="#1F2937" stroke="#111827" stroke-width="1"/>
+    <path d="M105 152 C105 147 109 144 109 150 C109 154 105 157 105 152 Z" fill="#1F2937" stroke="#111827" stroke-width="1"/>
+
+    <!-- Đôi mắt to tròn dễ thương ngơ ngác -->
+    <circle cx="85" cy="105" r="9" fill="#1E293B"/>
+    <circle cx="125" cy="105" r="9" fill="#1E293B"/>
+    <circle cx="82" cy="102" r="3.5" fill="#FFFFFF"/>
+    <circle cx="122" cy="102" r="3.5" fill="#FFFFFF"/>
+
+    <!-- Má hồng cà chua -->
+    <circle cx="70" cy="116" r="8" fill="#F43F5E" opacity="0.6"/>
+    <circle cx="140" cy="116" r="8" fill="#F43F5E" opacity="0.6"/>
+
+    <!-- Mũi tam giác & Miệng mèo cười tinh nghịch -->
+    <polygon points="102,112 108,112 105,116" fill="#881337"/>
+    <path d="M100 118 Q105 124 105 120 Q105 124 110 118" stroke="#881337" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Râu mèo trắng -->
+    <line x1="62" y1="108" x2="44" y2="105" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="62" y1="114" x2="42" y2="116" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="148" y1="108" x2="166" y2="105" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="148" y1="114" x2="168" y2="116" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Chân mèo béo tròn bấu vào vỏ dưa -->
+    <ellipse cx="65" cy="165" rx="10" ry="7" fill="#4ADE80" stroke="#15803D" stroke-width="2"/>
+    <ellipse cx="145" cy="165" rx="10" ry="7" fill="#4ADE80" stroke="#15803D" stroke-width="2"/>
+  </g>
+</svg>

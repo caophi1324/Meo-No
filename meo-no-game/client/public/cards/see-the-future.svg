@@ -1,0 +1,87 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="futureGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#EDE9FE"/>
+      <stop offset="45%" stop-color="#C084FC"/>
+      <stop offset="85%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#4C1D95" stop-opacity="0.3"/>
+    </radialGradient>
+    <radialGradient id="orbGlow" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="30%" stop-color="#A78BFA"/>
+      <stop offset="70%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#312E81"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Nền vũ trụ ma thuật tím huyền bí -->
+  <circle cx="120" cy="120" r="110" fill="url(#futureGlow)" opacity="0.4"/>
+
+  <!-- Tinh vân & Vòng tròn ma thuật Rune Runes -->
+  <circle cx="120" cy="120" r="96" fill="none" stroke="#C084FC" stroke-width="2" stroke-dasharray="6 8" opacity="0.7"/>
+  <circle cx="120" cy="120" r="75" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6"/>
+  <text x="35" y="70" font-size="14" fill="#E9D5FF">✨</text>
+  <text x="190" y="80" font-size="16" fill="#E9D5FF">🌟</text>
+  <text x="50" y="180" font-size="14" fill="#E9D5FF">🔮</text>
+
+  <!-- Mèo Pháp Sư / Chiêm Tinh Học -->
+  <g transform="translate(10, 10)">
+    <!-- Mũ phù thuỷ chóp nhọn màu tím đậm có ngôi sao vàng -->
+    <polygon points="110,12 72,70 148,70" fill="#4C1D95" stroke="#2E1065" stroke-width="3"/>
+    <ellipse cx="110" cy="70" rx="42" ry="10" fill="#3B0764" stroke="#2E1065" stroke-width="2"/>
+    <!-- Dải đai vàng trên mũ -->
+    <rect x="80" y="60" width="60" height="7" fill="#FACC15"/>
+    <polygon points="110,61 113,67 107,67" fill="#FEF08A"/>
+
+    <!-- Tai mèo lấp ló dưới mũ -->
+    <polygon points="68,80 58,48 82,72" fill="#8B5CF6" stroke="#5B21B6" stroke-width="2.5"/>
+    <polygon points="152,80 162,48 138,72" fill="#8B5CF6" stroke="#5B21B6" stroke-width="2.5"/>
+
+    <!-- Mặt mèo tím huyền bí -->
+    <ellipse cx="110" cy="105" rx="46" ry="40" fill="#A78BFA" stroke="#5B21B6" stroke-width="3.5"/>
+
+    <!-- Con mắt thứ ba huyền thoại phát sáng rực rỡ trên trán -->
+    <ellipse cx="110" cy="85" rx="10" ry="7" fill="#FEF08A" stroke="#7C3AED" stroke-width="2"/>
+    <circle cx="110" cy="85" r="3.5" fill="#DC2626"/>
+    <!-- Tia hào quang con mắt thứ 3 -->
+    <line x1="110" y1="74" x2="110" y2="70" stroke="#FACC15" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Mắt mèo mở to nhìn thấy tương lai -->
+    <ellipse cx="90" cy="102" rx="16" ry="18" fill="#FFFFFF" stroke="#4C1D95" stroke-width="2.5"/>
+    <ellipse cx="130" cy="102" rx="16" ry="18" fill="#FFFFFF" stroke="#4C1D95" stroke-width="2.5"/>
+    <!-- Con ngươi màu tím lấp lánh sao trời -->
+    <circle cx="90" cy="102" r="9" fill="#6D28D9"/>
+    <circle cx="130" cy="102" r="9" fill="#6D28D9"/>
+    <circle cx="87" cy="98" r="4" fill="#FFFFFF"/>
+    <circle cx="127" cy="98" r="4" fill="#FFFFFF"/>
+
+    <!-- Mũi hồng & Miệng mỉm cười bí hiểm -->
+    <polygon points="107,114 113,114 110,118" fill="#F472B6"/>
+    <path d="M104 120 Q107 124 110 121 Q113 124 116 120" stroke="#312E81" stroke-width="2" fill="none"/>
+
+    <!-- Quả Cầu Pha Lê Tiên Tri Phát Sáng Rực Rỡ Ở Phía Trước -->
+    <!-- Giá đỡ chân quả cầu màu vàng -->
+    <ellipse cx="110" cy="188" rx="28" ry="8" fill="#D97706" stroke="#78350F" stroke-width="2"/>
+    <polygon points="98,188 122,188 116,170 104,170" fill="#B45309"/>
+
+    <!-- Quả cầu pha lê vũ trụ -->
+    <circle cx="110" cy="155" r="32" fill="url(#orbGlow)" stroke="#C084FC" stroke-width="2.5"/>
+    <!-- Phản quang quả cầu -->
+    <ellipse cx="98" cy="142" rx="12" ry="7" fill="#FFFFFF" opacity="0.7" transform="rotate(-30 98 142)"/>
+
+    <!-- 3 lá bài tương lai lấp lánh bên trong quả cầu -->
+    <g transform="translate(100, 142) rotate(-15)">
+      <rect x="0" y="0" width="10" height="15" rx="1.5" fill="#FEF08A" stroke="#B45309" stroke-width="1"/>
+    </g>
+    <g transform="translate(108, 140)">
+      <rect x="0" y="0" width="10" height="15" rx="1.5" fill="#EF4444" stroke="#991B1B" stroke-width="1"/>
+    </g>
+    <g transform="translate(116, 143) rotate(15)">
+      <rect x="0" y="0" width="10" height="15" rx="1.5" fill="#60A5FA" stroke="#1D4ED8" stroke-width="1"/>
+    </g>
+
+    <!-- Hai tay mèo nâng quanh quả cầu truyền phép -->
+    <ellipse cx="68" cy="155" rx="14" ry="11" fill="#A78BFA" stroke="#5B21B6" stroke-width="2" transform="rotate(25 68 155)"/>
+    <ellipse cx="152" cy="155" rx="14" ry="11" fill="#A78BFA" stroke="#5B21B6" stroke-width="2" transform="rotate(-25 152 155)"/>
+  </g>
+</svg>

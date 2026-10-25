@@ -1,0 +1,73 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="beardGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#EDE9FE"/>
+      <stop offset="50%" stop-color="#DDD6FE"/>
+      <stop offset="85%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#5B21B6" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="beardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#78350F"/>
+      <stop offset="100%" stop-color="#451A03"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nền tím hipster sang trọng -->
+  <circle cx="120" cy="120" r="110" fill="url(#beardGlow)" opacity="0.35"/>
+  <circle cx="120" cy="120" r="95" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="6 6" opacity="0.4"/>
+
+  <!-- MÈO RÂU QUAI NÓN HIPSTER ĐẲNG CẤP -->
+  <g transform="translate(15, 15)">
+    <!-- Tai mèo vuốt nhọn kiêu kỳ -->
+    <polygon points="62,75 72,28 98,68" fill="#F3F4F6" stroke="#4B5563" stroke-width="3"/>
+    <polygon points="68,70 76,38 92,64" fill="#FDA4AF"/>
+    <polygon points="148,75 138,28 112,68" fill="#F3F4F6" stroke="#4B5563" stroke-width="3"/>
+    <polygon points="142,70 134,38 118,64" fill="#FDA4AF"/>
+
+    <!-- Đầu mèo trắng quý phái -->
+    <ellipse cx="105" cy="100" rx="46" ry="40" fill="#F9FAFB" stroke="#4B5563" stroke-width="3.5"/>
+
+    <!-- Kính mắt tròn cổ điển (Hipster Glasses) -->
+    <circle cx="85" cy="92" r="15" fill="#E0F2FE" stroke="#B45309" stroke-width="3" opacity="0.9"/>
+    <circle cx="125" cy="92" r="15" fill="#E0F2FE" stroke="#B45309" stroke-width="3" opacity="0.9"/>
+    <line x1="100" y1="92" x2="110" y2="92" stroke="#B45309" stroke-width="3.5"/>
+    <!-- Ánh sáng phản chiếu mắt kính -->
+    <path d="M78 86 L86 86 L80 98 L74 98 Z" fill="#FFFFFF" opacity="0.8"/>
+    <path d="M118 86 L126 86 L120 98 L114 98 Z" fill="#FFFFFF" opacity="0.8"/>
+
+    <!-- Đôi mắt điềm tĩnh trí thức -->
+    <circle cx="85" cy="92" r="6" fill="#1E293B"/>
+    <circle cx="125" cy="92" r="6" fill="#1E293B"/>
+    <circle cx="83" cy="90" r="2" fill="#FFFFFF"/>
+    <circle cx="123" cy="90" r="2" fill="#FFFFFF"/>
+
+    <!-- Mũi hồng thanh lịch -->
+    <polygon points="102,104 108,104 105,108" fill="#F43F5E"/>
+
+    <!-- BỘ RÂU VÀ RIA MÉP QUAI NÓN HOÀNG GIA KHỔNG LỒ -->
+    <!-- Ria mép uốn cong vuốt sáp quý tộc -->
+    <path d="M105 108 C80 102 55 110 50 120 C55 125 75 118 105 116 Z" fill="url(#beardGrad)" stroke="#271005" stroke-width="2"/>
+    <path d="M105 108 C130 102 155 110 160 120 C155 125 135 118 105 116 Z" fill="url(#beardGrad)" stroke="#271005" stroke-width="2"/>
+
+    <!-- Chòm râu quai nón rậm rạp dài xuống tận ngực -->
+    <path d="M62 115 C50 135 70 185 105 190 C140 185 160 135 148 115 C135 155 125 175 105 178 C85 175 75 155 62 115 Z" fill="url(#beardGrad)" stroke="#271005" stroke-width="3"/>
+    <!-- Các lọn râu tỉa tót mượt mà -->
+    <path d="M85 130 Q92 165 105 175" stroke="#92400E" stroke-width="2" fill="none"/>
+    <path d="M125 130 Q118 165 105 175" stroke="#92400E" stroke-width="2" fill="none"/>
+    <path d="M105 120 L105 170" stroke="#92400E" stroke-width="2" fill="none"/>
+
+    <!-- Chiếc tẩu thuốc nhỏ phong cách quý ông (nhả ra bong bóng xà phòng / khói thơm) -->
+    <g transform="translate(135, 120) rotate(15)">
+      <path d="M0 0 L25 -8 Q30 -10 32 -5 L32 5 Q28 8 22 2 L0 4 Z" fill="#92400E" stroke="#451A03" stroke-width="2"/>
+      <circle cx="35" cy="-14" r="5" fill="#E2E8F0" opacity="0.7"/>
+      <circle cx="42" cy="-22" r="7" fill="#E2E8F0" opacity="0.6"/>
+    </g>
+
+    <!-- Nơ cổ quý ông đỏ kẻ ca rô -->
+    <g transform="translate(90, 185)">
+      <polygon points="0,5 15,10 0,15" fill="#EF4444" stroke="#991B1B" stroke-width="1.5"/>
+      <polygon points="30,5 15,10 30,15" fill="#EF4444" stroke="#991B1B" stroke-width="1.5"/>
+      <circle cx="15" cy="10" r="4" fill="#B91C1C"/>
+    </g>
+  </g>
+</svg>

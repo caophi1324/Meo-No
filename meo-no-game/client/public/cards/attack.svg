@@ -1,0 +1,82 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="atkGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFEDD5"/>
+      <stop offset="50%" stop-color="#FB923C"/>
+      <stop offset="85%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#9A3412" stop-opacity="0.3"/>
+    </radialGradient>
+    <linearGradient id="slashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="30%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nền hào quang bùng cháy -->
+  <circle cx="120" cy="120" r="110" fill="url(#atkGlow)" opacity="0.4"/>
+
+  <!-- Vết chém móng vuốt xé toạc màn hình -->
+  <path d="M25 40 Q85 85 200 65 L215 50 Q105 70 30 25 Z" fill="url(#slashGrad)" opacity="0.85"/>
+  <path d="M40 70 Q110 120 220 100 L230 85 Q125 105 45 55 Z" fill="url(#slashGrad)"/>
+  <path d="M15 95 Q80 150 195 130 L205 118 Q95 135 20 80 Z" fill="url(#slashGrad)" opacity="0.85"/>
+
+  <!-- Mèo Chiến Binh Hổ Dũng Mãnh Nhảy Tới -->
+  <g transform="translate(10, 15)">
+    <!-- Đai buộc đầu võ sĩ đạo đỏ rực bay phấp phới -->
+    <path d="M45 75 Q15 65 5 45 L8 38 Q25 58 55 68 Z" fill="#DC2626"/>
+    <path d="M42 78 Q10 85 2 105 L5 110 Q20 90 52 75 Z" fill="#DC2626"/>
+
+    <!-- Tai mèo nhọn giận dữ hướng về phía trước -->
+    <polygon points="68,90 80,42 108,82" fill="#D97706" stroke="#92400E" stroke-width="3"/>
+    <polygon points="74,86 82,54 100,80" fill="#FDE68A"/>
+    <polygon points="152,90 140,42 112,82" fill="#D97706" stroke="#92400E" stroke-width="3"/>
+    <polygon points="146,86 138,54 120,80" fill="#FDE68A"/>
+
+    <!-- Băng đô hachimaki trên trán -->
+    <rect x="62" y="78" width="96" height="18" rx="6" fill="#EF4444" stroke="#991B1B" stroke-width="2.5"/>
+    <circle cx="110" cy="87" r="6" fill="#FFFFFF"/>
+    <circle cx="110" cy="87" r="4" fill="#DC2626"/>
+
+    <!-- Mặt mèo cam vằn hổ -->
+    <ellipse cx="110" cy="125" rx="48" ry="42" fill="#F59E0B" stroke="#92400E" stroke-width="3.5"/>
+
+    <!-- Vằn hổ trên trán và má -->
+    <polygon points="110,98 105,108 115,108" fill="#78350F"/>
+    <polygon points="98,98 96,106 104,105" fill="#78350F"/>
+    <polygon points="122,98 116,105 124,106" fill="#78350F"/>
+    <polygon points="64,124 76,126 68,131" fill="#78350F"/>
+    <polygon points="156,124 144,126 152,131" fill="#78350F"/>
+
+    <!-- Mắt mèo sắc lẹm xếch ngược chiến đấu -->
+    <polygon points="80,112 100,118 86,125" fill="#FEF08A" stroke="#78350F" stroke-width="2"/>
+    <polygon points="140,112 120,118 134,125" fill="#FEF08A" stroke="#78350F" stroke-width="2"/>
+    <!-- Con ngươi mắt thú dữ -->
+    <ellipse cx="91" cy="118" rx="2.5" ry="6" fill="#000000"/>
+    <ellipse cx="129" cy="118" rx="2.5" ry="6" fill="#000000"/>
+
+    <!-- Mũi gầm gừ & Nhe răng nanh sắc nhọn -->
+    <polygon points="106,126 114,126 110,131" fill="#78350F"/>
+    <!-- Miệng gầm -->
+    <path d="M96 138 Q110 132 124 138 Q110 156 96 138 Z" fill="#7F1D1D" stroke="#450A0A" stroke-width="2.5"/>
+    <!-- Răng nanh sắc bén -->
+    <polygon points="100,137 104,146 107,137" fill="#FFFFFF"/>
+    <polygon points="113,137 116,146 120,137" fill="#FFFFFF"/>
+
+    <!-- Hai móng vuốt mèo vươn ra sắc nhọn -->
+    <!-- Móng vuốt trái -->
+    <g transform="translate(42, 125)">
+      <circle cx="16" cy="16" r="16" fill="#F59E0B" stroke="#92400E" stroke-width="2.5"/>
+      <path d="M8 8 Q4 -5 12 -12" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      <path d="M16 6 Q16 -7 22 -14" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      <path d="M24 8 Q28 -5 32 -10" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <!-- Móng vuốt phải -->
+    <g transform="translate(142, 125)">
+      <circle cx="16" cy="16" r="16" fill="#F59E0B" stroke="#92400E" stroke-width="2.5"/>
+      <path d="M8 8 Q4 -5 0 -10" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      <path d="M16 6 Q16 -7 10 -14" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+      <path d="M24 8 Q28 -5 20 -12" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

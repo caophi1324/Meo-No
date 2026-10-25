@@ -1,0 +1,52 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="fuelGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF3C7"/>
+      <stop offset="45%" stop-color="#F59E0B"/>
+      <stop offset="80%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#431407" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="fuelCan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="120" cy="120" r="110" fill="url(#fuelGlow)" opacity="0.4"/>
+
+  <!-- tia năng lượng -->
+  <path d="M38 60 l14 -18 l-2 22 l18 -8 l-12 18" fill="none" stroke="#FDE68A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M198 192 l-12 18 l2 -22 l-18 8 l12 -18" fill="none" stroke="#FDE68A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- can nhiên liệu -->
+  <g transform="translate(132, 58) rotate(8)">
+    <rect x="0" y="12" width="62" height="82" rx="10" fill="url(#fuelCan)" stroke="#78350F" stroke-width="3"/>
+    <path d="M10 12 V2 h18 v10" fill="none" stroke="#78350F" stroke-width="4" stroke-linecap="round"/>
+    <path d="M48 12 q10 -12 18 -2" fill="none" stroke="#78350F" stroke-width="4" stroke-linecap="round"/>
+    <rect x="12" y="32" width="38" height="20" rx="4" fill="#431407" opacity="0.8"/>
+    <path d="M22 42 h18 M31 37 v10" stroke="#FDE68A" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- mèo tiếp nhiên liệu -->
+  <g>
+    <polygon points="76,88 66,50 96,80" fill="#D97706" stroke="#78350F" stroke-width="3"/>
+    <polygon points="82,84 76,62 94,78" fill="#FDE68A"/>
+    <polygon points="152,88 162,50 132,80" fill="#D97706" stroke="#78350F" stroke-width="3"/>
+    <polygon points="146,84 152,62 134,78" fill="#FDE68A"/>
+    <ellipse cx="114" cy="124" rx="50" ry="44" fill="#FBBF24" stroke="#78350F" stroke-width="3.5"/>
+    <!-- mắt quyết tâm -->
+    <path d="M84 116 l20 6 M144 116 l-20 6" stroke="#78350F" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="94" cy="124" r="3" fill="#431407"/>
+    <circle cx="134" cy="124" r="3" fill="#431407"/>
+    <!-- miệng -->
+    <polygon points="110,134 118,134 114,139" fill="#78350F"/>
+    <path d="M102 146 q12 10 24 0" fill="none" stroke="#78350F" stroke-width="3" stroke-linecap="round"/>
+    <!-- tay cầm vòi -->
+    <path d="M148 150 q26 8 24 -24" fill="none" stroke="#78350F" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="172" cy="124" r="6" fill="#FDE68A" stroke="#78350F" stroke-width="2"/>
+  </g>
+
+  <!-- giọt nhiên liệu -->
+  <path d="M58 168 q-10 16 0 22 q10 -6 0 -22 Z" fill="#FDE68A" stroke="#B45309" stroke-width="2"/>
+  <path d="M80 184 q-8 13 0 18 q8 -5 0 -18 Z" fill="#FBBF24" stroke="#B45309" stroke-width="2" opacity="0.8"/>
+</svg>

@@ -1,0 +1,68 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="altGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F5F3FF"/>
+      <stop offset="40%" stop-color="#C4B5FD"/>
+      <stop offset="75%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#2E1065" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="altCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="120" cy="120" r="110" fill="url(#altGlow)" opacity="0.4"/>
+  <circle cx="120" cy="120" r="94" fill="none" stroke="#DDD6FE" stroke-width="2" stroke-dasharray="5 9" opacity="0.65"/>
+
+  <!-- Tinh tú -->
+  <circle cx="42" cy="56" r="4" fill="#FDE68A"/>
+  <circle cx="198" cy="46" r="3" fill="#DDD6FE"/>
+  <circle cx="204" cy="164" r="4" fill="#FDE68A"/>
+  <circle cx="34" cy="178" r="3" fill="#C4B5FD"/>
+  <path d="M188 68 l4 -10 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 Z" fill="#FDE68A" opacity="0.9"/>
+
+  <!-- Mèo pháp sư -->
+  <g>
+    <!-- mũ -->
+    <polygon points="120,22 82,82 158,82" fill="#5B21B6" stroke="#2E1065" stroke-width="3"/>
+    <ellipse cx="120" cy="82" rx="42" ry="10" fill="#4C1D95" stroke="#2E1065" stroke-width="2"/>
+    <rect x="91" y="72" width="58" height="7" fill="#FACC15"/>
+    <!-- tai -->
+    <polygon points="78,96 68,64 92,88" fill="#A78BFA" stroke="#5B21B6" stroke-width="2.5"/>
+    <polygon points="162,96 172,64 148,88" fill="#A78BFA" stroke="#5B21B6" stroke-width="2.5"/>
+    <!-- mặt -->
+    <ellipse cx="120" cy="122" rx="48" ry="42" fill="#A78BFA" stroke="#4C1D95" stroke-width="3.5"/>
+    <!-- mắt thứ ba -->
+    <ellipse cx="120" cy="102" rx="11" ry="8" fill="#FEF08A" stroke="#7C3AED" stroke-width="2"/>
+    <circle cx="120" cy="102" r="4" fill="#7C3AED"/>
+    <path d="M120 90 v-7 M108 94 l-6 -5 M132 94 l6 -5" stroke="#FDE68A" stroke-width="2" stroke-linecap="round"/>
+    <!-- mắt -->
+    <ellipse cx="99" cy="125" rx="12" ry="14" fill="#FFFFFF" stroke="#4C1D95" stroke-width="2"/>
+    <ellipse cx="141" cy="125" rx="12" ry="14" fill="#FFFFFF" stroke="#4C1D95" stroke-width="2"/>
+    <circle cx="99" cy="125" r="6" fill="#7C3AED"/>
+    <circle cx="141" cy="125" r="6" fill="#7C3AED"/>
+    <circle cx="97" cy="122" r="2.5" fill="#FFFFFF"/>
+    <circle cx="139" cy="122" r="2.5" fill="#FFFFFF"/>
+    <!-- mũi miệng -->
+    <polygon points="116,139 124,139 120,144" fill="#EC4899"/>
+    <path d="M110 150 q10 7 20 0" fill="none" stroke="#4C1D95" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Ba lá bài tương lai đang xoay -->
+  <g transform="translate(60, 148) rotate(-18)">
+    <rect x="0" y="0" width="34" height="50" rx="5" fill="url(#altCard)" stroke="#92400E" stroke-width="2"/>
+    <circle cx="17" cy="17" r="5" fill="#7C3AED" opacity="0.8"/>
+    <path d="M8 34 h18 M8 40 h12" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(103, 142) rotate(1)">
+    <rect x="0" y="0" width="34" height="50" rx="5" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2"/>
+    <circle cx="17" cy="17" r="5" fill="#F59E0B"/>
+    <path d="M8 34 h18 M8 40 h12" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(146, 148) rotate(18)">
+    <rect x="0" y="0" width="34" height="50" rx="5" fill="url(#altCard)" stroke="#92400E" stroke-width="2"/>
+    <circle cx="17" cy="17" r="5" fill="#7C3AED" opacity="0.8"/>
+    <path d="M8 34 h18 M8 40 h12" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

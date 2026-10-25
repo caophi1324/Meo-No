@@ -1,0 +1,102 @@
+<svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="backCenterGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#EA580C" stop-opacity="0.8"/>
+      <stop offset="60%" stop-color="#991B1B" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1E1B4B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="50%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="innerCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Nền thẻ bài bo góc sang trọng -->
+  <rect x="2" y="2" width="196" height="276" rx="16" fill="url(#innerCard)" stroke="url(#goldBorder)" stroke-width="3"/>
+
+  <!-- Khung viền chỉ vàng kép với hoa văn góc -->
+  <rect x="8" y="8" width="184" height="264" rx="12" fill="none" stroke="#DC2626" stroke-width="1.5" opacity="0.8"/>
+  <rect x="14" y="14" width="172" height="252" rx="10" fill="none" stroke="url(#goldBorder)" stroke-width="2"/>
+
+  <!-- Hào quang đỏ cam giữa lưng bài -->
+  <circle cx="100" cy="140" r="80" fill="url(#backCenterGlow)"/>
+
+  <!-- Họa tiết đan chéo kim cương nền bài (Casino card pattern) -->
+  <g stroke="#334155" stroke-width="0.75" opacity="0.35">
+    <line x1="20" y1="20" x2="180" y2="180"/>
+    <line x1="20" y1="60" x2="180" y2="220"/>
+    <line x1="20" y1="100" x2="180" y2="260"/>
+    <line x1="180" y1="20" x2="20" y2="180"/>
+    <line x1="180" y1="60" x2="20" y2="220"/>
+    <line x1="180" y1="100" x2="20" y2="260"/>
+  </g>
+
+  <!-- 4 hoa văn góc: Dấu chân mèo vàng -->
+  <!-- Góc trên trái -->
+  <g transform="translate(22, 22) scale(0.6)">
+    <circle cx="15" cy="18" r="8" fill="#FBBF24"/>
+    <circle cx="8" cy="8" r="3.5" fill="#FBBF24"/>
+    <circle cx="15" cy="5" r="3.5" fill="#FBBF24"/>
+    <circle cx="22" cy="8" r="3.5" fill="#FBBF24"/>
+  </g>
+  <!-- Góc trên phải -->
+  <g transform="translate(155, 22) scale(0.6)">
+    <circle cx="15" cy="18" r="8" fill="#FBBF24"/>
+    <circle cx="8" cy="8" r="3.5" fill="#FBBF24"/>
+    <circle cx="15" cy="5" r="3.5" fill="#FBBF24"/>
+    <circle cx="22" cy="8" r="3.5" fill="#FBBF24"/>
+  </g>
+  <!-- Góc dưới trái -->
+  <g transform="translate(22, 240) scale(0.6)">
+    <circle cx="15" cy="18" r="8" fill="#FBBF24"/>
+    <circle cx="8" cy="8" r="3.5" fill="#FBBF24"/>
+    <circle cx="15" cy="5" r="3.5" fill="#FBBF24"/>
+    <circle cx="22" cy="8" r="3.5" fill="#FBBF24"/>
+  </g>
+  <!-- Góc dưới phải -->
+  <g transform="translate(155, 240) scale(0.6)">
+    <circle cx="15" cy="18" r="8" fill="#FBBF24"/>
+    <circle cx="8" cy="8" r="3.5" fill="#FBBF24"/>
+    <circle cx="15" cy="5" r="3.5" fill="#FBBF24"/>
+    <circle cx="22" cy="8" r="3.5" fill="#FBBF24"/>
+  </g>
+
+  <!-- Huy hiệu trung tâm hình Oval viền vàng bốc lửa -->
+  <ellipse cx="100" cy="140" rx="65" ry="65" fill="#0F172A" stroke="url(#goldBorder)" stroke-width="3"/>
+  <ellipse cx="100" cy="140" rx="58" ry="58" fill="#18181B" stroke="#EF4444" stroke-width="2"/>
+
+  <!-- Trái bom hoạt hình ở trung tâm huy hiệu -->
+  <g transform="translate(100, 115)">
+    <!-- Quả bom tròn -->
+    <circle cx="0" cy="5" r="28" fill="#1E293B" stroke="#F97316" stroke-width="2.5"/>
+    <circle cx="-8" cy="-3" r="6" fill="#FFFFFF" opacity="0.4"/>
+    <!-- Cổ bom -->
+    <rect x="-6" y="-28" width="12" height="7" fill="#64748B" rx="1"/>
+    <!-- Ngòi nổ uốn lượn -->
+    <path d="M0 -28 Q10 -38 4 -48" stroke="#D97706" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Tia lửa ngòi bom cháy rực rỡ -->
+    <circle cx="4" cy="-48" r="9" fill="#FDE047"/>
+    <circle cx="4" cy="-48" r="5" fill="#EF4444"/>
+    <!-- Tai mèo trên quả bom -->
+    <polygon points="-22,-5 -14,-22 -4,-12" fill="#F97316" stroke="#9A3412" stroke-width="1.5"/>
+    <polygon points="22,-5 14,-22 4,-12" fill="#F97316" stroke="#9A3412" stroke-width="1.5"/>
+    <!-- Mắt mèo gian xảo trên quả bom -->
+    <polygon points="-14,3 -4,7 -12,11" fill="#FEF08A"/>
+    <polygon points="14,3 4,7 12,11" fill="#FEF08A"/>
+    <circle cx="-8" cy="7" r="1.5" fill="#000000"/>
+    <circle cx="8" cy="7" r="1.5" fill="#000000"/>
+  </g>
+
+  <!-- Chữ MÈO NỔ kiêu hãnh phong cách Comic 3D -->
+  <!-- Viền bóng chữ -->
+  <text x="100" y="162" font-family="'Fredoka', Impact, sans-serif" font-size="20" font-weight="900" fill="#7F1D1D" text-anchor="middle" letter-spacing="3">MÈO NỔ</text>
+  <!-- Mặt chữ chính -->
+  <text x="100" y="160" font-family="'Fredoka', Impact, sans-serif" font-size="20" font-weight="900" fill="#FEF08A" text-anchor="middle" letter-spacing="3">MÈO NỔ</text>
+
+  <text x="100" y="176" font-family="'Nunito', sans-serif" font-size="9" font-weight="800" fill="#F97316" text-anchor="middle" letter-spacing="2">EXPLODING KITTENS</text>
+</svg>

@@ -1,0 +1,50 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="skipGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#DBEAFE"/>
+      <stop offset="50%" stop-color="#60A5FA"/>
+      <stop offset="85%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#172554" stop-opacity="0.2"/>
+    </radialGradient>
+    <linearGradient id="skipCape" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="120" cy="120" r="110" fill="url(#skipGlow)" opacity="0.4"/>
+
+  <!-- Vệt tốc độ -->
+  <path d="M18 88 H78 M10 112 H64 M22 138 H72" stroke="#BFDBFE" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+  <path d="M158 80 H218 M166 104 H228 M160 130 H210" stroke="#BFDBFE" stroke-width="5" stroke-linecap="round" opacity="0.45"/>
+
+  <!-- Ba mũi tên lao tới -->
+  <path d="M30 170 L78 170 L60 154 M78 170 L60 186" fill="none" stroke="#93C5FD" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M62 194 L110 194 L92 178 M110 194 L92 210" fill="none" stroke="#60A5FA" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+
+  <!-- Mèo phi hành gia lao về trước -->
+  <g transform="translate(6, -4)">
+    <!-- cape -->
+    <path d="M62 104 Q32 112 22 140 L42 136 Q52 120 74 118 Z" fill="url(#skipCape)" stroke="#1E3A8A" stroke-width="2.5"/>
+    <!-- tai -->
+    <polygon points="82,92 72,54 104,82" fill="#3B82F6" stroke="#1E3A8A" stroke-width="3"/>
+    <polygon points="88,88 84,66 100,82" fill="#BFDBFE"/>
+    <polygon points="158,92 168,54 136,82" fill="#3B82F6" stroke="#1E3A8A" stroke-width="3"/>
+    <polygon points="152,88 156,66 140,82" fill="#BFDBFE"/>
+    <!-- face -->
+    <ellipse cx="120" cy="124" rx="50" ry="44" fill="#93C5FD" stroke="#1E3A8A" stroke-width="3.5"/>
+    <!-- goggles -->
+    <rect x="82" y="104" width="76" height="26" rx="13" fill="#0F172A" stroke="#60A5FA" stroke-width="3"/>
+    <circle cx="102" cy="117" r="9" fill="#7DD3FC" stroke="#E0F2FE" stroke-width="2"/>
+    <circle cx="138" cy="117" r="9" fill="#7DD3FC" stroke="#E0F2FE" stroke-width="2"/>
+    <path d="M120 117 h8" stroke="#60A5FA" stroke-width="3"/>
+    <!-- mouth -->
+    <polygon points="116,138 124,138 120,143" fill="#1E3A8A"/>
+    <path d="M108 150 q12 8 24 0" fill="none" stroke="#1E3A8A" stroke-width="3" stroke-linecap="round"/>
+    <!-- paws forward -->
+    <ellipse cx="76" cy="152" rx="16" ry="12" fill="#60A5FA" stroke="#1E3A8A" stroke-width="2.5" transform="rotate(-18 76 152)"/>
+    <ellipse cx="164" cy="152" rx="16" ry="12" fill="#60A5FA" stroke="#1E3A8A" stroke-width="2.5" transform="rotate(18 164 152)"/>
+  </g>
+
+  <path d="M190 46 l10 -18 l4 20 l18 -8 l-10 18" fill="none" stroke="#DBEAFE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
