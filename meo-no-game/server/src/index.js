@@ -24,6 +24,9 @@ const io = new Server(httpServer, {
 const roomManager = new RoomManager();
 registerSocketHandlers(io, roomManager, GameEngine);
 
+// Health check cho Railway
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
 // Dọn phòng rác mỗi 60 giây: không còn người thật nào kết nối
 setInterval(() => {
   for (const [code, room] of roomManager.rooms) {
