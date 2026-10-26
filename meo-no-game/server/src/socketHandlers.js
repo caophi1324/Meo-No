@@ -169,9 +169,19 @@ export function registerSocketHandlers(io, roomManager, GameEngine) {
       const roomCode = String(payload.roomCode || '').trim().toUpperCase();
       const oldPlayerId = payload.playerId;
       const room = findRoomByCode(roomCode);
-      if (!room || !oldPlayerId) return;
+      if (!room || !oldPlayerId) {
+        return socket.emit(EVENTS.ERROR, {
+          message: 'Bàn chơi đã đóng sau khi mất kết nối.',
+          code: 'REJOIN_FAILED',
+        });
+      }
       const player = room.players.find(p => p.id === oldPlayerId);
-      if (!player) return;
+      if (!player) {
+        return socket.emit(EVENTS.ERROR, {
+          message: 'Không thể kết nối lại bàn chơi.',
+          code: 'REJOIN_FAILED',
+        });
+      }
 
       roomManager.clearReconnectTimer(roomCode, oldPlayerId);
       player.id = socket.id;
