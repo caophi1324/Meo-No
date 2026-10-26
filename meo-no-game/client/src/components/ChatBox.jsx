@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import VoiceChat from './VoiceChat';
 
 // Phần chat thuần bên trong GameSidePanel; panel lo phần mở/đóng và vị trí.
-export default function ChatBox({ messages = [], onSend, playerId }) {
+export default function ChatBox({ messages = [], onSend, playerId, roomCode = '' }) {
   const [text, setText] = useState('');
   const listRef = useRef(null);
 
@@ -54,6 +55,7 @@ export default function ChatBox({ messages = [], onSend, playerId }) {
         >
           Gửi
         </button>
+        <VoiceChat roomCode={roomCode} />
       </div>
     </div>
   );

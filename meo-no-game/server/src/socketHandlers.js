@@ -358,6 +358,21 @@ export function registerSocketHandlers(io, roomManager, GameEngine) {
       });
     });
 
+    // Voice chat push-to-talk: relay a short audio clip to the room.
+    socket.on(EVENTS.VOICE_CLIP, (payload = {}) => {
+      const room = findRoomByCode(payload.roomCode);
+      if (!room) return;
+      const player = room.players.find(p => p.id === socket.id);
+      const audio = typeof payload.audio === 'string' ? payload.audio : '';
+      if (!player || !audio || audio.length > 700_000) return;
+      socket.to(room.roomCode).emit(EVENTS.VOICE_CLIP, {
+        playerId: socket.id,
+        playerName: player.name,
+        mime: String(payload.mime || 'audio/webm').slice(0, 64),
+        audio,
+      });
+    });
+
     // ==================== NGẮT KẾT NỐI ====================
     socket.on('disconnect', () => {
       console.log(`Người chơi ngắt kết nối: ${socket.id}`);

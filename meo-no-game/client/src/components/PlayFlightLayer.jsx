@@ -24,8 +24,12 @@ export default function PlayFlightLayer({ card, cards = [], fromRect, origins = 
   const spin = SPIN.has(type);
   const x = useTransform(progress, t => quadraticPoint(geometry.start.x, geometry.control.x, geometry.end.x, t) - geometry.width / 2);
   const y = useTransform(progress, t => quadraticPoint(geometry.start.y, geometry.control.y, geometry.end.y, t) - geometry.height / 2);
-  const rotate = useTransform(progress, t => reduceMotion ? 0 : spin ? 180 * t + 8 * Math.sin(Math.PI * t) : 8 * Math.sin(Math.PI * t));
-  const rotateX = useTransform(progress, t => reduceMotion ? 0 : 12 * Math.sin(Math.PI * t));
+  const rotate = useTransform(progress, t => reduceMotion || spin ? 0 : 8 * Math.sin(Math.PI * t));
+  const rotateX = useTransform(progress, t => reduceMotion || spin ? 0 : 12 * Math.sin(Math.PI * t));
+  const rotateY = useTransform(progress, t => {
+    if (reduceMotion || !spin) return 0;
+    return (type === 'reverse' || type === 'reverse_alt' ? 1 : -1) * 180 * t;
+  });
   const flightOpacity = useTransform([progress, opacity], ([p, o]) => o * (future ? 1 - .35 * p : 1));
   const info = CARD_DATA[card?.type] || card || {};
   const color = heavy ? '#B9472E' : info.borderColor || '#C9922E';
@@ -75,7 +79,7 @@ export default function PlayFlightLayer({ card, cards = [], fromRect, origins = 
   const particles = lowFrameRate || window.innerWidth < 640 ? 6 : 12;
   return createPortal(
     <div data-play-flight={landing ? 'landing' : 'flight'} aria-hidden="true" className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 60, perspective: 800 }}>
-      <motion.div style={{ position: 'absolute', top: 0, left: 0, x, y, scale, rotate, rotateX, opacity: flightOpacity, width: geometry.width, height: geometry.height, transformPerspective: 800, willChange: 'transform, opacity' }}>
+      <motion.div style={{ position: 'absolute', top: 0, left: 0, x, y, scale, rotate, rotateX, rotateY, opacity: flightOpacity, width: geometry.width, height: geometry.height, transformPerspective: 800, willChange: 'transform, opacity' }}>
         {group.map((item, i) => {
           const data = CARD_DATA[item?.type] || item || {};
           const src = faceDown ? cardBackFor(theme) : themedImage(theme === 'lol' && item?.lolImage ? item.lolImage : data.image || cardBackFor(theme), theme);

@@ -29,6 +29,7 @@ import GameSidePanel from '../components/GameSidePanel';
 import CardAnimationOverlay from '../components/CardAnimationOverlay';
 import CardPresentation from '../components/CardPresentation';
 import AnimatedCount from '../components/AnimatedCount';
+import TurnTimerRing from '../components/TurnTimerRing';
 import { anchorRect, captureCardOrigins } from '../utils/animationGeometry';
 import AlterFutureModal from '../components/AlterFutureModal';
 import ModalShell from '../components/ModalShell';
@@ -95,6 +96,22 @@ export default function GamePage() {
   const [hasDealt, setHasDealt] = useState(false);
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [tableBackground, setTableBackground] = useState(readTableBackground);
+  const [deckInsert, setDeckInsert] = useState(null);
+  const [tableTrim, setTableTrim] = useState(() => {
+    try {
+      return Math.max(0, Math.min(90, Number(localStorage.getItem('meono_table_trim')) || 0));
+    } catch {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('meono_table_trim', String(tableTrim));
+    } catch {
+      /* bỏ qua */
+    }
+  }, [tableTrim]);
 
   useEffect(() => () => useGameStore.getState().clearEffects(), [roomCode]);
   useEffect(() => { if (activePresentationId) setCardAnimation(null); }, [activePresentationId]);
@@ -169,6 +186,8 @@ export default function GamePage() {
   const turnSecondsLeft = turnEndsAt
     ? Math.max(0, Math.ceil((turnEndsAt - clockNow) / 1000))
     : null;
+  const turnTimeLimit = Number(gameState?.timers?.turnTimeLimit) || 60;
+  const turnTotalSeconds = Math.max(turnTimeLimit, turnSecondsLeft || 0, 1);
 
   const isHost =
     !!gameState?.isHost || !!lobbyPlayers.find((p) => p.id === playerId && p.isHost);
@@ -712,16 +731,12 @@ export default function GamePage() {
           logs={mergedLog}
           playerId={playerId}
           playerName={playerName}
+          roomCode={roomCode}
           onSend={(msg) => sendChat(roomCode, msg)}
           onReplayCards={(entry) => setLogReplayCards(entry.cards)}
         />
 
         <main className="flex-1 min-w-0 max-w-6xl w-full mx-auto p-2 sm:p-3 flex flex-col justify-between gap-1.5 sm:gap-2.5 max-sm:pb-28">
-        {/* Banner trạng thái lượt đi */}
-        <div className="w-full max-w-2xl mx-auto">
-          <div key={currentPlayerId || 'none'} className="banner-slide">{statusBanner}</div>
-        </div>
-
         {/* Khu vực đối thủ */}
         <div className="w-full">
           {opponents.length > 0 ? (
@@ -731,6 +746,8 @@ export default function GamePage() {
               attackInfo={attackInfo}
               targetedPlayerId={targetedPlayerId}
               fueledPlayerId={fueledPlayerId}
+              turnSecondsLeft={turnSecondsLeft}
+              turnTotalSeconds={turnTotalSeconds}
             />
           ) : (
             <div className="text-center text-xs text-[var(--paper)]/60 py-1">Chờ đối thủ kết nối...</div>
@@ -738,10 +755,14 @@ export default function GamePage() {
         </div>
 
         {/* Khu vực trung tâm: Thảm Bàn Bài Đấu Casino */}
-        <div data-play-table className="game-table relative w-full max-w-2xl mx-auto my-1 py-3 sm:py-5 px-4 flex items-center justify-around gap-6 sm:gap-12 overflow-hidden">
+        <div
+          data-play-table
+          style={tableTrim ? { marginTop: `-${tableTrim}px` } : undefined}
+          className="game-table relative w-full max-w-2xl mx-auto my-1 py-3 sm:py-5 px-4 flex items-center justify-around gap-6 sm:gap-12 overflow-hidden"
+        >
           {/* Vùng chồng bài rút */}
           <div className="flex flex-col items-center">
-            <DrawPile count={drawPileCount} topCard={drawPileTop} onClick={handleDraw} disabled={!canAct} />
+            <DrawPile count={drawPileCount} topCard={drawPileTop} onClick={handleDraw} disabled={!canAct} insert={deckInsert} onInsertDone={() => setDeckInsert(null)} />
           </div>
 
           {/* Biểu tượng VS + chiều lượt */}
@@ -759,6 +780,22 @@ export default function GamePage() {
             <DiscardPile cards={discardPile} />
           </div>
         </div>
+
+        {/* Thanh kéo bàn cờ lên, độc lập với panel bên lề */}
+        <label className="mx-auto flex w-full max-w-sm items-center gap-2 px-2 text-[10px] font-bold text-[var(--paper)]/80">
+          <span className="shrink-0">Bàn</span>
+          <input
+            type="range"
+            min="0"
+            max="90"
+            step="5"
+            value={tableTrim}
+            onChange={(e) => setTableTrim(Number(e.target.value))}
+            aria-label="Kéo bàn cờ lên"
+            className="h-2 w-full cursor-pointer accent-[var(--mustard)]"
+          />
+          <span className="w-7 shrink-0 text-right tabular-nums">{tableTrim}px</span>
+        </label>
 
         {/* Diễn biến mini khi bảng bên lề đang đóng */}
         {mergedLog.length > 0 && !showSidePanel && (
@@ -783,11 +820,10 @@ export default function GamePage() {
                 : ''
           }`}
         >
-          {/* Tiêu đề khay bài */}
+          {/* Tiêu đề khay bài: số lá, đồng hồ và nút hành động cùng hàng */}
           <div className="flex flex-col gap-1.5 border-b border-[var(--line)] px-1 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-xs sm:text-sm font-black text-[var(--ink)] font-display flex flex-wrap items-center gap-2">
               <span>🐱 TAY BÀI CỦA BẠN</span>
-              <span className="landing-chip"><AnimatedCount value={myHand.length} /> lá</span>
               {attackInfo?.targetId === playerId ? (
                 <span className="landing-stamp border-[var(--oxblood)] text-[var(--oxblood)]">
                   ⚔️ BỊ TẤN CÔNG
@@ -806,14 +842,36 @@ export default function GamePage() {
                 </span>
               )}
             </div>
-            {combo.reason && (
-              <div className="text-[10px] sm:text-xs text-[var(--oxblood)] font-semibold sm:text-right">
-                💡 {combo.reason}
-              </div>
-            )}
+
+            <div className="flex flex-nowrap items-center justify-end gap-1.5">
+              <TurnTimerRing seconds={turnSecondsLeft} total={turnTotalSeconds} size={40} />
+              <span className="landing-chip whitespace-nowrap"><AnimatedCount value={myHand.length} /> lá</span>
+              <button
+                onClick={handlePlay}
+                disabled={!canAct || !combo.valid}
+                className={`landing-btn ${!canAct || !combo.valid ? '' : 'landing-btn--oxblood'} px-3 py-1.5 text-[10px] sm:text-xs`}
+              >
+                <span className="sm:hidden">{combo.valid ? 'ĐÁNH' : 'CHỌN'}</span>
+                <span className="hidden sm:inline">{combo.label}</span>
+              </button>
+              <button
+                onClick={handleDraw}
+                disabled={!canAct}
+                className={`landing-btn ${!canAct ? '' : 'landing-btn--ink'} px-3 py-1.5 text-[10px] sm:text-xs`}
+              >
+                <span className="sm:hidden">RÚT</span>
+                <span className="hidden sm:inline">RÚT BÀI</span>
+              </button>
+            </div>
           </div>
 
-          {/* Component tay bài với tự động xuống dòng và sắp xếp bài */}
+          {combo.reason && (
+            <div className="px-1 pt-1 text-[10px] sm:text-xs text-[var(--oxblood)] font-semibold">
+              💡 {combo.reason}
+            </div>
+          )}
+
+          {/* Component tay bài: 2 hàng, cuộn dọc, có tìm kiếm */}
           <CardHand
             cards={myHand}
             selectedIds={selectedCards}
@@ -829,6 +887,7 @@ export default function GamePage() {
             }
             canUseNope={canNopeNow}
             onUseNope={handleNope}
+            hideActions
           />
         </div>
         </main>
@@ -850,6 +909,13 @@ export default function GamePage() {
           max={drawPileCount}
           secondsLeft={turnSecondsLeft}
           onPlace={(pos) => {
+            setDeckInsert({
+              id: `defuse-${Date.now()}`,
+              type: CARD_TYPES.EXPLODING_KITTEN,
+              index: pos,
+              count: drawPileCount,
+              faceUp: false,
+            });
             defusePlace(roomCode, pos);
             setDefuseDismissed(false);
           }}
@@ -862,7 +928,16 @@ export default function GamePage() {
           max={drawPileCount}
           mode="imploding"
           secondsLeft={turnSecondsLeft}
-          onPlace={(pos) => implodingPlace(roomCode, pos)}
+          onPlace={(pos) => {
+            setDeckInsert({
+              id: `imploding-${Date.now()}`,
+              type: CARD_TYPES.IMPLODING_KITTEN,
+              index: pos,
+              count: drawPileCount,
+              faceUp: true,
+            });
+            implodingPlace(roomCode, pos);
+          }}
         />
       )}
 
@@ -1095,6 +1170,34 @@ export default function GamePage() {
                 </button>
               </>
             )}
+          </div>
+
+          <div className="mt-5 border-t border-slate-700 pt-4">
+            <div className="mb-2 text-xs font-black text-slate-300">🎛️ Giao diện bàn</div>
+            <label className="flex items-center gap-3 text-xs font-bold text-slate-300">
+              <span className="shrink-0">Thu gọn bàn</span>
+              <input
+                type="range"
+                min="0"
+                max="90"
+                step="5"
+                value={tableTrim}
+                onChange={(e) => setTableTrim(Number(e.target.value))}
+                aria-label="Thu gọn bàn trong cài đặt"
+                className="h-2 w-full cursor-pointer accent-[var(--mustard)]"
+              />
+              <span className="w-10 text-right tabular-nums">{tableTrim}px</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setTableTrim(0)}
+              className="mt-2 rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-300 hover:bg-slate-700"
+            >
+              Đặt lại giao diện
+            </button>
+            <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
+              Timer và ảnh nền cũ vẫn giữ nguyên; thay đổi giao diện chỉ lưu trên máy này.
+            </p>
           </div>
         </ModalShell>
       )}

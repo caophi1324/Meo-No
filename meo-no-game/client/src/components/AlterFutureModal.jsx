@@ -50,7 +50,7 @@ export default function AlterFutureModal({ cards = [], onSubmit }) {
               >
                 {i === 0 ? '1. Trên cùng' : `Thứ ${i + 1}`}
               </div>
-              <Card card={card} size="small" disabled className="shadow-lg" />
+              <Card card={card} size="small" className="shadow-lg" />
               <div className="flex gap-1.5 mt-2">
                 <button
                   onClick={() => move(i, -1)}

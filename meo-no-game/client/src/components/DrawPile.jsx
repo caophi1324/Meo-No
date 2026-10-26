@@ -3,8 +3,9 @@ import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import AnimatedCount from './AnimatedCount';
 import useGameStore from '../store/gameStore';
 import { themedImage, cardBackFor } from '../../../shared/decks.js';
+import { CARD_DATA } from '../data/cardData';
 
-export default function DrawPile({ count = 0, topCard = null, onClick, disabled = false }) {
+export default function DrawPile({ count = 0, topCard = null, onClick, disabled = false, insert = null, onInsertDone = null }) {
   const controls = useAnimationControls();
   const reduceMotion = useReducedMotion();
   const previous = useRef(count);
@@ -17,6 +18,11 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
   const deckTheme = useGameStore((s) => s.deckTheme);
   const isLol = deckTheme === 'lol';
   const topImage = isLol && topCard?.lolImage ? topCard.lolImage : topCard?.image;
+  const inset = insert ? CARD_DATA[insert.type] || {} : null;
+  const frontImage = insert
+    ? themedImage(isLol && inset?.lolImage ? inset.lolImage : inset?.image || '/cards/custom/MN001.jpg', deckTheme)
+    : null;
+  const backImage = cardBackFor(deckTheme);
 
   return (
     <div className="flex flex-col items-center gap-2 group">
@@ -47,8 +53,8 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
         {/* Lớp bài thứ 3 (đáy chồng) */}
         {count >= 3 && (
           <div
-            className="absolute inset-0 translate-x-1.5 translate-y-2 rounded-[6px] border-2 border-[var(--wood)] bg-[var(--felt-dark)] shadow-[3px_3px_0_var(--hard-shadow)]"
-            style={{ transform: 'rotate(2deg) translate(4px, 4px)' }}
+            className="absolute inset-0 translate-x-1.5 translate-y-2 rounded-[6px] border-2 border-[var(--wood)] bg-[var(--felt-dark)] shadow-[3px_3px_0_var(--hard-shadow)] transition-transform duration-200"
+            style={{ transform: `rotate(2deg) translate(4px, ${insert ? 10 : 4}px)` }}
           >
             <div className="w-full h-full rounded-[4px] bg-[var(--felt)] border border-[var(--wood)]" />
           </div>
@@ -57,8 +63,8 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
         {/* Lớp bài thứ 2 (giữa chồng) */}
         {count >= 2 && (
           <div
-            className="absolute inset-0 translate-x-0.5 translate-y-1 rounded-[6px] border-2 border-[var(--wood)] bg-[var(--felt)] shadow-[2px_2px_0_var(--hard-shadow)]"
-            style={{ transform: 'rotate(-1.5deg) translate(-2px, 2px)' }}
+            className="absolute inset-0 translate-x-0.5 translate-y-1 rounded-[6px] border-2 border-[var(--wood)] bg-[var(--felt)] shadow-[2px_2px_0_var(--hard-shadow)] transition-transform duration-200"
+            style={{ transform: `rotate(-1.5deg) translate(-2px, ${insert ? 7 : 2}px)` }}
           >
             <div className="w-full h-full rounded-[4px] bg-[var(--felt-dark)] border border-[var(--wood)]" />
           </div>
@@ -91,9 +97,11 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
 
           {topCard && (
             <div className="absolute inset-0 rounded-[4px] border-2 border-[var(--oxblood)] shadow-[0_0_18px_rgba(123,45,38,0.55)] pointer-events-none">
-              <span className="absolute inset-x-1 bottom-2 rounded-[2px] border border-[var(--paper)]/30 bg-[var(--oxblood)] px-1 py-0.5 text-center text-[8px] font-black uppercase tracking-wider text-[var(--paper)]">
-                Mặt ngửa
-              </span>
+              {!isLol && (
+                <span className="absolute inset-x-1 bottom-2 rounded-[2px] border border-[var(--paper)]/30 bg-[var(--oxblood)] px-1 py-0.5 text-center text-[8px] font-black uppercase tracking-wider text-[var(--paper)]">
+                  Mặt ngửa
+                </span>
+              )}
             </div>
           )}
 
@@ -112,6 +120,27 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
             </div>
           )}
         </div>
+
+        {/* Lá được nhét trở lại bộ: trượt vào khe, lật mặt rồi mới biến mất */}
+        {insert && (
+          <motion.div
+            key={insert.id}
+            className="pointer-events-none absolute left-1/2 top-1/2 z-30 h-[104px] w-[76px] -translate-x-1/2 -translate-y-1/2"
+            style={{ transformStyle: 'preserve-3d', perspective: 700 }}
+            initial={reduceMotion ? { opacity: 0 } : { x: 96, y: 28, opacity: 0, rotateY: insert.faceUp ? 180 : 0 }}
+            animate={reduceMotion ? { opacity: [0, 1, 0] } : {
+              x: insert.index % 2 ? 3 : -3,
+              y: Math.min(18, Math.round((insert.index / Math.max(1, insert.count)) * 18)),
+              opacity: 1,
+              rotateY: insert.faceUp ? 360 : 180,
+            }}
+            transition={reduceMotion ? { duration: .25 } : { duration: .55, ease: [.22, .9, .3, 1.05] }}
+            onAnimationComplete={() => onInsertDone?.()}
+          >
+            <img src={frontImage} alt="" className="absolute inset-0 h-full w-full rounded-[6px] border-2 border-[var(--mustard)] object-cover" style={{ backfaceVisibility: 'hidden' }} />
+            <img src={backImage} alt="" className="absolute inset-0 h-full w-full rounded-[6px] border-2 border-[var(--oxblood)] object-cover" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }} />
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Huy hiệu đếm số lượng lá bài còn lại */}

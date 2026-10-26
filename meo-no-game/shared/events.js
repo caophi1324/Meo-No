@@ -14,6 +14,7 @@ export const EVENTS = {
   CHOICE_RESPONSE: 'choice_response',
   STEAL_CHOOSE: 'steal_choose',
   CHAT_MESSAGE: 'chat_message',
+  VOICE_CLIP: 'voice_clip',
   ADD_BOT: 'add_bot',
   SET_TIMERS: 'set_timers',
   SET_DECK_THEME: 'set_deck_theme',

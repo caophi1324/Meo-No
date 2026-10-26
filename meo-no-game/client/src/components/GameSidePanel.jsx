@@ -32,6 +32,7 @@ export default function GameSidePanel({
   logs = [],
   playerId,
   playerName = '',
+  roomCode = '',
   onSend,
   onReplayCards,
 }) {
@@ -161,7 +162,7 @@ export default function GameSidePanel({
               TRÒ CHUYỆN
             </span>
           </div>
-          <ChatBox messages={messages} onSend={onSend} playerId={playerId} />
+          <ChatBox messages={messages} onSend={onSend} playerId={playerId} roomCode={roomCode} />
         </div>
       </aside>
     </>

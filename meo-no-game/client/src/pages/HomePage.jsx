@@ -45,14 +45,6 @@ const SHOWCASE = [
   CARD_TYPES.REVERSE,
 ];
 
-const NEW_CARDS = [
-  CARD_TYPES.IMPLODING_KITTEN,
-  CARD_TYPES.BOOM_ATOMIC,
-  CARD_TYPES.STEAL_CARD,
-  CARD_TYPES.REVERSE_ALT,
-  CARD_TYPES.ALTER_FUTURE,
-];
-
 const CARD_TILT = [-6, 3, -2, 5, -4, 2, -3, 4];
 const CARD_LIFT = [10, 0, 6, -4, 8, 0, 6, 10];
 const HERO_CARDS = [
@@ -566,14 +558,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="landing-overline">Vừa thêm</span>
-              {NEW_CARDS.map((type) => (
-                <span key={type} className="landing-chip">
-                  {CARD_DATA[type].nameVN}
-                </span>
-              ))}
-            </div>
           </div>
         </motion.section>
 

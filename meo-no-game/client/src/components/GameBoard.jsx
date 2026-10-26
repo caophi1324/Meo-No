@@ -1,21 +1,16 @@
 import PlayerSlot from './PlayerSlot';
 
-// Chia đối thủ ra các góc rộng thay vì ngồi sát một hàng.
-// 1 người: giữa trên — 2 người: 2 góc trên — 3 người: 2 góc trên + giữa dưới
-// 4 người: đủ 4 góc.
+// Chia đối thủ quanh bàn theo kiểu Tiến Lên: trên, trái, phải.
 function seatClass(index, count) {
-  if (count === 1) return 'col-span-2 justify-self-center';
-  if (count === 3 && index === 2) return 'col-span-2 justify-self-center';
-  if (count === 4) {
-    // 4 góc theo chiều kim đồng hồ để dễ nhìn hướng đi của lượt.
-    return [
-      'col-start-1 row-start-1 justify-self-start',
-      'col-start-2 row-start-1 justify-self-end',
-      'col-start-2 row-start-2 justify-self-end',
-      'col-start-1 row-start-2 justify-self-start',
-    ][index];
+  if (count === 1) return 'left-1/2 top-0 -translate-x-1/2';
+  if (count === 2) return index === 0 ? 'left-0 top-0' : 'right-0 top-0';
+  if (count === 3) {
+    return ['left-0 top-8', 'left-1/2 top-0 -translate-x-1/2', 'right-0 top-8'][index];
   }
-  return index % 2 === 0 ? 'justify-self-start' : 'justify-self-end';
+  if (count === 4) {
+    return ['left-0 top-0', 'right-0 top-0', 'left-0 top-44', 'right-0 top-44'][index];
+  }
+  return index % 2 === 0 ? 'left-0 top-0' : 'right-0 top-0';
 }
 
 export default function GameBoard({
@@ -24,12 +19,18 @@ export default function GameBoard({
   attackInfo = null,
   targetedPlayerId = null,
   fueledPlayerId = null,
+  turnSecondsLeft = null,
+  turnTotalSeconds = 60,
 }) {
   return (
-    <div className="w-full max-w-5xl mx-auto px-1 sm:px-2 py-1">
-      <div className="grid grid-cols-2 gap-x-4 sm:gap-x-24 lg:gap-x-44 gap-y-2 sm:gap-y-3 items-start">
+    <div className="game-seats w-full max-w-4xl mx-auto px-1 sm:px-2 py-1">
+      <div className="relative min-h-[190px] max-sm:grid max-sm:grid-cols-2 max-sm:gap-1 max-sm:min-h-0 sm:min-h-[230px]">
         {players.map((p, i) => (
-          <div key={p.id} data-player-seat={p.id} className={`flex ${seatClass(i, players.length)}`}>
+          <div
+            key={p.id}
+            data-player-seat={p.id}
+            className={`flex max-sm:static max-sm:translate-x-0 sm:absolute ${seatClass(i, players.length)} max-sm:justify-center ${players.length === 1 ? 'max-sm:col-span-2' : ''}`}
+          >
             <PlayerSlot
               player={p}
               isCurrentTurn={p.id === currentPlayerId}
@@ -41,6 +42,8 @@ export default function GameBoard({
               }
               isTargeted={targetedPlayerId === p.id}
               isFueled={fueledPlayerId === p.id}
+              secondsLeft={p.id === currentPlayerId ? turnSecondsLeft : null}
+              totalSeconds={turnTotalSeconds}
             />
           </div>
         ))}

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import AnimatedCount from './AnimatedCount';
+import TurnTimerRing from './TurnTimerRing';
 import useGameStore from '../store/gameStore';
 import { cardBackFor } from '../../../shared/decks.js';
 
@@ -10,6 +11,8 @@ export default function PlayerSlot({
   isTargeted = false,
   isFueled = false,
   attackerName = '',
+  secondsLeft = null,
+  totalSeconds = 60,
 }) {
   const isAlive = !!player.isAlive;
   const isBot = !!player.isBot;
@@ -34,13 +37,22 @@ export default function PlayerSlot({
               : ''
       }`}
     >
-      {/* Vòng xoay quanh avatar khi đến lượt; bị tấn công thì ưu tiên màu đỏ. */}
-      {isCurrentTurn && isAlive && !isAttacked && (
-        <motion.div
-          className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-[var(--mustard)]/70"
-          animate={reduceMotion ? undefined : { rotate: 360 }}
-          transition={reduceMotion ? undefined : { duration: 8, repeat: Infinity, ease: 'linear' }}
-        />
+      {/* Vòng thời gian / vòng xoay quanh avatar khi đến lượt */}
+      {isCurrentTurn && isAlive && (
+        secondsLeft !== null ? (
+          <TurnTimerRing
+            seconds={secondsLeft}
+            total={totalSeconds}
+            size={54}
+            className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2"
+          />
+        ) : (
+          <motion.div
+            className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-[var(--mustard)]/70"
+            animate={reduceMotion ? undefined : { rotate: 360 }}
+            transition={reduceMotion ? undefined : { duration: 8, repeat: Infinity, ease: 'linear' }}
+          />
+        )
       )}
 
       {/* Vòng đỏ nhấp nháy khi đang bị tấn công */}
