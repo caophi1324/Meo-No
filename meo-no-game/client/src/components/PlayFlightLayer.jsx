@@ -22,14 +22,14 @@ export default function PlayFlightLayer({ card, cards = [], fromRect, origins = 
   const heavy = HEAVY.has(type) || HEAVY.has(card?.type);
   const future = FUTURE.has(type);
   const spin = SPIN.has(type);
+  const fullSpin = type === 'reverse' || type === 'reverse_alt';
   const x = useTransform(progress, t => quadraticPoint(geometry.start.x, geometry.control.x, geometry.end.x, t) - geometry.width / 2);
   const y = useTransform(progress, t => quadraticPoint(geometry.start.y, geometry.control.y, geometry.end.y, t) - geometry.height / 2);
-  const rotate = useTransform(progress, t => reduceMotion || spin ? 0 : 8 * Math.sin(Math.PI * t));
+  const rotate = useTransform(progress, t =>
+    reduceMotion ? 0 : fullSpin ? 360 * t : spin ? 0 : 8 * Math.sin(Math.PI * t)
+  );
   const rotateX = useTransform(progress, t => reduceMotion || spin ? 0 : 12 * Math.sin(Math.PI * t));
-  const rotateY = useTransform(progress, t => {
-    if (reduceMotion || !spin) return 0;
-    return (type === 'reverse' || type === 'reverse_alt' ? 1 : -1) * 180 * t;
-  });
+  const rotateY = useTransform(progress, t => (reduceMotion || !spin || fullSpin ? 0 : -180 * t));
   const flightOpacity = useTransform([progress, opacity], ([p, o]) => o * (future ? 1 - .35 * p : 1));
   const info = CARD_DATA[card?.type] || card || {};
   const color = heavy ? '#B9472E' : info.borderColor || '#C9922E';
@@ -87,7 +87,6 @@ export default function PlayFlightLayer({ card, cards = [], fromRect, origins = 
             <img src={src} alt="" width={104} height={146} className="h-full w-full object-cover" draggable={false}/>
           </div>;
         })}
-        {!reduceMotion && ['reverse', 'reverse_alt'].includes(type) && <span className="absolute -inset-6 flex items-center justify-center text-6xl font-black text-[var(--mustard)]" style={{ textShadow: '2px 2px #151A14' }}>↻ ↺</span>}
       </motion.div>
       {landing && !reduceMotion && <>
         <motion.div className="absolute rounded-lg border-4" style={{ left: geometry.end.x - geometry.width * .7, top: geometry.end.y - geometry.height * .6, width: geometry.width * 1.4, height: geometry.height * 1.2, borderColor: heavy ? '#B9472E' : '#C9922E' }} initial={{ opacity: .85, scale: .8 }} animate={{ opacity: 0, scale: 1.3 }} transition={{ duration: .15 }}/>

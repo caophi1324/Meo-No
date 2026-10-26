@@ -84,20 +84,19 @@ export default function CardHand({
 
   return (
     <div data-hand className="flex flex-col items-center gap-2.5 w-full">
-      {/* Thanh công cụ sắp xếp + tìm kiếm lá bài */}
-      <div className="w-full max-w-4xl flex flex-wrap items-center justify-between gap-2 px-2 text-xs">
-        <label className="flex items-center gap-1.5 sm:hidden">
-          <span className="landing-overline" aria-hidden="true">Sắp xếp</span>
+      {/* Thanh công cụ: sắp xếp, tìm kiếm và rút bài cùng một hàng */}
+      <div className="w-full max-w-4xl flex items-center gap-1.5 px-1 text-xs">
+        <label className="flex items-center sm:hidden">
           <select
             value={sortMode}
             onChange={(e) => handleSortChange(e.target.value)}
             aria-label="Sắp xếp bài"
-            className="landing-input py-1.5 text-[11px] font-bold"
-            style={{ width: 'auto' }}
+            className="landing-input py-1.5 text-[11px]! font-bold"
+            style={{ width: '126px' }}
           >
             <option value="function">⚡ Tính năng</option>
-            <option value="combos">🐱 Ghép Combo</option>
-            <option value="name">🔤 Tên A-Z</option>
+            <option value="combos">🐱 Combo</option>
+            <option value="name">🔤 A-Z</option>
           </select>
         </label>
 
@@ -135,14 +134,14 @@ export default function CardHand({
           </div>
         </div>
 
-        <label className="relative min-w-[150px] flex-1 sm:max-w-[230px]">
-          <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-sm opacity-60" aria-hidden="true">🔎</span>
+        <label className="relative min-w-0 flex-1 sm:max-w-[230px]">
+          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-sm opacity-60" aria-hidden="true">🔎</span>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Tìm lá bài..."
             aria-label="Tìm lá bài trong tay"
-            className="landing-input w-full py-1.5 pl-8 text-[11px]"
+            className="landing-input w-full py-1.5 pl-7! pr-2! text-[11px]!"
           />
           {query && (
             <button
@@ -161,6 +160,15 @@ export default function CardHand({
             {visibleCards.length}/{cards.length} lá
           </span>
         )}
+
+        <button
+          onClick={handleDraw}
+          disabled={!canAct}
+          className={`landing-btn ml-auto shrink-0 ${!canAct ? '' : 'landing-btn--ink'} px-3 py-1.5 text-[10px] sm:text-xs`}
+        >
+          <span className="sm:hidden">RÚT</span>
+          <span className="hidden sm:inline">RÚT BÀI</span>
+        </button>
       </div>
 
       {/* Khay bài: tối đa 2 hàng, cuộn dọc khi nhiều lá */}

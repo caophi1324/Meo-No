@@ -781,22 +781,6 @@ export default function GamePage() {
           </div>
         </div>
 
-        {/* Thanh kéo bàn cờ lên, độc lập với panel bên lề */}
-        <label className="mx-auto flex w-full max-w-sm items-center gap-2 px-2 text-[10px] font-bold text-[var(--paper)]/80">
-          <span className="shrink-0">Bàn</span>
-          <input
-            type="range"
-            min="0"
-            max="90"
-            step="5"
-            value={tableTrim}
-            onChange={(e) => setTableTrim(Number(e.target.value))}
-            aria-label="Kéo bàn cờ lên"
-            className="h-2 w-full cursor-pointer accent-[var(--mustard)]"
-          />
-          <span className="w-7 shrink-0 text-right tabular-nums">{tableTrim}px</span>
-        </label>
-
         {/* Diễn biến mini khi bảng bên lề đang đóng */}
         {mergedLog.length > 0 && !showSidePanel && (
           <button
@@ -824,15 +808,11 @@ export default function GamePage() {
           <div className="flex flex-col gap-1.5 border-b border-[var(--line)] px-1 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-xs sm:text-sm font-black text-[var(--ink)] font-display flex flex-wrap items-center gap-2">
               <span>🐱 TAY BÀI CỦA BẠN</span>
-              {attackInfo?.targetId === playerId ? (
+              {attackInfo?.targetId === playerId && (
                 <span className="landing-stamp border-[var(--oxblood)] text-[var(--oxblood)]">
                   ⚔️ BỊ TẤN CÔNG
                 </span>
-              ) : canAct ? (
-                <span className="landing-stamp border-[var(--mustard)] text-[var(--oxblood)]">
-                  🎯 ĐẾN LƯỢT
-                </span>
-              ) : null}
+              )}
               {isFueled && (
                 <span className="inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--paper-2)] px-2 py-0.5 text-[10px] font-bold text-[var(--ink)]">
                   <span className="h-1.5 w-12 overflow-hidden rounded-full border border-[var(--ink)] bg-[var(--paper)]">
@@ -853,14 +833,6 @@ export default function GamePage() {
               >
                 <span className="sm:hidden">{combo.valid ? 'ĐÁNH' : 'CHỌN'}</span>
                 <span className="hidden sm:inline">{combo.label}</span>
-              </button>
-              <button
-                onClick={handleDraw}
-                disabled={!canAct}
-                className={`landing-btn ${!canAct ? '' : 'landing-btn--ink'} px-3 py-1.5 text-[10px] sm:text-xs`}
-              >
-                <span className="sm:hidden">RÚT</span>
-                <span className="hidden sm:inline">RÚT BÀI</span>
               </button>
             </div>
           </div>

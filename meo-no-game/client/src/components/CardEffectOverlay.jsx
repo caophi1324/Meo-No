@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { animate, motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { soundEffects } from '../utils/soundEffects';
+import { CARD_DATA } from '../data/cardData';
+import { themedImage } from '../../../shared/decks.js';
 
 // Hiệu ứng riêng cho từng loại lá bài — chạy cho CẢ người đánh lẫn người xem.
 export const FINISHER_META = {
@@ -95,6 +97,16 @@ export default function CardEffectOverlay({ effect, players = [], onDone, manage
   const meta = effect ? EFFECT_META[effect.type] : null;
   const reduceMotion = useReducedMotion();
   const done = useRef(onDone); done.current = onDone;
+  // Hoán Đổi / Đảo Chiều: cho lá bài thật xoay 360° thay vì biểu tượng hai mũi tên.
+  const swapped = effect && (effect.type === 'reverse' || effect.type === 'reverse_alt');
+  const swapImage = swapped
+    ? themedImage(
+        (effect.theme === 'lol' && effect.cards?.[0]?.lolImage) ||
+          effect.cards?.[0]?.image ||
+          CARD_DATA[effect.type]?.image,
+        effect.theme || 'default'
+      )
+    : null;
 
   useEffect(() => {
     if (!effect) return;
@@ -117,7 +129,17 @@ export default function CardEffectOverlay({ effect, players = [], onDone, manage
         <div className="paper-panel relative z-10 w-full max-w-md overflow-hidden">
           <div className="h-2 w-full" style={{ backgroundColor: meta.color }} />
           <div className="flex flex-col items-center gap-1 px-6 py-4">
-            <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
+            {swapImage ? (
+              <motion.img
+                src={swapImage}
+                alt=""
+                animate={reduceMotion ? undefined : { rotate: 360 }}
+                transition={{ duration: 1, ease: 'easeInOut' }}
+                className="h-24 w-16 rounded-[5px] border-2 border-[var(--ink)] object-cover shadow-[3px_3px_0_var(--hard-shadow)]"
+              />
+            ) : (
+              <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
+            )}
             <div className="font-display text-lg sm:text-2xl font-black tracking-wider text-[var(--ink)]">
               {meta.label}
             </div>
@@ -158,7 +180,17 @@ export default function CardEffectOverlay({ effect, players = [], onDone, manage
           >
             <div className="h-2 w-full" style={{ backgroundColor: meta.color }} />
             <div className="flex flex-col items-center gap-1 px-6 py-4">
-              <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
+              {swapImage ? (
+                <motion.img
+                  src={swapImage}
+                  alt=""
+                  animate={reduceMotion ? undefined : { rotate: 360 }}
+                  transition={{ duration: 1, ease: 'easeInOut' }}
+                  className="h-24 w-16 rounded-[5px] border-2 border-[var(--ink)] object-cover shadow-[3px_3px_0_var(--hard-shadow)]"
+                />
+              ) : (
+                <div className="text-4xl sm:text-5xl filter drop-shadow">{meta.emoji}</div>
+              )}
               <div className="font-display text-lg sm:text-2xl font-black tracking-wider text-[var(--ink)]">
                 {meta.label}
               </div>
