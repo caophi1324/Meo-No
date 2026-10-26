@@ -9,7 +9,9 @@ import useGameStore from './store/gameStore.js';
 // (Sửa lỗi B3: mỗi trang tự io() → tạo kết nối mới, mất trạng thái)
 // ============================================================
 
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
+export const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL ||
+  (import.meta.env.DEV ? 'http://localhost:4000' : 'https://meo-no-server-uxi1.onrender.com');
 export const socket = io(SOCKET_URL);
 
 let nopeTicker = null;
