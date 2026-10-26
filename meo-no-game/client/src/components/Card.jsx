@@ -1,7 +1,7 @@
-﻿import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { CARD_DATA } from '../data/cardData';
 import useGameStore from '../store/gameStore';
-import { themedImage } from '../../../shared/decks.js';
+import { themedImage, cardBackFor } from '../../../shared/decks.js';
 import { BEAST_CARDS, CARD_TYPES } from '../../../shared/cardTypes.js';
 
 const LOL_BEAST_EMOJI = {
@@ -21,7 +21,16 @@ export default function Card({
   className = '',
   disabled = false,
   highlighted = false,
+  layoutScope,
+  layoutDelay = 0,
 }) {
+  const reduceMotion = useReducedMotion();
+  const layoutProps = {
+    layout: reduceMotion ? false : 'position',
+    layoutId: layoutScope && card?.id ? `${layoutScope}-${card.id}` : undefined,
+    'data-card-id': card?.id,
+    transition: { layout: { duration: reduceMotion ? 0 : .2, delay: reduceMotion ? 0 : layoutDelay, ease: [.25, .46, .45, .94] } },
+  };
   const cardInfo = card ? (CARD_DATA[card.type] || card) : {};
   const deckTheme = useGameStore((s) => s.deckTheme);
   const isLol = deckTheme === 'lol';
@@ -61,12 +70,13 @@ export default function Card({
   if (faceDown) {
     return (
       <motion.div
+        {...layoutProps}
         {...keyboardProps}
         aria-disabled={disabled || undefined}
         title={disabled ? 'Bị Làm Phiền' : undefined}
         tabIndex={interactive ? 0 : -1}
-        whileHover={!disabled && onClick ? { scale: 1.05, y: -4 } : {}}
-        whileTap={!disabled && onClick ? { scale: 0.96 } : {}}
+        whileHover={!reduceMotion && !disabled && onClick ? { scale: 1.05, y: -4 } : {}}
+        whileTap={!reduceMotion && !disabled && onClick ? { scale: 0.96 } : {}}
         onClick={disabled ? undefined : onClick}
         className={`relative select-none flex-shrink-0 cursor-pointer overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mustard)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--felt-dark)] ${sizeClasses} ${selected ? 'ring-4 ring-[var(--mustard)] ring-offset-2 ring-offset-[var(--felt-dark)] z-20' : ''} ${disabled ? 'opacity-50 grayscale-[0.35] ring-2 ring-[var(--oxblood)]' : ''} ${className}`}
         style={{
@@ -75,7 +85,7 @@ export default function Card({
         }}
       >
         <img
-          src="/cards/card-back.svg"
+          src={cardBackFor(deckTheme)}
           alt="Lưng bài Mèo Nổ"
           className="w-full h-full object-cover rounded-xl"
         />
@@ -94,12 +104,13 @@ export default function Card({
   if (cardInfo.imageOnly && cardImage) {
     return (
       <motion.div
+        {...layoutProps}
         {...keyboardProps}
         aria-disabled={disabled || undefined}
         title={disabled ? 'Bị Làm Phiền' : undefined}
         tabIndex={interactive ? 0 : -1}
-        whileHover={interactive ? { y: -4 } : undefined}
-        whileTap={interactive ? { scale: 0.97 } : undefined}
+        whileHover={!reduceMotion && interactive ? { y: -4 } : undefined}
+        whileTap={!reduceMotion && interactive ? { scale: 0.97 } : undefined}
         onClick={disabled ? undefined : onClick}
         className={`relative select-none overflow-hidden shadow-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mustard)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--felt-dark)] ${sizeClasses} ${
           selected
@@ -146,14 +157,13 @@ export default function Card({
 
   return (
     <motion.div
+      {...layoutProps}
       {...keyboardProps}
       aria-disabled={disabled || undefined}
       title={disabled ? 'Bị Làm Phiền' : undefined}
       tabIndex={interactive ? 0 : -1}
-      layout
-      layoutId={card?.id}
       whileHover={
-        !disabled
+        !reduceMotion && !disabled
           ? {
               scale: 1.06,
               y: selected ? -18 : -10,
@@ -162,12 +172,12 @@ export default function Card({
             }
           : {}
       }
-      whileTap={!disabled ? { scale: 0.96 } : {}}
+      whileTap={!reduceMotion && !disabled ? { scale: 0.96 } : {}}
       onClick={disabled ? undefined : onClick}
       animate={{
-        y: selected ? -14 : 0,
+        y: !reduceMotion && selected ? -14 : 0,
       }}
-      transition={{ type: 'spring', stiffness: 350, damping: 26 }}
+      transition={{ ...layoutProps.transition, type: 'spring', stiffness: 350, damping: 26 }}
       className={`group relative select-none flex flex-col justify-between overflow-hidden shadow-xl flex-shrink-0 cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mustard)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--felt-dark)] ${sizeClasses} ${className} ${
         selected
           ? 'ring-4 ring-[var(--mustard)] ring-offset-2 ring-offset-[var(--felt-dark)] z-20'

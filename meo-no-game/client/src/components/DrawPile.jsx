@@ -1,8 +1,17 @@
-import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
+import AnimatedCount from './AnimatedCount';
 import useGameStore from '../store/gameStore';
-import { themedImage } from '../../../shared/decks.js';
+import { themedImage, cardBackFor } from '../../../shared/decks.js';
 
 export default function DrawPile({ count = 0, topCard = null, onClick, disabled = false }) {
+  const controls = useAnimationControls();
+  const reduceMotion = useReducedMotion();
+  const previous = useRef(count);
+  useEffect(() => {
+    if (count < previous.current && !reduceMotion) controls.start({ scaleX: [1, 1.06, 1], scaleY: [1, .91, 1], transition: { duration: .2 } });
+    previous.current = count;
+  }, [count, controls, reduceMotion]);
   // Danger indicator if deck has very few cards
   const isDanger = count > 0 && count <= 8;
   const deckTheme = useGameStore((s) => s.deckTheme);
@@ -13,6 +22,8 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
     <div className="flex flex-col items-center gap-2 group">
       {/* Khối chồng bài rút với hiệu ứng 3D phân lớp */}
       <motion.div
+        data-draw-pile
+        animate={controls}
         role={disabled ? undefined : 'button'}
         tabIndex={disabled ? undefined : 0}
         aria-label="Rút bài"
@@ -72,7 +83,7 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
             />
           ) : (
             <img
-              src="/cards/card-back.svg"
+              src={cardBackFor(deckTheme)}
               alt="Chồng bài rút"
               className="w-full h-full object-cover rounded-[4px]"
             />
@@ -106,7 +117,7 @@ export default function DrawPile({ count = 0, topCard = null, onClick, disabled 
       {/* Huy hiệu đếm số lượng lá bài còn lại */}
       <div className="flex items-center gap-1.5 rounded-[4px] border-2 border-[var(--ink)] bg-[var(--paper)] px-3 py-1 text-[var(--ink)] shadow-[2px_2px_0_var(--hard-shadow)]">
         <span className="text-xs font-bold font-display">
-          {count} <span className="text-[var(--ink-soft)] font-normal text-[10px]">lá còn lại</span>
+          <AnimatedCount value={count}/> <span className="text-[var(--ink-soft)] font-normal text-[10px]">lá còn lại</span>
         </span>
         {isDanger && (
           <span className="text-xs text-[var(--oxblood)] font-bold" title="Nguy cơ cao rút phải Mèo Nổ!">

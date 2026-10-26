@@ -1,4 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
+import AnimatedCount from './AnimatedCount';
+import useGameStore from '../store/gameStore';
+import { cardBackFor } from '../../../shared/decks.js';
 
 export default function PlayerSlot({
   player,
@@ -12,6 +15,7 @@ export default function PlayerSlot({
   const isBot = !!player.isBot;
   const isHost = !!player.isHost;
   const reduceMotion = useReducedMotion();
+  const theme = useGameStore(s => s.deckTheme);
 
   return (
     <motion.div
@@ -101,7 +105,7 @@ export default function PlayerSlot({
 
       {/* Hiển thị số lượng bài trên tay với icon lá bài */}
       {isAlive ? (
-        <div className="landing-chip mt-1">{player.cardCount} lá</div>
+        <div className="landing-chip mt-1"><img className="mr-1 h-6 w-4 rounded-sm sm:hidden" src={cardBackFor(theme)} alt=""/><AnimatedCount value={player.cardCount}/> lá</div>
       ) : (
         <div className="mt-1 text-[10px] text-[var(--oxblood)] font-bold">Bị loại</div>
       )}

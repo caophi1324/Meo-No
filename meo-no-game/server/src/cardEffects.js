@@ -1,5 +1,6 @@
 import { CARD_TYPES, CAT_CARDS } from '../../shared/cardTypes.js';
 import { shuffleDeck } from './deckBuilder.js';
+import { addPrivateLog, addPublicLog } from './gameLog.js';
 
 // Dữ liệu lá bài an toàn để gửi cho người được xem/chọn (không thêm gì bí mật).
 export function cardView(card) {
@@ -91,7 +92,7 @@ export function takeVuongNiem(gameState, player) {
   if (!player || index === -1) return null;
   const [card] = player.hand.splice(index, 1);
   gameState.discardPile.push(card);
-  gameState.gameLog.push(`👑 ${player.name} dùng Vương Niệm để chặn 1 lá và mất hiệu lực.`);
+  addPublicLog(gameState, `👑 ${player.name} dùng Vương Niệm để chặn 1 lá và mất hiệu lực.`);
   return card;
 }
 
@@ -122,7 +123,7 @@ export function handleAttack(gameState, playerId, payload = {}) {
   if (target) {
     gameState.lastAttack = { attackerId: playerId, targetId: target.id, turns };
   }
-  gameState.gameLog.push(
+  addPublicLog(gameState,
     `⚔️ ${current.name} đã Tấn Công ${target ? target.name : ''}! Người kế tiếp phải đi ${turns} lượt${fueled ? ' (đã nạp nhiên liệu)' : ''}.`
   );
   return {
@@ -147,7 +148,7 @@ export function handleSkip(gameState, playerId) {
   gameState.turnsRemaining = 0;
   clearWindow(gameState);
   advanceTurn(gameState, 1);
-  gameState.gameLog.push(`⏭️ ${current.name} đã Bỏ Lượt.`);
+  addPublicLog(gameState, `⏭️ ${current.name} đã Bỏ Lượt.`);
   return { gameState, response: { type: 'skip', playerId } };
 }
 
@@ -156,7 +157,7 @@ export function handleShuffle(gameState, playerId) {
   const player = gameState.players.find(p => p.id === playerId);
   gameState.drawPile = shuffleDeck(gameState.drawPile);
   clearWindow(gameState);
-  gameState.gameLog.push(`🔀 ${player ? player.name : 'Ai đó'} đã Xáo Trộn chồng bài.`);
+  addPublicLog(gameState, `🔀 ${player ? player.name : 'Ai đó'} đã Xáo Trộn chồng bài.`);
   return { gameState, response: { type: 'shuffle', playerId } };
 }
 
@@ -164,7 +165,15 @@ export function handleShuffle(gameState, playerId) {
 export function handleSeeTheFuture(gameState, playerId) {
   const player = gameState.players.find(p => p.id === playerId);
   const top3 = gameState.drawPile.slice(0, 3).map(cardView);
-  gameState.gameLog.push(`🔮 ${player ? player.name : 'Ai đó'} đã Nhìn Tương Lai.`);
+  addPublicLog(gameState, `🔮 ${player ? player.name : 'Ai đó'} đã Nhìn Tương Lai.`, {
+    kind: 'reveal',
+  });
+  addPrivateLog(
+    gameState,
+    [playerId],
+    `Bạn thấy: ${top3.map(card => card.nameVN).join(' → ')}.`,
+    { kind: 'reveal', cards: top3 }
+  );
   return { gameState, response: { type: 'see_the_future', cards: top3, forPlayer: playerId } };
 }
 
@@ -179,7 +188,7 @@ export function handleReverse(gameState, playerId) {
   gameState.turnsRemaining = 0;
   clearWindow(gameState);
   advanceTurn(gameState, 1);
-  gameState.gameLog.push(
+  addPublicLog(gameState,
     `🔄 ${player ? player.name : 'Ai đó'} đã Đảo Chiều và kết thúc lượt.`
   );
   return {
@@ -220,7 +229,9 @@ export function handleStealCard(gameState, playerId, targetPlayerId) {
     targetName: target.name,
     cardCount: target.hand.length,
   });
-  gameState.gameLog.push(`🐧 ${player.name} đang chọn 1 lá úp từ ${target.name}.`);
+  addPublicLog(gameState, `🐧 ${player.name} đang chọn 1 lá úp từ ${target.name}.`, {
+    kind: 'steal',
+  });
   return { gameState, response: { type: 'choice_request', playerId } };
 }
 
@@ -237,7 +248,7 @@ export function offerReaction(gameState, victim, thief) {
     thiefId: thief.id,
     cards: options,
   });
-  gameState.gameLog.push(`🛡️ ${victim.name} có thể phản đòn ${thief.name}.`);
+  addPublicLog(gameState, `🛡️ ${victim.name} có thể phản đòn ${thief.name}.`);
 }
 
 // ☢️ Boom Nguyên Tử: gom bài đã dùng trở lại chồng rút rồi kết thúc lượt.
@@ -254,7 +265,7 @@ export function handleBoomAtomic(gameState, playerId) {
   gameState.turnsRemaining = 0;
   clearWindow(gameState);
   advanceTurn(gameState, 1);
-  gameState.gameLog.push(`☢️ ${player ? player.name : 'Ai đó'} đã dùng Boom Nguyên Tử và kết thúc lượt.`);
+  addPublicLog(gameState, `☢️ ${player ? player.name : 'Ai đó'} đã dùng Boom Nguyên Tử và kết thúc lượt.`);
   return { gameState, response: { type: 'boom_atomic', playerId } };
 }
 
@@ -264,7 +275,7 @@ export function handleSuperSkip(gameState, playerId) {
   gameState.turnsRemaining = 0;
   clearWindow(gameState);
   advanceTurn(gameState, 1);
-  gameState.gameLog.push(
+  addPublicLog(gameState,
     `⏩ ${player ? player.name : 'Ai đó'} đã Siêu Bỏ Lượt — kết thúc mọi lượt còn lại!`
   );
   return { gameState, response: { type: 'super_skip', playerId } };
@@ -279,7 +290,15 @@ export function handleAlterFuture(gameState, playerId) {
   gameState.nopeCount = 0;
   gameState.nopePassed = [];
   gameState.windowOwnerId = null;
-  gameState.gameLog.push(`🌌 ${player ? player.name : 'Ai đó'} đang Kiến Tạo Tương Lai...`);
+  addPublicLog(gameState, `🌌 ${player ? player.name : 'Ai đó'} đang Kiến Tạo Tương Lai...`, {
+    kind: 'reveal',
+  });
+  addPrivateLog(
+    gameState,
+    [playerId],
+    `Bạn thấy: ${cards.map(card => card.nameVN).join(' → ')}.`,
+    { kind: 'reveal', cards }
+  );
   return {
     gameState,
     response: { type: 'alter_future', playerId, cards, forPlayer: playerId },
@@ -314,7 +333,7 @@ export function handleAlterFutureSubmit(gameState, playerId, order) {
   gameState.alterFuture = null;
 
   const player = gameState.players.find(p => p.id === playerId);
-  gameState.gameLog.push(`🌌 ${player ? player.name : 'Ai đó'} đã sắp xếp lại 3 lá tương lai.`);
+  addPublicLog(gameState, `🌌 ${player ? player.name : 'Ai đó'} đã sắp xếp lại 3 lá tương lai.`);
   return { gameState, response: { type: 'alter_future_placed', playerId } };
 }
 
@@ -326,7 +345,7 @@ export function handleFuel(gameState, playerId) {
   }
   clearWindow(gameState);
   gameState.fueledPlayerId = playerId;
-  gameState.gameLog.push(
+  addPublicLog(gameState,
     `⛽ ${player ? player.name : 'Ai đó'} đã Nạp Nhiên Liệu — Tấn Công kế tiếp gây 3 lượt!`
   );
   return { gameState, response: { type: 'fuel', playerId } };
@@ -345,7 +364,7 @@ export function handleSuperDestroy(gameState, playerId, targetPlayerId, requeste
 
   const idx = target.hand.findIndex(c => c.type === requestedCardType);
   if (idx === -1) {
-    gameState.gameLog.push(
+    addPublicLog(gameState,
       `🧨 ${player ? player.name : 'Ai đó'} đã Siêu Hủy Bài nhưng ${target.name} không có lá đó.`
     );
     return {
@@ -362,8 +381,14 @@ export function handleSuperDestroy(gameState, playerId, targetPlayerId, requeste
   }
 
   const [destroyed] = target.hand.splice(idx, 1);
-  gameState.gameLog.push(
-    `🧨 ${player ? player.name : 'Ai đó'} đã hủy vĩnh viễn ${destroyed.nameVN} của ${target.name}!`
+  addPublicLog(gameState, `🧨 ${player ? player.name : 'Ai đó'} đã hủy 1 lá của ${target.name}.`, {
+    kind: 'destroy',
+  });
+  addPrivateLog(
+    gameState,
+    [playerId, target.id],
+    `${player ? player.name : 'Ai đó'} đã hủy ${destroyed.nameVN} của ${target.name}.`,
+    { kind: 'destroy', cards: [cardView(destroyed)] }
   );
   return {
     gameState,
@@ -374,7 +399,6 @@ export function handleSuperDestroy(gameState, playerId, targetPlayerId, requeste
       targetName: target.name,
       requestedCardType,
       destroyed: true,
-      cardName: destroyed.nameVN,
       cardType: destroyed.type,
     },
   };
@@ -401,7 +425,7 @@ export function handleFavor(gameState, playerId, targetPlayerId) {
   gameState.waitingFor = 'favor_give';
   gameState.favorTarget = targetPlayerId;
   gameState.favorRequester = playerId;
-  gameState.gameLog.push(`🙏 ${requester ? requester.name : 'Ai đó'} đã Xin Bài từ ${target.name}.`);
+  addPublicLog(gameState, `🙏 ${requester ? requester.name : 'Ai đó'} đã Xin Bài từ ${target.name}.`);
   return { gameState, response: { type: 'favor_request', requester: playerId, target: targetPlayerId } };
 }
 
@@ -427,7 +451,15 @@ export function handleFavorGive(gameState, targetPlayerId, cardId) {
   gameState.waitingFor = null;
   gameState.favorTarget = null;
   gameState.favorRequester = null;
-  gameState.gameLog.push(`🎁 ${target.name} đã đưa ${card.nameVN} cho ${requester.name}.`);
+  addPublicLog(gameState, `🎁 ${target.name} đã đưa 1 lá cho ${requester.name}.`, {
+    kind: 'favor',
+  });
+  addPrivateLog(
+    gameState,
+    [target.id, requester.id],
+    `${target.name} đã đưa ${card.nameVN} cho ${requester.name}.`,
+    { kind: 'favor', cards: [cardView(card)] }
+  );
   return { gameState, response: { type: 'favor_give', from: targetPlayerId, to: requester.id } };
 }
 
@@ -470,7 +502,9 @@ export function handleCatCombo(gameState, playerId, cardIds, payload = {}) {
       targetName: target.name,
       cardCount: target.hand.length,
     });
-    gameState.gameLog.push(`🐾 ${requester.name} đang chọn 1 lá úp từ ${target.name}.`);
+    addPublicLog(gameState, `🐱 ${requester.name} đang chọn 1 lá úp từ ${target.name}.`, {
+    kind: 'steal',
+  });
     return { gameState, response: { type: 'choice_request', playerId } };
   }
 
@@ -479,12 +513,20 @@ export function handleCatCombo(gameState, playerId, cardIds, payload = {}) {
     if (!wanted) return { gameState, response: { error: 'Chưa chọn loại bài muốn đòi' } };
     const idx = target.hand.findIndex(c => c.type === wanted);
     if (idx === -1) {
-      gameState.gameLog.push(`🐱 ${requester.name} đòi bài nhưng ${target.name} không có lá đó.`);
+      addPublicLog(gameState, `🐱 ${requester.name} đòi bài nhưng ${target.name} không có lá đó.`);
       return { gameState, response: { type: 'steal_specific', from: target.id, to: playerId, card: null } };
     }
     const [got] = target.hand.splice(idx, 1);
     requester.hand.push(got);
-    gameState.gameLog.push(`🐱 ${requester.name} đã đòi được ${got.nameVN} từ ${target.name}!`);
+    addPublicLog(gameState, `🐱 ${requester.name} đã đòi được 1 lá từ ${target.name}.`, {
+      kind: 'steal',
+    });
+    addPrivateLog(
+      gameState,
+      [requester.id, target.id],
+      `${requester.name} đã đòi ${got.nameVN} từ ${target.name}.`,
+      { kind: 'steal', cards: [cardView(got)] }
+    );
     offerReaction(gameState, target, requester);
     return { gameState, response: { type: 'steal_specific', from: target.id, to: playerId, card: got } };
   }
@@ -495,7 +537,7 @@ export function handleCatCombo(gameState, playerId, cardIds, payload = {}) {
     if (idx === -1) return { gameState, response: { error: 'Chồng bài hạ trống' } };
     const [taken] = gameState.discardPile.splice(idx, 1);
     requester.hand.push(taken);
-    gameState.gameLog.push(`🐱 ${requester.name} đã lấy ${taken.nameVN} từ chồng bài hạ (combo 5 lá).`);
+    addPublicLog(gameState, `🐱 ${requester.name} đã lấy ${taken.nameVN} từ chồng bài hạ (combo 5 lá).`);
     return { gameState, response: { type: 'steal_discard', to: playerId, card: taken } };
   }
 

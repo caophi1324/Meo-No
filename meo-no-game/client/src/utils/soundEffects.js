@@ -3,7 +3,9 @@
 class SoundEngine {
   constructor() {
     this.ctx = null;
-    this.muted = localStorage.getItem('meono_sound_muted') === 'true';
+    this.muted = typeof localStorage !== 'undefined' && localStorage.getItem('meono_sound_muted') === 'true';
+    this.activeVoices = new Set();
+    this.collector = null;
   }
 
   init() {
@@ -14,7 +16,7 @@ class SoundEngine {
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
   }
 
@@ -25,13 +27,76 @@ class SoundEngine {
   toggleMute() {
     this.muted = !this.muted;
     localStorage.setItem('meono_sound_muted', this.muted);
+    if (this.muted) this.activeVoices.forEach(voice => voice.cancel());
     return this.muted;
+  }
+
+  // Capture all voices produced by an existing procedural sound. Completion comes
+  // from AudioScheduledSourceNode.onended, not an estimated sound duration.
+  track(source, gain, extra = []) {
+    let resolve;
+    const done = new Promise(r => { resolve = r; });
+    let ended = false;
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      source.disconnect(); gain.disconnect(); extra.forEach(node => node.disconnect());
+      this.activeVoices.delete(voice);
+      resolve();
+    };
+    const voice = { done, cancel: () => { try { source.stop(); } catch {} finish(); } };
+    source.onended = finish;
+    this.activeVoices.add(voice);
+    this.collector?.push(voice);
+    return voice;
+  }
+
+  playTracked(name, ...args) {
+    this.init();
+    if (this.muted || this.ctx?.state !== 'running' || typeof this[name] !== 'function') {
+      return { done: Promise.resolve(), cancel() {} };
+    }
+    const voices = [];
+    this.collector = voices;
+    try { this[name](...args); } finally { this.collector = null; }
+    return { done: Promise.all(voices.map(v => v.done)), cancel: () => voices.forEach(v => v.cancel()) };
+  }
+
+  playWhoosh(delay = 0) {
+    if (this.muted) return;
+    this.init();
+    if (this.ctx?.state !== 'running') return;
+    const ctx = this.ctx, now = ctx.currentTime + delay, duration = .32;
+    const buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * duration), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource(); noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter(); filter.type = 'bandpass'; filter.Q.value = .65;
+    filter.frequency.setValueAtTime(500, now);
+    filter.frequency.exponentialRampToValueAtTime(2200, now + .16);
+    filter.frequency.exponentialRampToValueAtTime(350, now + duration);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(.001, now);
+    gain.gain.linearRampToValueAtTime(.11, now + .09);
+    gain.gain.exponentialRampToValueAtTime(.001, now + duration);
+    noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    this.track(noise, gain, [filter]);
+    noise.start(now); noise.stop(now + duration);
+  }
+
+  playSlam() {
+    this.tone({ type: 'triangle', from: 160, to: 48, duration: .09, volume: .16 });
+  }
+
+  playImplodingFlip() {
+    this.tone({ type: 'sine', from: 180, to: 850, duration: .3, volume: .13 });
+    this.tone({ type: 'triangle', from: 620, to: 80, duration: .25, volume: .1, delay: .16 });
   }
 
   playDraw() {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
       const now = this.ctx.currentTime;
@@ -49,6 +114,7 @@ class SoundEngine {
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
+      this.track(osc, gain);
       osc.start(now);
       osc.stop(now + 0.15);
     } catch {
@@ -59,7 +125,7 @@ class SoundEngine {
   playCard() {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
       const now = this.ctx.currentTime;
@@ -76,6 +142,7 @@ class SoundEngine {
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
+      this.track(osc, gain);
       osc.start(now);
       osc.stop(now + 0.12);
     } catch {
@@ -83,13 +150,13 @@ class SoundEngine {
     }
   }
 
-  playExplosion() {
+  playExplosion(delay = 0) {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
-      const now = this.ctx.currentTime;
+      const now = this.ctx.currentTime + delay;
       // Low boom oscillator
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -104,6 +171,7 @@ class SoundEngine {
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
+      this.track(osc, gain);
       osc.start(now);
       osc.stop(now + 0.85);
     } catch {
@@ -114,7 +182,7 @@ class SoundEngine {
   playDefuse() {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
       const now = this.ctx.currentTime;
@@ -133,6 +201,7 @@ class SoundEngine {
         osc.connect(gain);
         gain.connect(this.ctx.destination);
 
+        this.track(osc, gain);
         osc.start(t);
         osc.stop(t + 0.2);
       });
@@ -144,7 +213,7 @@ class SoundEngine {
   playNope() {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
       const now = this.ctx.currentTime;
@@ -162,6 +231,7 @@ class SoundEngine {
         osc.connect(gain);
         gain.connect(this.ctx.destination);
 
+        this.track(osc, gain);
         osc.start(t);
         osc.stop(t + 0.12);
       });
@@ -173,7 +243,7 @@ class SoundEngine {
   playVictory() {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
       const now = this.ctx.currentTime;
@@ -192,6 +262,7 @@ class SoundEngine {
         osc.connect(gain);
         gain.connect(this.ctx.destination);
 
+        this.track(osc, gain);
         osc.start(t);
         osc.stop(t + 0.7);
       });
@@ -203,7 +274,7 @@ class SoundEngine {
   tone({ type = 'sine', from = 440, to = from, duration = 0.15, volume = 0.15, delay = 0 }) {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
       const now = this.ctx.currentTime + delay;
@@ -220,6 +291,7 @@ class SoundEngine {
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
+      this.track(osc, gain);
       osc.start(now);
       osc.stop(now + duration);
     } catch {
@@ -289,10 +361,40 @@ class SoundEngine {
     this.tone({ type: 'square', from: 300, to: 460, duration: 0.14, volume: 0.1, delay: 0.12 });
   }
 
+  // Một chuỗi kết liễu duy nhất theo theme; không chồng explosion + victory.
+  playFinisher(theme = 'default') {
+    if (this.muted) return;
+    this.init();
+    if (this.ctx?.state !== 'running') return;
+
+    if (theme === 'anime') {
+      // Nhát chém, trống nhỏ rồi tiếng whoosh tắt dần.
+      this.tone({ type: 'sawtooth', from: 1500, to: 180, duration: 0.26, volume: 0.22 });
+      this.tone({ type: 'triangle', from: 110, to: 48, duration: 0.5, volume: 0.2, delay: 0.08 });
+      this.tone({ type: 'sine', from: 880, to: 220, duration: 0.55, volume: 0.12, delay: 0.2 });
+      [523.25, 659.25, 783.99].forEach((freq, index) =>
+        this.tone({ type: 'triangle', from: freq, duration: 0.34, volume: 0.12, delay: 0.3 + index * 0.08 })
+      );
+      return;
+    }
+
+    if (theme === 'lol') {
+      // Hum nền, tia hextech và cú impact.
+      this.tone({ type: 'sine', from: 58, to: 64, duration: 1.1, volume: 0.16 });
+      this.tone({ type: 'square', from: 240, to: 960, duration: 0.4, volume: 0.1, delay: 0.08 });
+      this.tone({ type: 'sawtooth', from: 210, to: 38, duration: 0.55, volume: 0.24, delay: 0.32 });
+      this.tone({ type: 'triangle', from: 1200, to: 300, duration: 0.5, volume: 0.1, delay: 0.4 });
+      return;
+    }
+
+    this.playBoomBuild();
+    this.playExplosion(0.45);
+  }
+
   playClick() {
     if (this.muted) return;
     this.init();
-    if (!this.ctx) return;
+    if (this.ctx?.state !== 'running') return;
 
     try {
       const now = this.ctx.currentTime;
@@ -309,6 +411,7 @@ class SoundEngine {
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
+      this.track(osc, gain);
       osc.start(now);
       osc.stop(now + 0.05);
     } catch {

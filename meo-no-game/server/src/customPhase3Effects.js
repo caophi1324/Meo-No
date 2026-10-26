@@ -1,6 +1,7 @@
 import { CARD_TYPES } from '../../shared/cardTypes.js';
 import { advanceTurn, cardView, handleAlterFuture, nextAlivePlayer, setChoice, takeVuongNiem } from './cardEffects.js';
 import { shuffleDeck } from './deckBuilder.js';
+import { addPrivateLog, addPublicLog } from './gameLog.js';
 
 function playerOf(gameState, id) {
   return gameState.players.find(p => p.id === id);
@@ -46,7 +47,7 @@ export function openPartyChoice(gameState) {
         cards: p.hand.map(cardView),
         count: 1,
       });
-      gameState.gameLog.push(`🎂 ${p.name} đang chọn 1 lá úp cho Tiệc Tùng.`);
+      addPublicLog(gameState, `🎂 ${p.name} đang chọn 1 lá úp cho Tiệc Tùng.`);
       return { gameState, response: { type: 'choice_request', playerId: p.id } };
     }
     party.index += 1;
@@ -54,7 +55,7 @@ export function openPartyChoice(gameState) {
   gameState.pendingParty = null;
   gameState.pendingChoice = null;
   gameState.waitingFor = null;
-  gameState.gameLog.push('🎂 Tiệc Tùng hoàn tất.');
+  addPublicLog(gameState, '🎂 Tiệc Tùng hoàn tất.');
   return { gameState, response: { type: 'choice_resolved', playerId: null } };
 }
 
@@ -81,7 +82,13 @@ export const CUSTOM_PHASE3_EFFECTS = {
       maxPosition: Math.max(0, gameState.drawPile.length - 1),
       cards: [cardView(card)],
     });
-    gameState.gameLog.push(`🔎 ${player.name} đang xem lá trên cùng và chọn vị trí đặt lại.`);
+    addPublicLog(gameState, `🔎 ${player.name} đang xem lá trên cùng và chọn vị trí đặt lại.`, {
+      kind: 'reveal',
+    });
+    addPrivateLog(gameState, [playerId], `Bạn thấy ${card.nameVN} trên cùng.`, {
+      kind: 'reveal',
+      cards: [cardView(card)],
+    });
     return { gameState, response: { type: 'choice_request', playerId } };
   },
 
@@ -95,7 +102,13 @@ export const CUSTOM_PHASE3_EFFECTS = {
       sourceType: CARD_TYPES.TIM_KIEM,
       cards: top.map(cardView),
     });
-    gameState.gameLog.push(`🔎 ${player.name} đang xem 5 lá trên cùng.`);
+    addPublicLog(gameState, `🔎 ${player.name} đang xem 5 lá trên cùng.`, { kind: 'reveal' });
+    addPrivateLog(
+      gameState,
+      [playerId],
+      `Bạn thấy: ${top.map(card => card.nameVN).join(' → ')}.`,
+      { kind: 'reveal', cards: top.map(cardView) }
+    );
     return { gameState, response: { type: 'choice_request', playerId } };
   },
 
@@ -103,7 +116,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const next = nextAlivePlayer(gameState);
     if (!next) {
-      gameState.gameLog.push(`🧨 ${player.name} dùng Siêu Hủy Bài nhưng không còn đối thủ.`);
+      addPublicLog(gameState, `🧨 ${player.name} dùng Siêu Hủy Bài nhưng không còn đối thủ.`);
       return { gameState, response: { type: 'card_played', playerId } };
     }
     const nextIndex = gameState.players.findIndex(p => p.id === next.id);
@@ -115,7 +128,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     gameState.fueledPlayerId = null;
     gameState.alterFuture = null;
     gameState.lastAttack = null;
-    gameState.gameLog.push(`🧨 ${player.name} dừng lượt của ${next.name}.`);
+    addPublicLog(gameState, `🧨 ${player.name} dừng lượt của ${next.name}.`);
     return {
       gameState,
       response: { type: 'card_played', playerId, skippedPlayerId: next.id },
@@ -126,7 +139,15 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const card = gameState.drawPile.shift();
     if (card) player.hand.push(card);
-    gameState.gameLog.push(`🐾 ${player.name} dùng Siêu Thú Cưng và rút 1 lá.`);
+    addPublicLog(gameState, `🐾 ${player.name} dùng Siêu Thú Cưng và rút 1 lá.`, {
+      kind: 'draw',
+    });
+    if (card) {
+      addPrivateLog(gameState, [playerId], `Bạn đã rút được ${card.nameVN}.`, {
+        kind: 'draw',
+        cards: [cardView(card)],
+      });
+    }
     return { gameState, response: { type: 'drew_card', playerId } };
   },
 
@@ -134,7 +155,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const target = chosenTarget(gameState, playerId, payload);
     if (!target || target.hand.length === 0) {
-      gameState.gameLog.push(`🍕 ${player.name} dùng Chia Sẻ nhưng ${target?.name || 'mục tiêu'} không còn bài.`);
+      addPublicLog(gameState, `🍕 ${player.name} dùng Chia Sẻ nhưng ${target?.name || 'mục tiêu'} không còn bài.`);
       return { gameState, response: { type: 'card_played', playerId } };
     }
     const count = Math.min(
@@ -148,7 +169,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       cards: target.hand.map(cardView),
       count,
     });
-    gameState.gameLog.push(`🍕 ${target.name} đang tự chọn ${count} lá để hủy.`);
+    addPublicLog(gameState, `🍕 ${target.name} đang tự chọn ${count} lá để hủy.`);
     return { gameState, response: { type: 'choice_request', playerId: target.id } };
   },
 
@@ -156,7 +177,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const target = chosenTarget(gameState, playerId, payload);
     if (!target || target.hand.length === 0) {
-      gameState.gameLog.push(`🐼 ${player.name} dùng Giờ Giải Lao nhưng ${target?.name || 'mục tiêu'} không còn bài.`);
+      addPublicLog(gameState, `🐼 ${player.name} dùng Giờ Giải Lao nhưng ${target?.name || 'mục tiêu'} không còn bài.`);
       return { gameState, response: { type: 'card_played', playerId } };
     }
     const count = Math.min(3 * (payload?.boostMultiplier || 1), target.hand.length);
@@ -169,7 +190,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       cardCount: target.hand.length,
       count,
     });
-    gameState.gameLog.push(`🐼 ${player.name} đang chọn ${count} lá úp của ${target.name} để xem.`);
+    addPublicLog(gameState, `🐼 ${player.name} đang chọn ${count} lá úp của ${target.name} để xem.`);
     return { gameState, response: { type: 'choice_request', playerId } };
   },
 
@@ -183,7 +204,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     gameState.fueledPlayerId = null;
     gameState.alterFuture = null;
     gameState.lastAttack = { attackerId: playerId, targetId: target.id, turns };
-    gameState.gameLog.push(`🎯 ${player.name} chỉ định ${target.name} bốc ${turns} lượt.`);
+    addPublicLog(gameState, `🎯 ${player.name} chỉ định ${target.name} bốc ${turns} lượt.`);
     return { gameState, response: { type: 'attack', playerId, targetPlayerId: target.id, turnsRemaining: turns } };
   },
 
@@ -192,13 +213,17 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const card = gameState.drawPile.pop();
     if (!card) return { gameState, response: { error: 'Chồng bài rút đang trống' } };
     drawFromPile(gameState, player, card);
-    gameState.gameLog.push(`⬇️ ${player.name} đã bốc lá dưới đáy.`);
+    addPublicLog(gameState, `⬇️ ${player.name} đã bốc lá dưới đáy.`, { kind: 'draw' });
+    addPrivateLog(gameState, [playerId], `Bạn đã rút được ${card.nameVN} dưới đáy.`, {
+      kind: 'draw',
+      cards: [cardView(card)],
+    });
     return { gameState, response: { type: 'drew_card', playerId } };
   },
 
   [CARD_TYPES.VUONG_NIEM]: (gameState, playerId) => {
     const player = playerOf(gameState, playerId);
-    gameState.gameLog.push(`👑 ${player.name} dùng Vương Niệm.`);
+    addPublicLog(gameState, `👑 ${player.name} dùng Vương Niệm.`);
     return { gameState, response: { type: 'card_played', playerId } };
   },
 
@@ -206,7 +231,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const target = chosenTarget(gameState, playerId, payload);
     if (!target || target.hand.length === 0) {
-      gameState.gameLog.push(`🥊 ${player.name} dùng Hủy Bài nhưng ${target?.name || 'mục tiêu'} không còn bài.`);
+      addPublicLog(gameState, `🥊 ${player.name} dùng Hủy Bài nhưng ${target?.name || 'mục tiêu'} không còn bài.`);
       return { gameState, response: { type: 'card_played', playerId } };
     }
     const count = Math.min(target.hand.length, 2 * (payload?.boostMultiplier || 1));
@@ -219,7 +244,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       cardCount: target.hand.length,
       count,
     });
-    gameState.gameLog.push(`🥊 ${player.name} đang chọn ${count} lá úp của ${target.name}.`);
+    addPublicLog(gameState, `🥊 ${player.name} đang chọn ${count} lá úp của ${target.name}.`);
     return { gameState, response: { type: 'choice_request', playerId } };
   },
 
@@ -227,7 +252,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const extra = 3 * (payload?.boostMultiplier || 1);
     gameState.turnsRemaining = (gameState.turnsRemaining || 1) + extra;
-    gameState.gameLog.push(`🐙 ${player.name} được thêm ${extra} lượt.`);
+    addPublicLog(gameState, `🐙 ${player.name} được thêm ${extra} lượt.`);
     return { gameState, response: { type: 'card_played', playerId } };
   },
 
@@ -235,20 +260,29 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const turns = 3 * (payload?.boostMultiplier || 1);
     gameState.turnsRemaining = turns;
-    gameState.gameLog.push(`🦫 ${player.name} tự tấn công và phải bốc ${turns} lượt liên tục.`);
+    addPublicLog(gameState, `🦫 ${player.name} tự tấn công và phải bốc ${turns} lượt liên tục.`);
     return { gameState, response: { type: 'card_played', playerId } };
   },
 
   [CARD_TYPES.THOI_MIEN]: (gameState, playerId, payload) => {
     const player = playerOf(gameState, playerId);
     const target = chosenTarget(gameState, playerId, payload);
-    gameState.gameLog.push(`🦈 ${player.name} xem toàn bộ bài của ${target?.name || 'đối thủ'}.`);
+    const cards = (target?.hand || []).map(cardView);
+    addPublicLog(gameState, `🦈 ${player.name} xem toàn bộ bài của ${target?.name || 'đối thủ'}.`, {
+      kind: 'reveal',
+    });
+    addPrivateLog(
+      gameState,
+      [playerId],
+      `Bạn thấy: ${cards.map(card => card.nameVN).join(', ')}.`,
+      { kind: 'reveal', cards }
+    );
     return {
       gameState,
       response: {
         type: 'see_the_future',
         forPlayer: playerId,
-        cards: (target?.hand || []).map(cardView),
+        cards,
       },
     };
   },
@@ -267,7 +301,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       targetName: target.name,
       cardCount: target.hand.length,
     });
-    gameState.gameLog.push(`🐱 ${player.name} đang chọn 1 lá của ${target.name} để vô hiệu hóa.`);
+    addPublicLog(gameState, `🐱 ${player.name} đang chọn 1 lá của ${target.name} để vô hiệu hóa.`);
     return { gameState, response: { type: 'choice_request', playerId } };
   },
 
@@ -282,7 +316,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       };
     }
     target.pendingStealBy = playerId;
-    gameState.gameLog.push(`🐻 ${player.name} đặt Nhân Bản trước ${target.name}; lá họ rút tiếp theo sẽ bị cướp.`);
+    addPublicLog(gameState, `🐻 ${player.name} đặt Nhân Bản trước ${target.name}; lá họ rút tiếp theo sẽ bị cướp.`);
     return { gameState, response: { type: 'card_played', playerId, targetPlayerId: target.id } };
   },
 
@@ -297,7 +331,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       };
     }
     target.pendingStealBy = playerId;
-    gameState.gameLog.push(`🪲 ${player.name} nhắm ${target.name}; lá họ rút tiếp theo sẽ bị lấy.`);
+    addPublicLog(gameState, `🪲 ${player.name} nhắm ${target.name}; lá họ rút tiếp theo sẽ bị lấy.`);
     return { gameState, response: { type: 'card_played', playerId, targetPlayerId: target.id } };
   },
 
@@ -305,11 +339,11 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const queue = partyQueue(gameState, playerId);
     if (queue.length === 0) {
-      gameState.gameLog.push(`🎂 ${player.name} mở tiệc nhưng không ai còn bài để úp.`);
+      addPublicLog(gameState, `🎂 ${player.name} mở tiệc nhưng không ai còn bài để úp.`);
       return { gameState, response: { type: 'card_played', playerId } };
     }
     gameState.pendingParty = { queue, index: 0 };
-    gameState.gameLog.push(`🎂 ${player.name} mở tiệc; mỗi người tự chọn 1 lá úp lên đầu chồng bài.`);
+    addPublicLog(gameState, `🎂 ${player.name} mở tiệc; mỗi người tự chọn 1 lá úp lên đầu chồng bài.`);
     return openPartyChoice(gameState);
   },
 
@@ -334,7 +368,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       cards,
       count,
     });
-    gameState.gameLog.push(`🌱 ${player.name} đang chọn ${count} lá từ người đã loại.`);
+    addPublicLog(gameState, `🌱 ${player.name} đang chọn ${count} lá từ người đã loại.`);
     return { gameState, response: { type: 'choice_request', playerId } };
   },
 
@@ -348,7 +382,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
     gameState.discardPile = gameState.discardPile.filter(c => c.type === CARD_TYPES.EXPLODING_KITTEN || c.type === CARD_TYPES.IMPLODING_KITTEN);
     gameState.drawPile = shuffleDeck([...gameState.drawPile, ...recyclable]);
     finishTurn(gameState);
-    gameState.gameLog.push(`⛽ ${player.name} nạp lại bài đã dùng và kết thúc lượt.`);
+    addPublicLog(gameState, `⛽ ${player.name} nạp lại bài đã dùng và kết thúc lượt.`);
     return { gameState, response: { type: 'card_played', playerId } };
   },
 
@@ -361,7 +395,7 @@ export const CUSTOM_PHASE3_EFFECTS = {
       sourceType: CARD_TYPES.BOC_O_DAU_CUNG_DUOC,
       maxPosition: gameState.drawPile.length - 1,
     });
-    gameState.gameLog.push(`🦜 ${player.name} đang chọn vị trí bốc bài.`);
+    addPublicLog(gameState, `🦜 ${player.name} đang chọn vị trí bốc bài.`);
     return { gameState, response: { type: 'choice_request', playerId } };
   },
 
@@ -369,7 +403,13 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const card = gameState.drawPile.shift();
     if (card) player.hand.push(card);
-    gameState.gameLog.push(`🐰 ${player.name} tăng cường và rút 1 lá.`);
+    addPublicLog(gameState, `🐰 ${player.name} tăng cường và rút 1 lá.`, { kind: 'draw' });
+    if (card) {
+      addPrivateLog(gameState, [playerId], `Bạn đã rút được ${card.nameVN}.`, {
+        kind: 'draw',
+        cards: [cardView(card)],
+      });
+    }
     return { gameState, response: { type: 'drew_card', playerId } };
   },
 
@@ -385,25 +425,37 @@ export const CUSTOM_PHASE3_EFFECTS = {
     const player = playerOf(gameState, playerId);
     const card = gameState.drawPile.shift();
     if (card) player.hand.push(card);
-    gameState.gameLog.push(`🐊 ${player.name} sao chép và rút 1 lá.`);
+    addPublicLog(gameState, `🐊 ${player.name} sao chép và rút 1 lá.`, { kind: 'draw' });
+    if (card) {
+      addPrivateLog(gameState, [playerId], `Bạn đã rút được ${card.nameVN}.`, {
+        kind: 'draw',
+        cards: [cardView(card)],
+      });
+    }
     return { gameState, response: { type: 'drew_card', playerId } };
   },
 
   [CARD_TYPES.NHIN_THAU_TUONG_LAI]: (gameState, playerId) => {
     const cards = gameState.drawPile.slice(0, 5).map(cardView);
-    gameState.gameLog.push(`📸 Người chơi đã Nhìn Thấu Tương Lai.`);
+    addPublicLog(gameState, `📸 Người chơi đã Nhìn Thấu Tương Lai.`, { kind: 'reveal' });
+    addPrivateLog(
+      gameState,
+      [playerId],
+      `Bạn thấy: ${cards.map(card => card.nameVN).join(' → ')}.`,
+      { kind: 'reveal', cards }
+    );
     return { gameState, response: { type: 'see_the_future', forPlayer: playerId, cards } };
   },
 
   [CARD_TYPES.CHONG_XAO_BAI]: (gameState, playerId) => {
     const player = playerOf(gameState, playerId);
-    gameState.gameLog.push(`🐉 ${player.name} dùng Chống Xào Bài.`);
+    addPublicLog(gameState, `🐉 ${player.name} dùng Chống Xào Bài.`);
     return { gameState, response: { type: 'card_played', playerId } };
   },
 
   [CARD_TYPES.TIET_LO_TUONG_LAI]: (gameState, playerId) => {
     const player = playerOf(gameState, playerId);
-    gameState.gameLog.push(`🐘 ${player.name} đã Tiết Lộ Tương Lai.`);
+    addPublicLog(gameState, `🐘 ${player.name} đã Tiết Lộ Tương Lai.`);
     return handleAlterFuture(gameState, playerId);
   },
 };

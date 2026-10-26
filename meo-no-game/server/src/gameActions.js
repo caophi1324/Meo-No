@@ -293,6 +293,8 @@ export function performAction(io, room, playerId, type, payload = {}) {
     io.to(room.roomCode).emit(EVENTS.EXPLODED, {
       playerId: response.playerId,
       playerName: response.playerName,
+      gameOver: !!response.gameOver,
+      winner: response.winner || null,
     });
     if (response.gameOver && response.winner) {
       io.to(room.roomCode).emit(EVENTS.GAME_OVER, { winnerName: response.winner.name });

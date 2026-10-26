@@ -5,6 +5,7 @@ import { CONFIG } from './constants.js';
 import { getDeckCounts, createDeck } from './deckBuilder.js';
 import { sanitizeStateForPlayer } from './stateSanitizer.js';
 import { CUSTOM_PHASE3_EFFECTS } from './customPhase3Effects.js';
+import { handleSeeTheFuture } from './cardEffects.js';
 import { getTimeoutAction } from './turnTimer.js';
 import {
   BOOSTABLE_TYPES,
@@ -657,4 +658,111 @@ test('Choice mới có giá trị timeout/bot hợp lệ', () => {
   gs.pendingChoice = { id: 'c7', playerId: 'p1', kind: 'copy_target', cards: [{ id: 'p2' }, { id: 'p3' }] };
   action = getTimeoutAction(gs, 'p1');
   assert.ok(['p2', 'p3'].includes(action.value));
+});
+
+test('Log 2 lớp: public generic, private chỉ tới đúng người nhận', () => {
+  const { engine, gs } = setup(3);
+  gs.privateLog = { p1: [], p2: [], p3: [] };
+  gs.publicLog = [];
+  gs.gameLog = [];
+
+  // A rút lá bí mật
+  const secretDraw = card(CARD_TYPES.ATTACK, { nameVN: 'MẬT-A-RÚT' });
+  gs.drawPile = [secretDraw, card(CARD_TYPES.SKIP, { nameVN: 'CÔNG-KHAI-1' })];
+  engine.drawCard(gs, 'p1');
+  gs.currentPlayerIndex = 0;
+  gs.turnsRemaining = 1;
+
+  // A trộm B lá bí mật
+  const secretSteal = card(CARD_TYPES.NOPE, { nameVN: 'MẬT-AB-TRỘM' });
+  gs.players[1].hand = [secretSteal, card(CARD_TYPES.SKIP, { nameVN: 'CÔNG-KHAI-2' })];
+  const steal = card(CARD_TYPES.STEAL_CARD);
+  gs.players[0].hand.push(steal);
+  playResolve(engine, gs, 'p1', [steal], { targetPlayerId: 'p2' });
+  engine.handleChoiceResponse(gs, 'p1', gs.pendingChoice.id, 0);
+
+  // A và B cùng Nhìn Tương Lai với hai bộ lá khác nhau
+  gs.drawPile = [
+    card(CARD_TYPES.SKIP, { nameVN: 'MẬT-A-TƯƠNG-LAI-1' }),
+    card(CARD_TYPES.NOPE, { nameVN: 'MẬT-A-TƯƠNG-LAI-2' }),
+    card(CARD_TYPES.ATTACK, { nameVN: 'MẬT-A-TƯƠNG-LAI-3' }),
+  ];
+  const seenA = handleSeeTheFuture(gs, 'p1');
+  assert.deepEqual(seenA.response.cards.map(c => c.nameVN), [
+    'MẬT-A-TƯƠNG-LAI-1',
+    'MẬT-A-TƯƠNG-LAI-2',
+    'MẬT-A-TƯƠNG-LAI-3',
+  ]);
+  gs.drawPile = [
+    card(CARD_TYPES.SKIP, { nameVN: 'MẬT-B-TƯƠNG-LAI-1' }),
+    card(CARD_TYPES.NOPE, { nameVN: 'MẬT-B-TƯƠNG-LAI-2' }),
+    card(CARD_TYPES.ATTACK, { nameVN: 'MẬT-B-TƯƠNG-LAI-3' }),
+  ];
+  handleSeeTheFuture(gs, 'p2');
+
+  // A rút Mèo Nổ rồi Gỡ Bom, đặt vị trí 3
+  gs.players[0].hand.push(card(CARD_TYPES.DEFUSE));
+  gs.drawPile = [
+    card(CARD_TYPES.EXPLODING_KITTEN, { nameVN: 'MẬT-EXPLODING' }),
+    card(CARD_TYPES.SKIP, { nameVN: 'CÔNG-KHAI-3' }),
+    card(CARD_TYPES.SKIP, { nameVN: 'CÔNG-KHAI-4' }),
+    card(CARD_TYPES.SKIP, { nameVN: 'CÔNG-KHAI-5' }),
+  ];
+  gs.currentPlayerIndex = 0;
+  gs.turnsRemaining = 1;
+  engine.drawCard(gs, 'p1');
+  engine.placeExplodingKitten(gs, 'p1', 2);
+
+  // B Phủ Nhận hành động của A
+  gs.waitingFor = 'nope';
+  gs.pendingAction = { type: CARD_TYPES.ATTACK, playerId: 'p1', cardIds: [] };
+  gs.players[1].hand.push(card(CARD_TYPES.NOPE));
+  engine.handleNope(gs, 'p2');
+
+  const pub = gs.publicLog.map(e => e.text).join('\n');
+  assert.match(pub, /P1 đã rút 1 lá/);
+  assert.match(pub, /P2 đã Phủ Nhận Tấn Công.*của P1/);
+  assert.match(pub, /P1 đã Gỡ Bom thành công/);
+  assert.doesNotMatch(pub, /MẬT-|CÔNG-KHAI/);
+  assert.doesNotMatch(pub, /vị trí \d/);
+  assert.equal(gs.gameLog.join('\n'), pub);
+
+  const a = sanitizeStateForPlayer(gs, 'p1');
+  const b = sanitizeStateForPlayer(gs, 'p2');
+  const c = sanitizeStateForPlayer(gs, 'p3');
+  const texts = view => view.myPrivateLog.map(e => e.text).join('\n');
+
+  assert.match(texts(a), /MẬT-A-RÚT/);
+  assert.match(texts(a), /MẬT-AB-TRỘM/);
+  assert.match(texts(a), /MẬT-A-TƯƠNG-LAI-1 → MẬT-A-TƯƠNG-LAI-2 → MẬT-A-TƯƠNG-LAI-3/);
+  assert.match(texts(a), /vị trí 3/);
+
+  assert.doesNotMatch(texts(b), /MẬT-A-RÚT/);
+  assert.doesNotMatch(texts(b), /MẬT-A-TƯƠNG-LAI/);
+  assert.doesNotMatch(texts(b), /vị trí 3/);
+  assert.match(texts(b), /MẬT-AB-TRỘM/);
+
+  assert.doesNotMatch(texts(c), /MẬT-A-RÚT/);
+  assert.doesNotMatch(texts(c), /MẬT-AB-TRỘM/);
+  assert.doesNotMatch(texts(c), /MẬT-A-TƯƠNG-LAI/);
+  assert.doesNotMatch(texts(c), /vị trí 3/);
+
+  // Payload của B/C không chứa private log của A
+  assert.doesNotMatch(JSON.stringify(b), /MẬT-A-RÚT|MẬT-A-TƯƠNG-LAI|vị trí 3/);
+  assert.doesNotMatch(JSON.stringify(c), /MẬT-A-RÚT|MẬT-AB-TRỘM|MẬT-A-TƯƠNG-LAI|vị trí 3/);
+  assert.equal(a.publicLog.length, b.publicLog.length);
+});
+
+test('Imploding đặt lại: public generic, chỉ người đặt thấy vị trí', () => {
+  const { engine, gs } = setup(3);
+  const ik = card(CARD_TYPES.IMPLODING_KITTEN, { faceUp: true });
+  gs.drawPile = [card(CARD_TYPES.SKIP), card(CARD_TYPES.SKIP), card(CARD_TYPES.SKIP)];
+  gs.pendingAction = { type: 'imploding', playerId: 'p1', card: ik };
+  engine.placeImplodingKitten(gs, 'p1', 1);
+
+  const pub = gs.publicLog.map(e => e.text).join('\n');
+  assert.match(pub, /P1 đã đặt Imploding Kitten ngửa vào chồng bài\./);
+  assert.doesNotMatch(pub, /vị trí \d/);
+  assert.match(sanitizeStateForPlayer(gs, 'p1').myPrivateLog.map(e => e.text).join('\n'), /vị trí 2/);
+  assert.doesNotMatch(sanitizeStateForPlayer(gs, 'p3').myPrivateLog.map(e => e.text).join('\n'), /vị trí/);
 });

@@ -74,7 +74,8 @@ socket.on('connect', () => {
 });
 
 socket.on('disconnect', () => {
-  useGameStore.setState({ connectionLost: true });
+  useGameStore.getState().clearEffects();
+  useGameStore.setState({ connectionLost: true, presentationNeedsBaseline: true });
 });
 
 socket.on('connect_error', () => {
@@ -107,7 +108,11 @@ socket.on(EVENTS.GAME_STATE_UPDATE, (state) => {
   const store = useGameStore.getState();
   // Bỏ qua trạng thái từ phòng khác (tránh lẫn state khi nằm 2 phòng)
   if (state.roomCode && store.roomCode && state.roomCode !== store.roomCode) return;
+  const wasImplodingPlace = store.gameState?.waitingFor === 'imploding_place';
   store.setGameState(state);
+  if (state.waitingFor === 'imploding_place' && !wasImplodingPlace) {
+    store.setCardEffect({ type: 'imploding_flipped', playerId: state.pendingActionOwner });
+  }
   if (state.deckTheme) useGameStore.setState({ deckTheme: state.deckTheme });
   persistIdentity();
   if (state.waitingFor !== 'nope') {
@@ -171,7 +176,7 @@ socket.on(EVENTS.NOPE_WINDOW, (payload = {}) => {
 
 // ==================== NHÌN TƯƠNG LAI ====================
 socket.on(EVENTS.SEE_FUTURE_RESULT, ({ cards }) => {
-  useGameStore.setState({ showSeeTheFuture: true, seeTheFutureCards: cards || [] });
+  useGameStore.setState({ seeFuturePending: cards || [] });
 });
 
 // ==================== XIN BÀI ====================
@@ -189,7 +194,8 @@ socket.on(EVENTS.FAVOR_REQUEST, (payload = {}) => {
 });
 
 // ==================== NỔ / KẾT THÚC ====================
-socket.on(EVENTS.EXPLODED, ({ playerName }) => {
+socket.on(EVENTS.EXPLODED, ({ playerId, playerName, gameOver }) => {
+  if (!gameOver) useGameStore.getState().setCardEffect({ type: 'exploded', playerId });
   useGameStore.getState().pushToast(`💥 ${playerName} đã nổ tung!`);
 });
 
@@ -212,5 +218,6 @@ socket.on(EVENTS.PLAYER_RECONNECTED, ({ playerName }) => {
 });
 
 socket.on(EVENTS.ERROR, ({ message }) => {
+  useGameStore.getState().cancelPendingPlay();
   useGameStore.getState().pushToast(message || 'Có lỗi xảy ra!');
 });

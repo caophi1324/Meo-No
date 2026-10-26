@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useReducedMotion } from 'framer-motion';
-import confetti from 'canvas-confetti';
+import { useEffect, useMemo, useState } from 'react';
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSocket } from '../hooks/useSocket';
 import useGameStore from '../store/gameStore';
@@ -28,7 +27,9 @@ import GameOverModal from '../components/GameOverModal';
 import RulesModal from '../components/RulesModal';
 import GameSidePanel from '../components/GameSidePanel';
 import CardAnimationOverlay from '../components/CardAnimationOverlay';
-import CardEffectOverlay from '../components/CardEffectOverlay';
+import CardPresentation from '../components/CardPresentation';
+import AnimatedCount from '../components/AnimatedCount';
+import { anchorRect, captureCardOrigins } from '../utils/animationGeometry';
 import AlterFutureModal from '../components/AlterFutureModal';
 import ModalShell from '../components/ModalShell';
 import TimerSettings from '../components/TimerSettings';
@@ -62,6 +63,7 @@ export default function GamePage() {
   const lobbyPlayers = useGameStore((s) => s.lobbyPlayers);
   const connectionLost = useGameStore((s) => s.connectionLost);
   const deckTheme = useGameStore((s) => s.deckTheme);
+  const activePresentationId = useGameStore(s => s.cardEffect?.effectId);
 
   const showNopePopup = useGameStore((s) => s.showNopePopup);
   const nopeInfo = useGameStore((s) => s.nopeInfo);
@@ -70,18 +72,20 @@ export default function GamePage() {
 
   const showSeeTheFuture = useGameStore((s) => s.showSeeTheFuture);
   const seeTheFutureCards = useGameStore((s) => s.seeTheFutureCards);
+  const seeFuturePending = useGameStore((s) => s.seeFuturePending);
+  const cardEffectPhase = useGameStore((s) => s.cardEffect?.phase || null);
   const setSeeTheFuture = useGameStore((s) => s.setSeeTheFuture);
   const choice = gameState?.choice || null;
   const choiceOwnerId = gameState?.choiceOwnerId || null;
   const showFavorGive = useGameStore((s) => s.showFavorGive);
   const favorGiveInfo = useGameStore((s) => s.favorGiveInfo);
-  const cardEffect = useGameStore((s) => s.cardEffect);
+
 
   const [picker, setPicker] = useState(null);
   const [defuseDismissed, setDefuseDismissed] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [isMuted, setIsMuted] = useState(soundEffects.isMuted());
-  const [screenShake, setScreenShake] = useState(false);
+
   const [showSidePanel, setShowSidePanel] = useState(
     () => typeof window !== 'undefined' && window.innerWidth >= 1024
   );
@@ -91,8 +95,20 @@ export default function GamePage() {
   const [hasDealt, setHasDealt] = useState(false);
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [tableBackground, setTableBackground] = useState(readTableBackground);
-  const lastBoomLog = useRef('');
-  const reduceMotion = useReducedMotion();
+
+  useEffect(() => () => useGameStore.getState().clearEffects(), [roomCode]);
+  useEffect(() => { if (activePresentationId) setCardAnimation(null); }, [activePresentationId]);
+
+  // Nhìn Tương Lai: chờ lá đáp xong mới mở modal để không che animation.
+  useEffect(() => {
+    if (!seeFuturePending) return;
+    if (cardEffectPhase && cardEffectPhase !== 'effect') return;
+    useGameStore.setState({
+      showSeeTheFuture: true,
+      seeTheFutureCards: seeFuturePending,
+      seeFuturePending: null,
+    });
+  }, [seeFuturePending, cardEffectPhase]);
 
   // đồng bộ mã phòng khi vào thẳng URL (F5)
   useEffect(() => {
@@ -117,6 +133,24 @@ export default function GamePage() {
   const drawPileTop = gameState?.drawPileTop || null;
   const discardPile = gameState?.discardPile || [];
   const gameLog = gameState?.gameLog || [];
+  const publicLog = gameState?.publicLog || [];
+  const myPrivateLog = gameState?.myPrivateLog || [];
+  const mergedLog = useMemo(() => {
+    const pub = publicLog.length > 0
+      ? publicLog.map((entry) => ({ ...entry, private: false }))
+      : gameLog.map((text, index) => ({
+          id: `legacy-${index}`,
+          ts: 0,
+          kind: 'system',
+          text,
+          private: false,
+        }));
+    const priv = myPrivateLog.map((entry) => ({ ...entry, private: true }));
+    return [...pub, ...priv].sort(
+      (a, b) => (a.ts || 0) - (b.ts || 0) || String(a.id).localeCompare(String(b.id))
+    );
+  }, [publicLog, myPrivateLog, gameLog]);
+  const [logReplayCards, setLogReplayCards] = useState(null);
   const winner = gameState?.winner;
   const pendingOwner = gameState?.pendingActionOwner;
   const attackInfo = gameState?.attackInfo || null;
@@ -161,64 +195,6 @@ export default function GamePage() {
 
   useEffect(() => {
     if (waitingFor !== 'defuse_place') setDefuseDismissed(false);
-  }, [waitingFor]);
-
-  useEffect(() => {
-    if (gameState?.status === 'playing') lastBoomLog.current = '';
-  }, [gameState?.status]);
-
-  // Rung màn hình, build-up rồi nổ khi có người nổ. Mỗi log chỉ chạy một lần.
-  useEffect(() => {
-    const last = gameLog[gameLog.length - 1];
-    if (!last || last === lastBoomLog.current || !last.includes('💥')) return;
-    lastBoomLog.current = last;
-
-    soundEffects.playBoomBuild();
-    const boomSound = setTimeout(() => soundEffects.playExplosion(), 360);
-    if (reduceMotion) return () => clearTimeout(boomSound);
-
-    setScreenShake(true);
-    const bursts = [
-      [18, 80],
-      [24, 220],
-      [56, 380],
-    ].map(([particleCount, delay]) =>
-      setTimeout(
-        () =>
-          confetti({
-            particleCount,
-            spread: 60,
-            startVelocity: 26,
-            origin: { x: 0.5, y: 0.56 },
-            ticks: 90,
-            scalar: 0.85,
-            colors: ['#F59E0B', '#EF4444', '#FDE68A'],
-            disableForReducedMotion: true,
-          }),
-        delay
-      )
-    );
-    const shakeTimer = setTimeout(() => setScreenShake(false), 800);
-    return () => {
-      clearTimeout(boomSound);
-      clearTimeout(shakeTimer);
-      bursts.forEach(clearTimeout);
-    };
-  }, [gameLog, reduceMotion]);
-
-  // Xào bài + Tấn Công + Imploding: hiệu ứng ngắn, không chặn input.
-  useEffect(() => {
-    if (!cardEffect) return;
-    if (cardEffect.type === 'shuffle') setCardAnimation({ type: 'shuffle' });
-    if (cardEffect.type === 'attack' && !reduceMotion) {
-      setScreenShake(true);
-      const t = setTimeout(() => setScreenShake(false), 120);
-      return () => clearTimeout(t);
-    }
-  }, [cardEffect?.effectId, reduceMotion]);
-
-  useEffect(() => {
-    if (waitingFor === 'imploding_place') setCardAnimation({ type: 'imploding' });
   }, [waitingFor]);
 
   const handleToggleMute = () => {
@@ -369,13 +345,15 @@ export default function GamePage() {
   }, [gameState?.status, myHand.length, hasDealt]);
 
   // ===== Hành động =====
-  const firstCardType = (ids) =>
-    myHand.find((card) => card.id === (ids || [])[0])?.type || null;
+  const preparePlay = (ids) => {
+    soundEffects.init();
+    useGameStore.getState().preparePlay(myHand.filter(c => ids.includes(c.id)), captureCardOrigins(ids));
+  };
 
   const handleDraw = () => {
     if (!canAct) return;
-    soundEffects.playDraw();
-    setCardAnimation({ type: 'draw' });
+    soundEffects.init();
+    useGameStore.getState().enqueueDraw(anchorRect('[data-draw-pile]'));
     clearSelectedCards();
     drawCard(roomCode);
   };
@@ -396,7 +374,7 @@ export default function GamePage() {
       setPicker({ mode: 'discard', cardIds });
       return;
     }
-    setCardAnimation({ type: 'play', cardType: firstCardType(cardIds) });
+    preparePlay(cardIds);
     playCard(roomCode, cardIds);
     clearSelectedCards();
   };
@@ -406,14 +384,14 @@ export default function GamePage() {
       setPicker({ ...picker, mode: 'type', targetPlayerId: targetId });
       return;
     }
-    setCardAnimation({ type: 'play', cardType: firstCardType(picker.cardIds) });
+    preparePlay(picker.cardIds);
     playCard(roomCode, picker.cardIds, { targetPlayerId: targetId });
     setPicker(null);
     clearSelectedCards();
   };
 
   const handlePickType = (type) => {
-    setCardAnimation({ type: 'play', cardType: firstCardType(picker.cardIds) });
+    preparePlay(picker.cardIds);
     playCard(roomCode, picker.cardIds, {
       targetPlayerId: picker.targetPlayerId,
       requestedCardType: type,
@@ -423,7 +401,7 @@ export default function GamePage() {
   };
 
   const handlePickDiscard = (cardId) => {
-    setCardAnimation({ type: 'play', cardType: firstCardType(picker.cardIds) });
+    preparePlay(picker.cardIds);
     playCard(roomCode, picker.cardIds, { discardPickId: cardId });
     setPicker(null);
     clearSelectedCards();
@@ -435,6 +413,7 @@ export default function GamePage() {
   };
 
   const handleNope = () => {
+    if (nopeCards[0]) preparePlay([nopeCards[0].id]);
     nopeAction(roomCode);
     useGameStore.setState({ showNopePopup: false });
   };
@@ -641,9 +620,7 @@ export default function GamePage() {
 
   return (
     <div
-      className={`game-root min-h-screen flex flex-col justify-between selection:bg-[var(--mustard)] selection:text-[var(--ink)] transition-transform ${
-        screenShake ? 'animate-[wiggle_0.2s_ease-in-out_infinite]' : ''
-      }`}
+      className="game-root min-h-screen overflow-x-hidden flex flex-col justify-between selection:bg-[var(--mustard)] selection:text-[var(--ink)]"
       style={
         tableBackground
           ? {
@@ -669,7 +646,7 @@ export default function GamePage() {
               className="text-[10px] font-bold text-[var(--ink-soft)] hover:text-[var(--ink)] px-0.5 cursor-pointer"
             >
               <span className="hidden sm:inline">Sao chép</span>
-              <span className="sm:hidden">Chép</span>
+              <span className="sm:hidden" aria-hidden="true">📋</span>
             </button>
           </div>
         </div>
@@ -692,7 +669,7 @@ export default function GamePage() {
             title={showSidePanel ? 'Đóng chat và diễn biến' : 'Mở chat và diễn biến'}
             className={`landing-btn landing-btn--compact ${showSidePanel ? 'landing-btn--mustard' : 'landing-btn--paper'}`}
           >
-            <span className="sm:hidden">Chat</span>
+            <span className="sm:hidden" aria-hidden="true">💬</span>
             <span className="hidden sm:inline">Bên lề</span>
           </button>
 
@@ -710,7 +687,8 @@ export default function GamePage() {
             aria-label="Luật chơi"
             className="landing-btn landing-btn--compact landing-btn--paper"
           >
-            Luật
+            <span className="sm:hidden" aria-hidden="true">📖</span>
+            <span className="hidden sm:inline">Luật</span>
           </button>
 
           <button
@@ -719,7 +697,8 @@ export default function GamePage() {
             aria-label="Thoát phòng"
             className="landing-btn landing-btn--compact landing-btn--oxblood"
           >
-            Thoát
+            <span className="sm:hidden" aria-hidden="true">🚪</span>
+            <span className="hidden sm:inline">Thoát</span>
           </button>
         </div>
       </header>
@@ -730,9 +709,11 @@ export default function GamePage() {
           open={showSidePanel}
           onClose={() => setShowSidePanel(false)}
           messages={chatMessages}
-          logs={gameLog}
+          logs={mergedLog}
           playerId={playerId}
+          playerName={playerName}
           onSend={(msg) => sendChat(roomCode, msg)}
+          onReplayCards={(entry) => setLogReplayCards(entry.cards)}
         />
 
         <main className="flex-1 min-w-0 max-w-6xl w-full mx-auto p-2 sm:p-3 flex flex-col justify-between gap-1.5 sm:gap-2.5 max-sm:pb-28">
@@ -757,7 +738,7 @@ export default function GamePage() {
         </div>
 
         {/* Khu vực trung tâm: Thảm Bàn Bài Đấu Casino */}
-        <div className="game-table relative w-full max-w-2xl mx-auto my-1 py-3 sm:py-5 px-4 flex items-center justify-around gap-6 sm:gap-12 overflow-hidden">
+        <div data-play-table className="game-table relative w-full max-w-2xl mx-auto my-1 py-3 sm:py-5 px-4 flex items-center justify-around gap-6 sm:gap-12 overflow-hidden">
           {/* Vùng chồng bài rút */}
           <div className="flex flex-col items-center">
             <DrawPile count={drawPileCount} topCard={drawPileTop} onClick={handleDraw} disabled={!canAct} />
@@ -780,19 +761,20 @@ export default function GamePage() {
         </div>
 
         {/* Diễn biến mini khi bảng bên lề đang đóng */}
-        {gameLog.length > 0 && !showSidePanel && (
+        {mergedLog.length > 0 && !showSidePanel && (
           <button
             type="button"
             onClick={() => setShowSidePanel(true)}
             className="w-full max-w-md mx-auto py-1.5 px-3 bg-[var(--paper)] border-2 border-[var(--ink)] rounded-[4px] text-left text-[11px] text-[var(--ink-soft)] shadow-[2px_2px_0_var(--hard-shadow)] hover:bg-[var(--paper-2)] transition-colors flex items-center justify-between"
           >
-            <span className="truncate">{gameLog[gameLog.length - 1]}</span>
+            <span className="truncate">{mergedLog[mergedLog.length - 1]?.text}</span>
             <span className="text-[10px] text-[var(--oxblood)] font-bold ml-2 shrink-0">Mở bên lề</span>
           </button>
         )}
 
         {/* Khu vực tay bài người chơi */}
         <div
+          data-player-seat={playerId}
           className={`game-hand w-full rounded-[6px] p-3 sm:p-4 relative transition-all ${
             attackInfo?.targetId === playerId
               ? 'game-hand--attacked'
@@ -805,7 +787,7 @@ export default function GamePage() {
           <div className="flex flex-col gap-1.5 border-b border-[var(--line)] px-1 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-xs sm:text-sm font-black text-[var(--ink)] font-display flex flex-wrap items-center gap-2">
               <span>🐱 TAY BÀI CỦA BẠN</span>
-              <span className="landing-chip">{myHand.length} lá</span>
+              <span className="landing-chip"><AnimatedCount value={myHand.length} /> lá</span>
               {attackInfo?.targetId === playerId ? (
                 <span className="landing-stamp border-[var(--oxblood)] text-[var(--oxblood)]">
                   ⚔️ BỊ TẤN CÔNG
@@ -917,6 +899,17 @@ export default function GamePage() {
 
       {showSeeTheFuture && (
         <SeeTheFutureModal cards={seeTheFutureCards} onClose={() => setSeeTheFuture(false)} />
+      )}
+
+      {/* Xem lại danh sách lá đã lưu trong private log */}
+      {logReplayCards && (
+        <SeeTheFutureModal
+          cards={logReplayCards}
+          title="👁️ LÁ BẠN ĐÃ THẤY"
+          subtitle="Chi tiết từ nhật ký riêng tư — chỉ mình bạn thấy."
+          showOrder={false}
+          onClose={() => setLogReplayCards(null)}
+        />
       )}
 
       {/* Sắp xếp 3 lá tương lai */}
@@ -1041,6 +1034,7 @@ export default function GamePage() {
           winnerId={winner.id}
           playerId={playerId}
           stats={gameState.myStats}
+          deckTheme={deckTheme}
           onPlayAgain={handlePlayAgain}
           onHome={handleHome}
         />
@@ -1147,16 +1141,12 @@ export default function GamePage() {
 
       {/* Hiệu ứng chia bài / rút bài */}
       <CardAnimationOverlay
-        animation={cardAnimation}
+        animation={activePresentationId ? null : cardAnimation}
         onComplete={() => setCardAnimation(null)}
       />
 
       {/* Hiệu ứng riêng của từng lá bài khi được đánh */}
-      <CardEffectOverlay
-        effect={cardEffect}
-        players={allPlayers}
-        onDone={() => useGameStore.getState().setCardEffect(null)}
-      />
+      <CardPresentation players={allPlayers} />
     </div>
   );
 }

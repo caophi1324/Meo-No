@@ -3,6 +3,7 @@ import Card from './Card';
 import CardSkillInspector from './CardSkillInspector';
 import { soundEffects } from '../utils/soundEffects';
 import { sortCards } from '../utils/cardSorter';
+import useGameStore from '../store/gameStore';
 
 export default function CardHand({
   cards = [],
@@ -19,6 +20,7 @@ export default function CardHand({
   canUseNope = false,
   onUseNope,
 }) {
+  const active = useGameStore(s => s.cardEffect);
   // Chế độ sắp xếp bài: 'function' (theo tính năng - mặc định) | 'combos' (ưu tiên combo) | 'name' (A-Z)
   const [sortMode, setSortMode] = useState('function');
   const [isMobile, setIsMobile] = useState(() =>
@@ -48,7 +50,6 @@ export default function CardHand({
   };
 
   const handlePlay = () => {
-    soundEffects.playCard();
     if (onPlay) onPlay();
   };
 
@@ -62,7 +63,7 @@ export default function CardHand({
   };
 
   return (
-    <div className="flex flex-col items-center gap-2.5 w-full">
+    <div data-hand className="flex flex-col items-center gap-2.5 w-full">
       {/* Thanh công cụ sắp xếp bài (Sort Bar) */}
       <div className="w-full max-w-4xl flex items-center justify-between gap-2 px-2 text-xs">
         <label className="flex items-center gap-1.5 sm:hidden">
@@ -125,16 +126,19 @@ export default function CardHand({
       <div className="relative w-full px-1">
         <div className="pointer-events-none absolute inset-y-1 left-0 z-10 w-5 bg-gradient-to-r from-[var(--paper)] to-transparent sm:hidden" />
         <div className="pointer-events-none absolute inset-y-1 right-0 z-10 w-5 bg-gradient-to-l from-[var(--paper)] to-transparent sm:hidden" />
-        <div className="mx-auto flex max-w-4xl snap-x snap-mandatory gap-2 overflow-x-auto px-1 py-1.5 sm:flex-wrap sm:justify-center sm:gap-2.5 sm:overflow-visible">
-          {sortedCards.map((card) => (
+        <div className="card-hand-scroll mx-auto flex max-w-4xl snap-x snap-mandatory gap-2 overflow-x-auto px-1 py-1.5 sm:flex-wrap sm:justify-center sm:gap-2.5 sm:overflow-visible">
+          {sortedCards.map((card, index) => (
             <div
               key={card.id}
-              className={`shrink-0 snap-start ${
+              className={`hand-card-target shrink-0 snap-start ${
                 selectedIds.includes(card.id) ? 'combo-selected-pulse' : ''
               }`}
+              style={{ opacity: active?.phase === 'flight' && active.cards?.some(c => c.id === card.id) ? 0 : 1 }}
             >
               <Card
                 card={card}
+                layoutScope="hand"
+                layoutDelay={Math.min(index, 10) * .04}
                 selected={selectedIds.includes(card.id)}
                 onClick={() => handleToggle(card)}
                 disabled={!!card.disabled}

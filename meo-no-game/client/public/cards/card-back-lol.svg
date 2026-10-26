@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" role="img" aria-label="Lưng bài Mèo Nổ - bộ Liên Minh">
+  <defs>
+    <linearGradient id="hextech" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D2430"/>
+      <stop offset="0.55" stop-color="#123640"/>
+      <stop offset="1" stop-color="#081820"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M16 1 29 9v16l-13 8L3 25V9Z" fill="none" stroke="#2A9D8F" stroke-width="0.8" opacity="0.18"/>
+    </pattern>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F2D28A"/>
+      <stop offset="0.5" stop-color="#C9922E"/>
+      <stop offset="1" stop-color="#8A5A16"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="560" rx="18" fill="#050D12"/>
+  <rect x="10" y="10" width="380" height="540" rx="12" fill="url(#hextech)" stroke="url(#gold)" stroke-width="3"/>
+  <rect x="10" y="10" width="380" height="540" rx="12" fill="url(#grid)"/>
+  <g fill="none" stroke="#2A9D8F" stroke-width="1.5" opacity="0.55">
+    <circle cx="200" cy="256" r="148"/>
+    <circle cx="200" cy="256" r="112"/>
+    <path d="M52 256h296M200 108v296M95 151l210 210M305 151 95 361"/>
+  </g>
+  <g fill="none" stroke="url(#gold)" stroke-width="5" stroke-linejoin="round">
+    <path d="M200 118 278 162v108l-78 44-78-44V162Z"/>
+    <path d="M200 158 242 182v68l-42 24-42-24v-68Z"/>
+  </g>
+  <path d="M200 188 224 202v42l-24 14-24-14v-42Z" fill="#2A9D8F" opacity="0.25"/>
+  <g fill="#F2D28A">
+    <circle cx="200" cy="118" r="4"/>
+    <circle cx="278" cy="162" r="4"/>
+    <circle cx="278" cy="270" r="4"/>
+    <circle cx="200" cy="314" r="4"/>
+    <circle cx="122" cy="270" r="4"/>
+    <circle cx="122" cy="162" r="4"/>
+  </g>
+  <g fill="none" stroke="#2A9D8F" stroke-width="3" opacity="0.9">
+    <path d="M94 88h52M254 88h52M94 440h52M254 440h52"/>
+    <path d="M120 76v24M280 76v24M120 428v24M280 428v24"/>
+  </g>
+  <text x="200" y="484" text-anchor="middle" font-family="Georgia,serif" font-size="30" font-weight="700" letter-spacing="5" fill="#F4EAD5">MÈO NỔ</text>
+  <text x="200" y="514" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="12" font-weight="700" letter-spacing="4" fill="#F2D28A">HEXTECH</text>
+  <rect x="24" y="24" width="352" height="512" rx="8" fill="none" stroke="#2A9D8F" stroke-width="1.5" opacity="0.45"/>
+</svg>

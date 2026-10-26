@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { io } from 'socket.io-client';
 import { EVENTS as E } from '../shared/events.js';
-import { themedImage } from '../shared/decks.js';
+import { themedImage, cardBackFor } from '../shared/decks.js';
 import { createDeck } from '../server/src/deckBuilder.js';
 
 const PORT = 4100;
@@ -28,6 +28,13 @@ for (const card of createDeck(2)) {
   if (!fs.existsSync(file)) throw new Error(`missing lol art: ${card.lolImage}`);
 }
 console.log('PASS: LoL theme has art for the 150-card deck');
+
+// Card back riêng cho cả 3 theme chơi được.
+for (const theme of ['default', 'anime', 'lol']) {
+  const file = path.join(PUBLIC, cardBackFor(theme).replace(/^\//, ''));
+  if (!fs.existsSync(file)) throw new Error(`missing ${theme} card back: ${cardBackFor(theme)}`);
+}
+console.log('PASS: 3 theme card backs exist');
 
 let server;
 let host;
@@ -120,6 +127,23 @@ async function main() {
   host.socket.emit(E.DRAW_CARD, { roomCode: host.roomCode });
   await waitFor(() => host.state.drawPileCount < before, 3000, 'drawPileCount decrease');
   if (host.state.drawPile !== undefined) throw new Error('draw state leaks drawPile');
+
+  // Private log: chỉ người rút thấy tên lá, public chỉ generic.
+  await waitFor(
+    () => (host.state.myPrivateLog || []).some((entry) => /rút được/.test(entry.text)),
+    3000,
+    'host private draw log'
+  );
+  const hostPrivate = host.state.myPrivateLog.find((entry) => /rút được/.test(entry.text));
+  const secretName = hostPrivate.cards?.[0]?.nameVN;
+  if (!secretName) throw new Error('private draw log has no card detail');
+  const guestState = JSON.stringify(guest.state);
+  if (guestState.includes(hostPrivate.id)) throw new Error('guest receives host private log entry');
+  const guestPrivate = (guest.state.myPrivateLog || []).map((entry) => entry.text).join('\n');
+  if (guestPrivate.includes(secretName)) throw new Error('guest receives host private card name');
+  const publicText = (host.state.gameLog || []).join('\n');
+  if (!/đã rút 1 lá/.test(publicText)) throw new Error('missing public draw log');
+  if (publicText.includes(secretName)) throw new Error('public log leaks drawn card name');
 
   console.log(`PASS: room ${host.roomCode}, 2 players, status playing, drawPileCount ${before} -> ${host.state.drawPileCount}`);
   clearTimeout(watchdog);

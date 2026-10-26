@@ -5,18 +5,24 @@ export const DECK_THEMES = [
     name: 'Bộ mặc định',
     description: 'Ảnh bài gốc',
     preview: '/cards/custom/MN006.jpg',
+    cardBack: '/cards/card-back-default.svg',
+    finisher: 'default',
   },
   {
     id: 'anime',
     name: 'Bộ Anime',
     description: 'Tranh anime',
     preview: '/cards/anime/MN006.jpg',
+    cardBack: '/cards/card-back-anime.svg',
+    finisher: 'anime',
   },
   {
     id: 'lol',
     name: 'Liên Minh',
     description: 'Tướng Liên Minh Huyền Thoại',
     preview: '/cards/lol/Ahri.jpg',
+    cardBack: '/cards/card-back-lol.svg',
+    finisher: 'lol',
   },
   {
     id: 'halloween',
@@ -65,4 +71,20 @@ export function themedImage(image, theme) {
     return image.replace('/cards/custom/', '/cards/anime/');
   }
   return ANIME_EXTRA_IMAGES[image] || image;
+}
+
+const CARD_BACKS = {
+  default: '/cards/card-back-default.svg',
+  anime: '/cards/card-back-anime.svg',
+  lol: '/cards/card-back-lol.svg',
+};
+
+export function cardBackFor(theme = DEFAULT_DECK_THEME) {
+  return CARD_BACKS[theme] || CARD_BACKS.default;
+}
+
+const FINISHERS = { default: 'default', anime: 'anime', lol: 'lol' };
+
+export function finisherFor(theme = DEFAULT_DECK_THEME) {
+  return FINISHERS[theme] || FINISHERS.default;
 }

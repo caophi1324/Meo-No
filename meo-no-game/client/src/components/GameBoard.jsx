@@ -29,7 +29,7 @@ export default function GameBoard({
     <div className="w-full max-w-5xl mx-auto px-1 sm:px-2 py-1">
       <div className="grid grid-cols-2 gap-x-4 sm:gap-x-24 lg:gap-x-44 gap-y-2 sm:gap-y-3 items-start">
         {players.map((p, i) => (
-          <div key={p.id} className={`flex ${seatClass(i, players.length)}`}>
+          <div key={p.id} data-player-seat={p.id} className={`flex ${seatClass(i, players.length)}`}>
             <PlayerSlot
               player={p}
               isCurrentTurn={p.id === currentPlayerId}

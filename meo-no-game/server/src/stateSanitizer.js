@@ -95,7 +95,9 @@ export function sanitizeStateForPlayer(gameState, playerId) {
     isAlive: player?.isAlive !== false,
     myStats: player?.stats ? { ...player.stats } : null,
     winner: winnerPlayer ? { id: winnerPlayer.id, name: winnerPlayer.name } : null,
-    gameLog: gameState.gameLog.slice(-30),
+    gameLog: (gameState.gameLog || []).slice(-50),
+    publicLog: (gameState.publicLog || []).slice(-50),
+    myPrivateLog: (gameState.privateLog?.[playerId] || []).slice(-50),
   };
 }
 

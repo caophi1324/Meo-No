@@ -3,6 +3,14 @@ import { createDeck, shuffleDeck, dealCards } from './deckBuilder.js';
 import * as cardEffects from './cardEffects.js';
 import { advanceTurn, setChoice } from './cardEffects.js';
 import { CUSTOM_PHASE3_EFFECTS, openPartyChoice } from './customPhase3Effects.js';
+import { addGameLog, addPrivateLog, addPublicLog, initGameLogs } from './gameLog.js';
+import { CARD_META } from './constants.js';
+
+function actionLabel(type) {
+  if (type === 'cat_combo') return 'Combo mèo';
+  if (type === 'imploding') return 'Imploding Kitten';
+  return CARD_META[type]?.nameVN || type;
+}
 
 const NOPEABLE_TYPES = [
   CARD_TYPES.ATTACK,
@@ -118,13 +126,13 @@ export class GameEngine {
       pendingParty: null,
       napNhienLieuUsed: false,
     };
+    initGameLogs(this.gameState);
     return this.gameState;
   }
 
-  addLog(message) {
-    if (!this.gameState) return;
-    this.gameState.gameLog.push(message);
-    if (this.gameState.gameLog.length > 200) this.gameState.gameLog.shift();
+  addLog(message, audience = 'all', meta = {}) {
+    if (!this.gameState) return null;
+    return addGameLog(this.gameState, message, audience, meta);
   }
 
   validateMove(gameState, playerId) {
@@ -441,6 +449,10 @@ export class GameEngine {
     }
 
     const drawnCard = gameState.drawPile.shift();
+    addPrivateLog(gameState, [player.id], `Bạn đã rút được ${drawnCard.nameVN}.`, {
+      kind: 'draw',
+      cards: [cardEffects.cardView(drawnCard)],
+    });
 
     if (drawnCard.type === CARD_TYPES.BOOM_ATOMIC) {
       const kittens = [
@@ -561,6 +573,12 @@ export class GameEngine {
         stealer.hand.push(drawnCard);
         reactionStealer = stealer;
         this.addLog(`🐻 ${stealer.name} đã cướp lá ${player.name} vừa rút.`);
+        addPrivateLog(
+          gameState,
+          [player.id, stealer.id],
+          `${stealer.name} đã cướp ${drawnCard.nameVN} của ${player.name}.`,
+          { kind: 'steal', cards: [cardEffects.cardView(drawnCard)] }
+        );
       } else {
         player.hand.push(drawnCard);
       }
@@ -601,7 +619,10 @@ export class GameEngine {
     if (!Number.isFinite(pos)) pos = 0;
     pos = Math.floor(Math.max(0, Math.min(pos, gameState.drawPile.length)));
     gameState.drawPile.splice(pos, 0, ekCard);
-    this.addLog(`🔧 ${player.name} đã Gỡ Bom và nhét Mèo Nổ vào vị trí ${pos + 1}.`);
+    this.addLog(`🔧 ${player.name} đã Gỡ Bom thành công.`, 'all', { kind: 'defuse' });
+    addPrivateLog(gameState, [playerId], `Bạn đã đặt Mèo Nổ vào vị trí ${pos + 1}.`, {
+      kind: 'defuse',
+    });
 
     gameState.waitingFor = null;
     gameState.pendingAction = null;
@@ -632,7 +653,12 @@ export class GameEngine {
 
     gameState.waitingFor = null;
     gameState.pendingAction = null;
-    this.addLog(`💣 ${player.name} đã đặt Imploding Kitten ngửa vào vị trí ${pos + 1}.`);
+    this.addLog(`💣 ${player.name} đã đặt Imploding Kitten ngửa vào chồng bài.`, 'all', {
+      kind: 'imploding',
+    });
+    addPrivateLog(gameState, [playerId], `Bạn đã đặt Imploding Kitten vào vị trí ${pos + 1}.`, {
+      kind: 'imploding',
+    });
 
     gameState.turnsRemaining -= 1;
     if (gameState.turnsRemaining <= 0) advanceTurn(gameState, 1);
@@ -661,7 +687,16 @@ export class GameEngine {
     gameState.nopePassed = [];
     gameState.windowOwnerId = playerId;
 
-    this.addLog(`🚫 ${player.name} đã Phủ Nhận!`);
+    const actionOwner = gameState.players.find(
+      p => p.id === gameState.pendingAction?.playerId
+    );
+    this.addLog(
+      `🚫 ${player.name} đã Phủ Nhận ${actionLabel(gameState.pendingAction?.type)} của ${
+        actionOwner?.name || 'Ai đó'
+      }.`,
+      'all',
+      { kind: 'nope' }
+    );
 
     if (gameState.nopeCount % 2 === 0) {
       // chẵn → hành động gốc được thi hành
@@ -831,12 +866,12 @@ export class GameEngine {
               cards: candidates.map(p => ({ id: p.id, name: p.name })),
               copyAction: { type: last.type, payload: { ...payload } },
             });
-            gameState.gameLog.push(`🐊 ${actor?.name || 'Người chơi'} đang chọn mục tiêu để Sao Chép ${last.type}.`);
+            addPublicLog(gameState, `🐊 ${actor?.name || 'Người chơi'} đang chọn mục tiêu để Sao Chép ${last.type}.`);
             return { gameState, response: { type: 'choice_request', playerId: pa.playerId } };
           }
           payload.targetPlayerId = currentTarget.id;
         }
-        gameState.gameLog.push(`🐊 Người chơi đã Sao Chép hiệu ứng ${last.type}.`);
+        addPublicLog(gameState, `🐊 Người chơi đã Sao Chép hiệu ứng ${last.type}.`);
         return this.runAction(gameState, {
           type: last.type,
           playerId: pa.playerId,
@@ -865,7 +900,11 @@ export class GameEngine {
     const player = gameState.players.find(p => p.id === pa.playerId);
     if (player) {
       // Lá đã đánh và bị Nope vẫn nằm trong chồng bài hạ (mất khỏi tay).
-      this.addLog(`🚫 Hành động của ${player.name} đã bị Phủ Nhận hoàn toàn!`);
+      this.addLog(
+        `🚫 ${actionLabel(pa.type)} của ${player.name} đã bị Phủ Nhận hoàn toàn!`,
+        'all',
+        { kind: 'nope' }
+      );
     }
     return { gameState, response: { type: 'action_cancelled', playerId: pa.playerId, cardIds: pa.cardIds } };
   }
@@ -888,7 +927,9 @@ export class GameEngine {
       gameState.drawPile.splice(pos, 0, top);
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
-      gameState.gameLog.push(`🔎 ${player.name} đã đặt lại lá trên cùng ở vị trí ${pos + 1}.`);
+      addPublicLog(gameState, `🔎 ${player.name} đã đặt lại lá trên cùng.`, {
+        kind: 'reveal',
+      });
       return { gameState, response: { type: 'choice_resolved', playerId } };
     }
 
@@ -916,7 +957,15 @@ export class GameEngine {
         return this.drawCard(gameState, playerId);
       }
       player.hand.push(chosen);
-      gameState.gameLog.push(`🔎 ${player.name} đã chọn ${chosen.nameVN} từ 5 lá trên cùng.`);
+      addPublicLog(gameState, `🔎 ${player.name} đã chọn 1 lá từ 5 lá trên cùng.`, {
+        kind: 'reveal',
+      });
+      addPrivateLog(
+        gameState,
+        [playerId],
+        `Bạn đã chọn ${chosen.nameVN} từ 5 lá trên cùng.`,
+        { kind: 'reveal', cards: [cardEffects.cardView(chosen)] }
+      );
       return { gameState, response: { type: 'choice_resolved', playerId } };
     }
 
@@ -930,7 +979,15 @@ export class GameEngine {
       card.disabled = true;
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
-      gameState.gameLog.push(`🐱 ${player.name} đã vô hiệu hóa 1 lá của ${target.name} trong lượt tới.`);
+      addPublicLog(gameState, `🐱 ${player.name} đã vô hiệu hóa 1 lá của ${target.name} trong lượt tới.`, {
+        kind: 'disable',
+      });
+      addPrivateLog(
+        gameState,
+        [player.id, target.id],
+        `${player.name} đã vô hiệu hóa ${card.nameVN} của ${target.name}.`,
+        { kind: 'disable', cards: [cardEffects.cardView(card)] }
+      );
       return { gameState, response: { type: 'choice_resolved', playerId } };
     }
 
@@ -956,7 +1013,15 @@ export class GameEngine {
       }
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
-      gameState.gameLog.push(`🌱 ${player.name} đã hồi sinh ${picked.length} lá từ người đã loại.`);
+      addPublicLog(gameState, `🌱 ${player.name} đã hồi sinh ${picked.length} lá từ người đã loại.`, {
+        kind: 'revive',
+      });
+      addPrivateLog(
+        gameState,
+        [playerId],
+        `Bạn đã hồi sinh: ${picked.map(item => item.card.nameVN).join(', ')}.`,
+        { kind: 'revive', cards: picked.map(item => cardEffects.cardView(item.card)) }
+      );
       return { gameState, response: { type: 'choice_resolved', playerId } };
     }
 
@@ -970,12 +1035,20 @@ export class GameEngine {
         if (idx === -1) return fail('Lá bài không có trên tay');
         indexes.push(idx);
       }
-      indexes.sort((a, b) => b - a).forEach(idx => {
-        gameState.discardPile.push(player.hand.splice(idx, 1)[0]);
-      });
+      indexes.sort((a, b) => b - a);
+      const removed = indexes.map(idx => player.hand.splice(idx, 1)[0]);
+      removed.forEach(card => gameState.discardPile.push(card));
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
-      gameState.gameLog.push(`🍕 ${player.name} đã tự hủy ${ids.length} lá.`);
+      addPublicLog(gameState, `🍕 ${player.name} đã tự hủy ${ids.length} lá.`, {
+        kind: 'destroy',
+      });
+      addPrivateLog(
+        gameState,
+        [playerId],
+        `Bạn đã hủy: ${removed.map(card => card.nameVN).join(', ')}.`,
+        { kind: 'destroy', cards: removed.map(cardEffects.cardView) }
+      );
       return { gameState, response: { type: 'choice_resolved', playerId } };
     }
 
@@ -988,7 +1061,13 @@ export class GameEngine {
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
       if (gameState.pendingParty) gameState.pendingParty.index += 1;
-      gameState.gameLog.push(`🎂 ${player.name} đã úp 1 lá lên đầu chồng bài.`);
+      addPublicLog(gameState, `🎂 ${player.name} đã úp 1 lá lên đầu chồng bài.`, {
+        kind: 'party',
+      });
+      addPrivateLog(gameState, [playerId], `Bạn đã úp ${card.nameVN} lên đầu chồng bài.`, {
+        kind: 'party',
+        cards: [cardEffects.cardView(card)],
+      });
       return openPartyChoice(gameState);
     }
 
@@ -1008,7 +1087,15 @@ export class GameEngine {
       const cards = indexes.map(i => target.hand[i]).map(cardEffects.cardView);
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
-      gameState.gameLog.push(`👁️ ${player.name} đã xem ${needed} lá úp của ${target.name}.`);
+      addPublicLog(gameState, `👁️ ${player.name} đã xem ${needed} lá úp của ${target.name}.`, {
+        kind: 'reveal',
+      });
+      addPrivateLog(
+        gameState,
+        [playerId],
+        `Bạn đã xem: ${cards.map(card => card.nameVN).join(', ')}.`,
+        { kind: 'reveal', cards }
+      );
       return {
         gameState,
         response: {
@@ -1034,15 +1121,39 @@ export class GameEngine {
         return fail(`Phải chọn đủ ${needed} lá úp hợp lệ`);
       }
       indexes.sort((a, b) => b - a);
+      const moved = [];
       if (choice.kind === 'destroy_pick') {
-        indexes.forEach(idx => gameState.discardPile.push(target.hand.splice(idx, 1)[0]));
+        indexes.forEach(idx => {
+          const card = target.hand.splice(idx, 1)[0];
+          moved.push(card);
+          gameState.discardPile.push(card);
+        });
       } else {
-        indexes.forEach(idx => player.hand.push(target.hand.splice(idx, 1)[0]));
+        indexes.forEach(idx => {
+          const card = target.hand.splice(idx, 1)[0];
+          moved.push(card);
+          player.hand.push(card);
+        });
       }
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
       const verb = choice.kind === 'destroy_pick' ? 'hủy' : 'cướp lại';
-      gameState.gameLog.push(`🛡️ ${player.name} đã ${verb} ${needed} lá úp từ ${target.name}.`);
+      const publicText =
+        choice.kind === 'destroy_pick'
+          ? `🛡️ ${player.name} đã ${verb} ${needed} lá úp từ ${target.name}.`
+          : `🛡️ ${player.name} đã phản đòn ${target.name}.`;
+      addPublicLog(gameState, publicText, {
+        kind: choice.kind === 'destroy_pick' ? 'destroy' : 'reaction',
+      });
+      addPrivateLog(
+        gameState,
+        [player.id, target.id],
+        `${player.name} đã ${verb} ${moved.map(card => card.nameVN).join(', ')} của ${target.name}.`,
+        {
+          kind: choice.kind === 'destroy_pick' ? 'destroy' : 'reaction',
+          cards: moved.map(cardEffects.cardView),
+        }
+      );
       return {
         gameState,
         response:
@@ -1078,7 +1189,15 @@ export class GameEngine {
       player.hand.push(card);
       gameState.pendingChoice = null;
       gameState.waitingFor = null;
-      gameState.gameLog.push(`🐾 ${player.name} đã lấy 1 lá úp từ ${target.name}.`);
+      addPublicLog(gameState, `🐾 ${player.name} đã lấy 1 lá úp từ ${target.name}.`, {
+        kind: 'steal',
+      });
+      addPrivateLog(
+        gameState,
+        [player.id, target.id],
+        `${player.name} đã lấy ${card.nameVN} từ ${target.name}.`,
+        { kind: 'steal', cards: [cardEffects.cardView(card)] }
+      );
       cardEffects.offerReaction(gameState, target, player);
       return {
         gameState,
@@ -1096,7 +1215,7 @@ export class GameEngine {
       if (value === 'pass') {
         gameState.pendingChoice = null;
         gameState.waitingFor = null;
-        gameState.gameLog.push(`🛡️ ${player.name} không phản đòn.`);
+        addPublicLog(gameState, `🛡️ ${player.name} không phản đòn.`);
         return { gameState, response: { type: 'choice_resolved', playerId } };
       }
       const idx = player.hand.findIndex(
@@ -1109,7 +1228,7 @@ export class GameEngine {
       if (cardEffects.takeVuongNiem(gameState, thief)) {
         gameState.pendingChoice = null;
         gameState.waitingFor = null;
-        gameState.gameLog.push(`👑 ${thief.name} đã chặn phản đòn của ${player.name}.`);
+        addPublicLog(gameState, `👑 ${thief.name} đã chặn phản đòn của ${player.name}.`);
         return {
           gameState,
           response: { type: 'reaction_steal', playerId, targetPlayerId: thief.id, stolen: 0, blocked: true },
@@ -1131,7 +1250,7 @@ export class GameEngine {
         cardCount: thief.hand.length,
         count,
       });
-      gameState.gameLog.push(`🛡️ ${player.name} phản đòn và đang chọn ${count} lá úp từ ${thief.name}.`);
+      addPublicLog(gameState, `🛡️ ${player.name} phản đòn và đang chọn ${count} lá úp từ ${thief.name}.`);
       return { gameState, response: { type: 'choice_request', playerId: player.id } };
     }
 

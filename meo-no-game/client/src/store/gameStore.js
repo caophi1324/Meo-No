@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { appendPresentation, nextPresentationId, playPresentation, receiveEffect, finishPresentation, observePlayedCards } from './presentation.js';
+import { captureCardOrigins } from '../utils/animationGeometry.js';
 
 let toastId = 0;
 let chatId = 0;
@@ -27,7 +29,11 @@ const useGameStore = create((set, get) => ({
     const selected = get().selectedCards.filter(id =>
       (state?.myHand || []).some(c => c.id === id)
     );
-    set({ gameState: state, selectedCards: selected });
+    const current = get();
+    const origins = captureCardOrigins((current.gameState?.myHand || []).map(c => c.id));
+    const freshRound = current.gameState && (current.gameState.roomCode !== state.roomCode || (current.gameState.status !== 'playing' && state.status === 'playing'));
+    const presentation = freshRound || current.presentationNeedsBaseline ? { cardEffect: null, effectQueue: [], playedPresentations: [], seeFuturePending: null } : observePlayedCards(current, state, origins);
+    set({ gameState: state, selectedCards: selected, presentationNeedsBaseline: false, ...presentation });
   },
 
   selectedCards: [],
@@ -54,11 +60,32 @@ const useGameStore = create((set, get) => ({
   winnerName: null,
   showSeeTheFuture: false,
   seeTheFutureCards: [],
-  setSeeTheFuture: (show, cards = []) => set({ showSeeTheFuture: show, seeTheFutureCards: cards }),
+  seeFuturePending: null,
+  setSeeTheFuture: (show, cards = []) => set({ showSeeTheFuture: show, seeTheFutureCards: cards, seeFuturePending: null }),
   showFavorGive: false,
   favorGiveInfo: null,
   cardEffect: null,
-  setCardEffect: (effect) => set({ cardEffect: effect }),
+  effectQueue: [],
+  playedPresentations: [],
+  presentationNeedsBaseline: false,
+  enqueueDraw: (fromRect) => set(s => appendPresentation(s, { effectId: nextPresentationId(), type: 'drew_card', motionKind: 'draw', flight: true, showEffect: false, phase: 'flight', fromRect, playerId: s.playerId, theme: s.deckTheme })),
+  preparePlay: (cards, origins) => set(s => {
+    if (!cards.length || s.playedPresentations.some(p => !p.accepted && p.cardIds.some(id => cards.some(c => c.id === id)))) return {};
+    return playPresentation(s, cards, s.playerId, origins);
+  }),
+  setCardEffect: (effect) => set(s => effect ? receiveEffect(s, effect) : finishPresentation(s, s.cardEffect?.effectId)),
+  completeEffect: (id) => set(s => finishPresentation(s, id)),
+  markEffectLanded: (id) => set(s => ({
+    cardEffect: s.cardEffect?.effectId === id ? { ...s.cardEffect, phase: 'effect' } : s.cardEffect,
+    playedPresentations: s.playedPresentations.map(p => p.actionId === id ? { ...p, landed: true } : p),
+  })),
+  clearEffects: () => set({ cardEffect: null, effectQueue: [], playedPresentations: [] }),
+  cancelPendingPlay: () => set(s => {
+    const ids = new Set(s.playedPresentations.filter(p => !p.accepted).map(p => p.actionId));
+    const queue = s.effectQueue.filter(e => !ids.has(e.actionId));
+    const cancelActive = ids.has(s.cardEffect?.actionId);
+    return { playedPresentations: s.playedPresentations.filter(p => !ids.has(p.actionId)), cardEffect: cancelActive ? queue[0] || null : s.cardEffect, effectQueue: cancelActive ? queue.slice(1) : queue };
+  }),
 
   // ---- chat ----
   chatMessages: [],
@@ -92,9 +119,13 @@ const useGameStore = create((set, get) => ({
       winnerName: null,
       showSeeTheFuture: false,
       seeTheFutureCards: [],
+      seeFuturePending: null,
       showFavorGive: false,
       favorGiveInfo: null,
       cardEffect: null,
+      effectQueue: [],
+      playedPresentations: [],
+      presentationNeedsBaseline: false,
       chatMessages: [],
       lobbyPlayers: [],
       lobbyStatus: 'lobby',

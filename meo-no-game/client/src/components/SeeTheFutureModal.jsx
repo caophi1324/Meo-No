@@ -4,7 +4,13 @@ import ModalShell from './ModalShell';
 import Card from './Card';
 import { soundEffects } from '../utils/soundEffects';
 
-export default function SeeTheFutureModal({ cards = [], onClose }) {
+export default function SeeTheFutureModal({
+  cards = [],
+  onClose,
+  title = '🔮 NHÌN TRƯỚC TƯƠNG LAI',
+  subtitle = 'Những lá bài bạn đã thấy — chỉ một mình bạn nhìn thấy!',
+  showOrder = true,
+}) {
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -26,11 +32,9 @@ export default function SeeTheFutureModal({ cards = [], onClose }) {
         </div>
 
         <h2 className="text-xl sm:text-2xl font-black text-[var(--ink)] mb-1 font-display tracking-wide">
-          🔮 NHÌN TRƯỚC TƯƠNG LAI
+          {title}
         </h2>
-        <p className="text-xs sm:text-sm text-[var(--ink-soft)] mb-5">
-          3 lá trên cùng của chồng bài rút — chỉ một mình bạn nhìn thấy!
-        </p>
+        <p className="text-xs sm:text-sm text-[var(--ink-soft)] mb-5">{subtitle}</p>
 
         {/* Danh sách 3 lá bài tương lai */}
         <div className="relative mb-6">
@@ -42,7 +46,7 @@ export default function SeeTheFutureModal({ cards = [], onClose }) {
                     i === 0
                       ? 'bg-[#F3D8D2] border-[var(--oxblood)] text-[var(--oxblood)]'
                       : 'bg-[var(--paper-2)] border-[var(--line)] text-[var(--ink-soft)]'
-                  }`}
+                  } ${showOrder ? '' : 'hidden'}`}
                 >
                   {labels[i] || `Thứ ${i + 1}`}
                 </div>
@@ -56,7 +60,7 @@ export default function SeeTheFutureModal({ cards = [], onClose }) {
                   }
                   style={{ transformPerspective: 800 }}
                 >
-                  <Card card={card} size="small" disabled className="shadow-lg" />
+                  <Card card={card} size="small" className="shadow-lg" />
                 </motion.div>
               </div>
             ))}

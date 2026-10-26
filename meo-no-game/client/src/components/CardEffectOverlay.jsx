@@ -1,9 +1,33 @@
-import { useEffect } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { animate, motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { soundEffects } from '../utils/soundEffects';
 
 // Hiệu ứng riêng cho từng loại lá bài — chạy cho CẢ người đánh lẫn người xem.
-const EFFECT_META = {
+export const FINISHER_META = {
+  default: {
+    label: 'MÈO NỔ!',
+    emoji: '💥',
+    color: '#7B2D26',
+    accent: '#C9922E',
+    confetti: ['#C9922E', '#7B2D26', '#1F4D3A', '#A9743F', '#F4EAD5'],
+  },
+  anime: {
+    label: 'NHÁT CHÉM CUỐI',
+    emoji: '⚔️',
+    color: '#B23A48',
+    accent: '#F2C14E',
+    confetti: ['#E8A0B4', '#F2C14E', '#F4EAD5', '#B23A48'],
+  },
+  lol: {
+    label: 'HEXTECH OVERFLOW',
+    emoji: '⚡',
+    color: '#C9922E',
+    accent: '#2A9D8F',
+    confetti: ['#F2D28A', '#2A9D8F', '#F4EAD5', '#123640'],
+  },
+};
+
+export const EFFECT_META = {
   attack: { label: 'TẤN CÔNG', emoji: '⚔️', color: '#FB923C', sound: 'playAttack' },
   skip: { label: 'BỎ LƯỢT', emoji: '⏭️', color: '#38BDF8', sound: 'playSkip' },
   favor_request: { label: 'XIN BÀI', emoji: '🙏', color: '#FBBF24', sound: 'playFavor' },
@@ -14,7 +38,7 @@ const EFFECT_META = {
   reverse_alt: { label: 'HOÁN ĐỔI', emoji: '🔁', color: '#22D3EE', sound: 'playReverse' },
   steal_card: { label: 'TRỘM BÀI', emoji: '🐧', color: '#34D399', sound: 'playCat' },
   boom_atomic: { label: 'BOOM NGUYÊN TỬ', emoji: '☢️', color: '#F59E0B', sound: 'playShuffle' },
-  imploding_flipped: { label: 'IMPLODING KITTEN', emoji: '💣', color: '#38BDF8', sound: null },
+  imploding_flipped: { label: 'IMPLODING KITTEN', emoji: '💣', color: '#38BDF8', sound: 'playImplodingFlip' },
   super_skip: { label: 'SIÊU BỎ LƯỢT', emoji: '⏩', color: '#60A5FA', sound: 'playSkip' },
   alter_future: { label: 'KIẾN TẠO TƯƠNG LAI', emoji: '🌌', color: '#A78BFA', sound: 'playFuture' },
   fuel: { label: 'NẠP NHIÊN LIỆU', emoji: '⛽', color: '#F59E0B', sound: 'playFuel' },
@@ -24,7 +48,7 @@ const EFFECT_META = {
   steal_discard: { label: 'LẤY BÀI HẠ', emoji: '🐱', color: '#F472B6', sound: 'playBeast' },
   reaction_steal: { label: 'PHẢN ĐÒN', emoji: '🛡️', color: '#F472B6', sound: 'playBeast' },
   action_cancelled: { label: 'BỊ PHỦ NHẬN', emoji: '🚫', color: '#EF4444', sound: 'playNopeSlam' },
-  exploded: { label: 'NỔ TUNG', emoji: '💥', color: '#EF4444', sound: null },
+  exploded: { label: 'NỔ TUNG', emoji: '💥', color: '#EF4444', sound: 'playExplosion' },
 };
 
 function nameOf(players, id) {
@@ -67,17 +91,24 @@ function subtitleFor(effect, players) {
   }
 }
 
-export default function CardEffectOverlay({ effect, players = [], onDone }) {
+export default function CardEffectOverlay({ effect, players = [], onDone, managedAudio = false }) {
   const meta = effect ? EFFECT_META[effect.type] : null;
   const reduceMotion = useReducedMotion();
+  const done = useRef(onDone); done.current = onDone;
 
   useEffect(() => {
-    if (!effect || !meta) return;
-    const play = meta.sound ? soundEffects[meta.sound] : null;
-    if (typeof play === 'function') play.call(soundEffects);
-    const timer = setTimeout(() => onDone && onDone(), 1250);
-    return () => clearTimeout(timer);
-  }, [effect?.effectId]);
+    if (!effect) return;
+    let cancelled = false, timeline, audio;
+    const frame = requestAnimationFrame(() => {
+      if (!meta) { done.current?.(); return; }
+      audio = !managedAudio ? soundEffects.playTracked(meta.sound) : null;
+      timeline = animate(0, 1, { duration: 1.25, onComplete: async () => {
+        await audio?.done;
+        if (!cancelled) done.current?.();
+      } });
+    });
+    return () => { cancelled = true; cancelAnimationFrame(frame); timeline?.stop(); audio?.cancel(); };
+  }, [effect?.effectId, managedAudio]);
 
   if (reduceMotion) {
     if (!effect || !meta) return null;

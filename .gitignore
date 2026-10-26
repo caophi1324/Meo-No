@@ -5,3 +5,6 @@ dist/
 # Internal notes, not part of the project
 DANH-GIA-VA-CAI-TIEN-MEO-NO.md
 HUONG-DAN-THUC-HIEN.md
+
+# Local test artifacts / evidence
+test-report/
